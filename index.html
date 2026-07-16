@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paulo Crespo — Inglés para comunicar con confianza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBF4EC;
+    --bg-soft: #F5EBDD;
+    --ink: #2A1F16;
+    --ink-soft: #6B5A48;
+    --orange: #F26822;
+    --orange-deep: #C1440E;
+    --peach: #FBDDC5;
+    --peach-line: #E9C8A6;
+    --white: #FFFCF8;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .mono {
+    font-family: 'Space Mono', monospace;
+  }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ---- Header ---- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(251, 244, 236, 0.88);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--peach-line);
+  }
+
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 32px;
+    max-width: 1040px;
+    margin: 0 auto;
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .logo span { color: var(--orange); }
+
+  nav { display: flex; gap: 28px; }
+
+  nav a {
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    transition: color 0.2s ease;
+  }
+
+  nav a:hover { color: var(--orange-deep); }
+
+  /* ---- Hero ---- */
+  .hero {
+    padding: 92px 0 60px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--orange-deep);
+    background: var(--peach);
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 26px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--orange);
+  }
+
+  .hero p {
+    max-width: 560px;
+    margin: 26px auto 0;
+    color: var(--ink-soft);
+    font-size: 1.08rem;
+  }
+
+  /* Waveform signature */
+  .wave-holder {
+    margin: 52px auto 8px;
+    max-width: 620px;
+  }
+
+  .wave-holder svg { width: 100%; height: auto; display: block; }
+
+  .wave-path {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 900;
+    stroke-dashoffset: 900;
+    animation: draw 2.2s ease-out forwards 0.3s;
+  }
+
+  @keyframes draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wave-path { animation: none; stroke-dashoffset: 0; }
+  }
+
+  .cta-row {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn-solid {
+    background: var(--orange);
+    color: var(--white);
+  }
+
+  .btn-solid:hover {
+    background: var(--orange-deep);
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--peach-line);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--orange);
+    transform: translateY(-1px);
+  }
+
+  /* ---- Section shared ---- */
+  section { padding: 76px 0; }
+
+  .section-head { max-width: 620px; margin-bottom: 44px; }
+
+  .section-head .eyebrow { margin-bottom: 16px; }
+
+  .section-head h2 { font-size: clamp(1.8rem, 3.5vw, 2.4rem); }
+
+  .section-head p { color: var(--ink-soft); margin-top: 14px; font-size: 1.02rem; }
+
+  /* ---- About ---- */
+  #sobre-mi { border-top: 1px solid var(--peach-line); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: var(--peach);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--orange-deep);
+    flex-shrink: 0;
+  }
+
+  .about-text p { max-width: 560px; }
+  .about-text p + p { margin-top: 16px; }
+
+  /* ---- Enfoque ---- */
+  #enfoque { background: var(--bg-soft); border-top: 1px solid var(--peach-line); border-bottom: 1px solid var(--peach-line); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--peach-line);
+    border-radius: 14px;
+    padding: 28px 24px;
+  }
+
+  .card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+  .card p { color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
+
+  /* ---- Pricing ---- */
+  .price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .price-card {
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .price-card.std {
+    background: var(--white);
+    border: 1px solid var(--peach-line);
+  }
+
+  .price-card.xmr {
+    background: var(--ink);
+    color: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .price-card.xmr::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, var(--orange) 0%, transparent 70%);
+    opacity: 0.35;
+  }
+
+  .price-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+    margin-bottom: 14px;
+  }
+
+  .price-card.xmr .price-label { color: var(--peach); opacity: 1; }
+
+  .price-amount {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .price-amount span {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.65;
+  }
+
+  .badge-discount {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    background: var(--orange);
+    color: var(--white);
+    padding: 4px 12px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+
+  .price-card p.desc {
+    margin-top: 18px;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+
+  .price-card.xmr p.desc { color: #E7DCCF; }
+
+  .xmr-address-box {
+    margin-top: auto;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .xmr-address-label {
+    font-size: 0.78rem;
+    color: var(--peach);
+    margin-bottom: 8px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.03em;
+  }
+
+  .xmr-address-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .xmr-address {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    word-break: break-all;
+    line-height: 1.4;
+    color: #F5EBDD;
+    flex: 1;
+  }
+
+  .copy-btn {
+    flex-shrink: 0;
+    background: var(--orange);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .copy-btn:hover { background: var(--orange-deep); }
+
+  .payment-note {
+    margin-top: 22px;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    background: var(--peach);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+
+  .payment-note strong { color: var(--orange-deep); }
+
+  /* ---- Contact / footer ---- */
+  footer {
+    border-top: 1px solid var(--peach-line);
+    padding: 56px 0 40px;
+    text-align: center;
+  }
+
+  footer h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 10px; }
+  footer .sub { color: var(--ink-soft); margin-bottom: 30px; }
+
+  .contact-row {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 44px;
+  }
+
+  .contact-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--peach-line);
+    border-radius: 100px;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: border-color 0.15s ease;
+  }
+
+  .contact-pill:hover { border-color: var(--orange); }
+
+  .contact-pill .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--orange);
+  }
+
+  .copyright {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 720px) {
+    .header-inner { padding: 16px 20px; }
+    nav { gap: 16px; }
+    .wrap { padding: 0 20px; }
+    .hero { padding: 56px 0 40px; }
+    .about-grid { grid-template-columns: 1fr; }
+    .avatar { margin: 0 auto; }
+    .card-grid { grid-template-columns: 1fr; }
+    .price-grid { grid-template-columns: 1fr; }
+    section { padding: 52px 0; }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--orange-deep);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Paulo <span>Crespo</span></div>
+    <nav>
+      <a href="#sobre-mi">Sobre mí</a>
+      <a href="#precios">Precios</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Inglés para comunicar, no solo para aprobar</span>
+    <h1>Encuentra tu voz <em>en inglés</em></h1>
+    <p>Clases pensadas para personas tímidas o inseguras que quieren dejar de traducir en su cabeza y empezar a comunicarse de verdad. No es una academia más: es acompañamiento cercano, centrado en que te expreses con naturalidad.</p>
+
+    <div class="wave-holder">
+      <svg viewBox="0 0 620 90" xmlns="http://www.w3.org/2000/svg">
+        <path class="wave-path" d="M0,45 Q15,10 30,45 T60,45 Q75,70 90,45 T120,45 Q135,20 150,45 T180,45 Q195,60 210,45 T240,45 Q255,15 270,45 T300,45 Q315,45 330,45 T360,45 Q375,25 390,45 T420,45 Q435,55 450,45 T480,45 Q495,45 510,45 T540,45 Q555,30 570,45 T600,45 L620,45"/>
+      </svg>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn btn-solid" href="mailto:yankxwtic@mozmail.com">Escríbeme por email</a>
+      <a class="btn btn-outline" href="https://t.me/frelseisme" target="_blank" rel="noopener">Escríbeme por Telegram</a>
+    </div>
+  </div>
+</section>
+
+<section id="sobre-mi">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="avatar">PC</div>
+      <div class="about-text">
+        <div class="section-head" style="margin-bottom: 20px;">
+          <span class="eyebrow">Sobre mí</span>
+          <h2>Soy Paulo, y te ayudo a hablar sin miedo</h2>
+        </div>
+        <p>Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público, combinando algo parecido a la logopedia con la enseñanza del idioma.</p>
+        <p>El objetivo no es solo que "sepas" inglés, sino que lo <strong>uses</strong> con confianza: en una entrevista, una llamada, un viaje o una conversación cualquiera.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="enfoque">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Cómo trabajo</span>
+      <h2>Comunicación real, no solo teoría</h2>
+      <p>Cada clase se adapta a lo que necesitas practicar, con foco en la confianza tanto como en el idioma.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Habla desde el primer día</h3>
+        <p>Nada de memorizar listas de verbos sin usarlos. Practicamos conversación real desde la primera sesión.</p>
+      </div>
+      <div class="card">
+        <h3>Trabajo la seguridad, no solo el idioma</h3>
+        <p>Si te bloqueas al hablar, buscamos juntos por qué pasa y cómo soltarte, con paciencia y sin juicios.</p>
+      </div>
+      <div class="card">
+        <h3>Práctica con propósito</h3>
+        <p>Entrevistas, presentaciones, viajes o el día a día: adaptamos las clases a lo que realmente vas a necesitar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="precios">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Precios y pago</span>
+      <h2>Una clase, un precio claro</h2>
+      <p>Pagando con Monero, tienes un 25% de descuento.</p>
+    </div>
+
+    <div class="price-grid">
+      <div class="price-card std">
+        <div class="price-label">Pago estándar</div>
+        <div class="price-amount">19€ <span>/ clase</span></div>
+        <p class="desc">Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.</p>
+      </div>
+
+      <div class="price-card xmr">
+        <div class="price-label">Pagando con Monero (XMR)</div>
+        <div class="price-amount">14€ <span>/ clase</span></div>
+        <span class="badge-discount">−25% de descuento</span>
+        <p class="desc">Monero es mi método de pago principal. Envía el pago a esta dirección:</p>
+        <div class="xmr-address-box">
+          <div class="xmr-address-label">Dirección Monero (XMR)</div>
+          <div class="xmr-address-row">
+            <span class="xmr-address" id="xmr-addr">8A51usuuiVnTZsaM2g1dYG2wvfe3VWwaMJyMQg2kjbiHYb2gKDWPWrARUx5e4yaZzs1rPEdkQAivwJ6TEVRG8osbRkTUWkd</span>
+            <button class="copy-btn" onclick="copyAddress()" id="copy-btn">Copiar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="payment-note">
+      <strong>¿Cómo reservar tu clase?</strong> Escríbeme por email o Telegram para cuadrar horarios. Si vas a pagar con un método distinto a Monero, cuéntamelo en el mensaje y te explico cómo hacerlo.
+    </div>
+  </div>
+</section>
+
+<footer id="contacto">
+  <div class="wrap">
+    <h2>Hablemos</h2>
+    <p class="sub">Escríbeme y empezamos cuando quieras.</p>
+    <div class="contact-row">
+      <a class="contact-pill" href="mailto:yankxwtic@mozmail.com"><span class="dot"></span>yankxwtic@mozmail.com</a>
+      <a class="contact-pill" href="https://t.me/frelseisme" target="_blank" rel="noopener"><span class="dot"></span>@frelseisme en Telegram</a>
+    </div>
+    <div class="copyright">© 2026 Paulo Crespo · Clases de inglés</div>
+  </div>
+</footer>
+
+<script>
+function copyAddress() {
+  const text = document.getElementById('xmr-addr').innerText;
+  const btn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerText = '¡Copiado!';
+    setTimeout(() => { btn.innerText = 'Copiar'; }, 1800);
+  }).catch(() => {
+    btn.innerText = 'Error';
+    setTimeout(() => { btn.innerText = 'Copiar'; }, 1800);
+  });
+}
+</script>
+
+</body>
+</html>
