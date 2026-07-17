@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi cuenta — Paulo Crespo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #FBF4EC; --bg-soft: #F5EBDD; --ink: #2A1F16; --ink-soft: #6B5A48;
+    --orange: #F26822; --orange-deep: #C1440E; --peach: #FBDDC5; --peach-line: #E9C8A6; --white: #FFFCF8;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Work Sans', sans-serif; line-height: 1.6; }
+  h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 600; margin: 0; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+  a.back { display: inline-block; margin-bottom: 28px; color: var(--ink-soft); text-decoration: none; font-size: 0.9rem; }
+  a.back:hover { color: var(--orange-deep); }
+
+  .card { background: var(--white); border: 1px solid var(--peach-line); border-radius: 14px; padding: 32px; margin-bottom: 24px; }
+
+  label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; margin-top: 16px; }
+  label:first-child { margin-top: 0; }
+  input {
+    width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--peach-line);
+    background: var(--bg); font-family: 'Work Sans', sans-serif; font-size: 0.95rem;
+  }
+  input:focus { outline: none; border-color: var(--orange); }
+
+  .btn {
+    display: inline-block; margin-top: 22px; padding: 12px 24px; border-radius: 8px; border: none;
+    background: var(--orange); color: var(--white); font-weight: 600; font-size: 0.95rem; cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn:hover { background: var(--orange-deep); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-link { background: none; color: var(--orange-deep); text-decoration: underline; padding: 0; margin-top: 14px; font-size: 0.88rem; }
+
+  .msg { margin-top: 14px; font-size: 0.88rem; padding: 10px 14px; border-radius: 8px; }
+  .msg.error { background: #FBE4DC; color: var(--orange-deep); }
+  .msg.ok { background: var(--peach); color: var(--orange-deep); }
+
+  .credit-badge {
+    display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--bg);
+    padding: 10px 18px; border-radius: 100px; font-family: 'Space Mono', monospace; font-size: 0.9rem;
+  }
+  .credit-badge b { color: var(--orange); font-size: 1.1rem; }
+
+  .slot-list { list-style: none; padding: 0; margin: 18px 0 0; }
+  .slot-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 16px; border: 1px solid var(--peach-line); border-radius: 10px; margin-bottom: 10px;
+    font-size: 0.92rem;
+  }
+  .slot-item button {
+    padding: 7px 16px; border-radius: 6px; border: none; background: var(--orange); color: var(--white);
+    font-weight: 600; font-size: 0.85rem; cursor: pointer;
+  }
+  .slot-item button:hover { background: var(--orange-deep); }
+  .slot-item button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .empty-note { color: var(--ink-soft); font-size: 0.9rem; margin-top: 8px; }
+
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .logout-link { background: none; border: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 0.88rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; Volver a la web</a>
+
+  <!-- LOGIN / SIGNUP VIEW -->
+  <div id="auth-view">
+    <h1 style="font-size: 1.8rem; margin-bottom: 26px;">Mi cuenta</h1>
+    <div class="card">
+      <h3 id="auth-title" style="font-size: 1.1rem;">Iniciar sesión</h3>
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="tu@email.com">
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••">
+      <div id="name-field" style="display:none;">
+        <label for="full_name">Nombre</label>
+        <input type="text" id="full_name" placeholder="Tu nombre">
+      </div>
+      <button class="btn" id="submit-btn" onclick="handleSubmit()">Entrar</button>
+      <br>
+      <button class="btn-link" id="toggle-mode" onclick="toggleMode()">¿No tienes cuenta? Regístrate</button>
+      <div id="auth-msg"></div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW (shown after login) -->
+  <div id="dashboard-view" style="display:none;">
+    <div class="top-bar">
+      <h1 style="font-size: 1.8rem;">Hola, <span id="student-name">—</span></h1>
+      <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1rem; margin-bottom: 12px;">Tus créditos</h3>
+      <div class="credit-badge"><b id="credit-count">0</b> clases disponibles</div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1rem; margin-bottom: 4px;">Clases disponibles</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0;">Reserva una franja horaria. Se descontará un crédito.</p>
+      <ul class="slot-list" id="open-slots"></ul>
+      <p class="empty-note" id="open-slots-empty" style="display:none;">No hay clases disponibles ahora mismo. Vuelve a mirar pronto.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1rem; margin-bottom: 4px;">Tus próximas clases</h3>
+      <ul class="slot-list" id="my-slots"></ul>
+      <p class="empty-note" id="my-slots-empty" style="display:none;">Aún no tienes clases reservadas.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- CONFIG: fill these in with your Supabase project values ----
+  const SUPABASE_URL = 'https://xmpajzrbgnmlttmlwopf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtcGFqenJiZ25tbHR0bWx3b3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDIzNjcsImV4cCI6MjA5OTg3ODM2N30.zqLrCYDUIYWnVT83S5EPUbTXptckM9E6yPKwzw2hv94';
+  // -------------------------------------------------------------
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let mode = 'login'; // or 'signup'
+
+  function toggleMode() {
+    mode = mode === 'login' ? 'signup' : 'login';
+    document.getElementById('auth-title').innerText = mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
+    document.getElementById('submit-btn').innerText = mode === 'login' ? 'Entrar' : 'Registrarme';
+    document.getElementById('toggle-mode').innerText = mode === 'login'
+      ? '¿No tienes cuenta? Regístrate'
+      : '¿Ya tienes cuenta? Inicia sesión';
+    document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('auth-msg').innerHTML = '';
+  }
+
+  function showMsg(text, type) {
+    document.getElementById('auth-msg').innerHTML =
+      `<div class="msg ${type}">${text}</div>`;
+  }
+
+  async function handleSubmit() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+
+    if (!email || !password) {
+      showMsg('Rellena email y contraseña.', 'error');
+      btn.disabled = false;
+      return;
+    }
+
+    if (mode === 'signup') {
+      const full_name = document.getElementById('full_name').value.trim();
+      const { error } = await sb.auth.signUp({
+        email, password,
+        options: { data: { full_name } }
+      });
+      if (error) {
+        showMsg(error.message, 'error');
+        btn.disabled = false;
+        return;
+      }
+      showMsg('Cuenta creada. Ya puedes iniciar sesión.', 'ok');
+      toggleMode();
+      btn.disabled = false;
+    } else {
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        showMsg(error.message, 'error');
+        btn.disabled = false;
+        return;
+      }
+      await loadDashboard();
+    }
+  }
+
+  async function handleLogout() {
+    await sb.auth.signOut();
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('auth-view').style.display = 'block';
+  }
+
+  async function loadDashboard() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+
+    document.getElementById('auth-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'block';
+
+    const { data: profile } = await sb
+      .from('profiles')
+      .select('full_name, credits')
+      .eq('id', user.id)
+      .single();
+
+    document.getElementById('student-name').innerText = profile?.full_name || user.email;
+    document.getElementById('credit-count').innerText = profile?.credits ?? 0;
+
+    await loadOpenSlots(profile?.credits ?? 0);
+    await loadMyBookings();
+  }
+
+  function formatSlot(start, end) {
+    const s = new Date(start), e = new Date(end);
+    const dateStr = s.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    const timeStr = `${s.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}–${e.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+    return `${dateStr}, ${timeStr}`;
+  }
+
+  async function loadOpenSlots(credits) {
+    const { data: slots } = await sb
+      .from('schedule_slots')
+      .select('id, start_time, end_time')
+      .eq('is_booked', false)
+      .gt('start_time', new Date().toISOString())
+      .order('start_time');
+
+    const list = document.getElementById('open-slots');
+    const empty = document.getElementById('open-slots-empty');
+    list.innerHTML = '';
+
+    if (!slots || slots.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    slots.forEach(slot => {
+      const li = document.createElement('li');
+      li.className = 'slot-item';
+      li.innerHTML = `<span>${formatSlot(slot.start_time, slot.end_time)}</span>
+        <button ${credits < 1 ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">Reservar</button>`;
+      list.appendChild(li);
+    });
+  }
+
+  async function loadMyBookings() {
+    const { data: bookings } = await sb
+      .from('my_bookings')
+      .select('id, start_time, end_time')
+      .order('start_time');
+
+    const list = document.getElementById('my-slots');
+    const empty = document.getElementById('my-slots-empty');
+    list.innerHTML = '';
+
+    if (!bookings || bookings.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    bookings.forEach(b => {
+      const li = document.createElement('li');
+      li.className = 'slot-item';
+      li.innerHTML = `<span>${formatSlot(b.start_time, b.end_time)}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  async function bookSlot(slotId) {
+    const { error } = await sb.rpc('book_slot', { slot_id: slotId });
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    await loadDashboard();
+  }
+
+  // On page load, check if already logged in.
+  (async () => {
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) await loadDashboard();
+  })();
+</script>
+</body>
+</html>
