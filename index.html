@@ -473,7 +473,6 @@
       <a href="#precios">Precios</a>
       <a href="#contacto">Contacto</a>
       <a href="cuenta.html" style="color: var(--orange-deep);">Mi cuenta</a>
-
     </nav>
   </div>
 </header>
@@ -509,7 +508,6 @@
         <p>Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público, combinando algo parecido a la logopedia con la enseñanza del idioma.</p>
         <p>El objetivo no es solo que "sepas" inglés, sino que lo <strong>uses</strong> con confianza: en una entrevista, una llamada, un viaje o una conversación cualquiera.</p>
         <p>Las clases son por videollamada (Zoom o Google Meet), así que puedes conectarte desde donde estés, sin desplazamientos.</p>
-
       </div>
     </div>
   </div>
@@ -567,9 +565,9 @@
     <div class="section-head">
       <span class="eyebrow">Opiniones</span>
       <h2>Lo que dicen quienes ya han probado las clases</h2>
-      <p style="font-size: 0.85rem;">Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.</p>
+      <p style="font-size: 0.85rem;" id="opiniones-note">Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.</p>
     </div>
-    <div class="card-grid">
+    <div class="card-grid" id="testimonials-grid">
       <div class="card">
         <p style="color: var(--ink); font-style: italic;">"Antes me bloqueaba en las reuniones en inglés. Ahora hablo sin pensar tanto en cada palabra."</p>
         <h3 style="margin-top: 16px; font-size: 0.95rem;">— Marta, Madrid</h3>
@@ -586,7 +584,6 @@
   </div>
 </section>
 
-
 <section id="precios">
   <div class="wrap">
     <div class="section-head">
@@ -595,11 +592,9 @@
       <p>Pagando con Monero, tienes un 25% de descuento.</p>
     </div>
 
-
     <div class="payment-note" style="margin-bottom: 20px;">
       <strong>¿Primera vez?</strong> Tu primera clase de prueba cuesta 10€ (7€ pagando con Monero), para que veas cómo trabajamos antes de comprometerte.
     </div>
-
 
     <div class="price-grid">
       <div class="price-card std">
@@ -678,5 +673,38 @@ function copyAddress() {
 }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://xmpajzrbgnmlttmlwopf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtcGFqenJiZ25tbHR0bWx3b3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzMDIzNjcsImV4cCI6MjA5OTg3ODM2N30.zqLrCYDUIYWnVT83S5EPUbTXptckM9E6yPKwzw2hv94';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.innerText = str;
+    return div.innerHTML;
+  }
+
+  (async () => {
+    const { data: testimonials, error } = await sb
+      .from('testimonials')
+      .select('student_name, content')
+      .eq('approved', true)
+      .order('created_at', { ascending: false })
+      .limit(6);
+
+    if (error || !testimonials || testimonials.length === 0) return; // keep illustrative fallback cards
+
+    const grid = document.getElementById('testimonials-grid');
+    const note = document.getElementById('opiniones-note');
+    note.innerText = 'Opiniones reales de alumnos.';
+    grid.innerHTML = testimonials.map(t => `
+      <div class="card">
+        <p style="color: var(--ink); font-style: italic;">"${escapeHtml(t.content)}"</p>
+        <h3 style="margin-top: 16px; font-size: 0.95rem;">— ${escapeHtml(t.student_name || 'Alumno/a')}</h3>
+      </div>
+    `).join('');
+  })();
+</script>
 </body>
 </html>

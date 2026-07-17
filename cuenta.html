@@ -94,7 +94,10 @@
   <div id="dashboard-view" style="display:none;">
     <div class="top-bar">
       <h1 style="font-size: 1.8rem;">Hola, <span id="student-name">—</span></h1>
-      <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
+      <div>
+        <a href="admin.html" style="color: var(--ink-soft); text-decoration: underline; font-size: 0.88rem; margin-right: 16px;">Panel admin</a>
+        <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
+      </div>
     </div>
 
     <div class="card">
@@ -113,6 +116,15 @@
       <h3 style="font-size: 1rem; margin-bottom: 4px;">Tus próximas clases</h3>
       <ul class="slot-list" id="my-slots"></ul>
       <p class="empty-note" id="my-slots-empty" style="display:none;">Aún no tienes clases reservadas.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1rem; margin-bottom: 4px;">Deja tu opinión</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 6px;">Tu opinión se revisará antes de publicarse en la web.</p>
+      <textarea id="testimonial-text" rows="3" placeholder="Cuenta tu experiencia con las clases..."
+        style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--peach-line); background: var(--bg); font-family: 'Work Sans', sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
+      <button class="btn" onclick="submitTestimonial()">Enviar opinión</button>
+      <div id="testimonial-msg"></div>
     </div>
   </div>
 </div>
@@ -279,6 +291,38 @@
       return;
     }
     await loadDashboard();
+  }
+
+  async function submitTestimonial() {
+    const text = document.getElementById('testimonial-text').value.trim();
+    const msgBox = document.getElementById('testimonial-msg');
+    if (!text) {
+      msgBox.innerHTML = '<div class="msg error">Escribe algo antes de enviar.</div>';
+      return;
+    }
+
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+
+    const { data: profile } = await sb
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+
+    const { error } = await sb.from('testimonials').insert({
+      student_id: user.id,
+      student_name: profile?.full_name || 'Alumno/a',
+      content: text
+    });
+
+    if (error) {
+      msgBox.innerHTML = `<div class="msg error">${error.message}</div>`;
+      return;
+    }
+
+    document.getElementById('testimonial-text').value = '';
+    msgBox.innerHTML = '<div class="msg ok">¡Gracias! Tu opinión se revisará antes de publicarse.</div>';
   }
 
   // On page load, check if already logged in.
