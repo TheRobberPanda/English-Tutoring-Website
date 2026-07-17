@@ -119,3 +119,24 @@ from public.schedule_slots
 where student_id = auth.uid();
 
 alter view public.my_bookings set (security_invoker = true);
+
+
+-- ============================================================
+-- 5. GRANTS
+-- RLS policies control WHICH ROWS a role can see/edit, but Postgres
+-- still requires baseline permission to access the schema and tables
+-- at all. If these grants are missing you'll see "permission denied
+-- for schema public" (42501) even though your RLS policies are correct.
+-- ============================================================
+
+grant usage on schema public to anon, authenticated;
+
+grant select, update on public.profiles to authenticated;
+grant select on public.schedule_slots to authenticated;
+grant select on public.my_bookings to authenticated;
+
+-- Make sure future tables you add also get sensible default access.
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to authenticated;
+alter default privileges in schema public
+  grant select on tables to anon;
