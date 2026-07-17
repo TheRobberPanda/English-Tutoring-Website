@@ -192,13 +192,18 @@
     document.getElementById('auth-view').style.display = 'none';
     document.getElementById('dashboard-view').style.display = 'block';
 
-    const { data: profile } = await sb
+    const { data: profile, error: profileError } = await sb
       .from('profiles')
       .select('full_name, credits')
       .eq('id', user.id)
       .single();
 
-    document.getElementById('student-name').innerText = profile?.full_name || user.email;
+    if (profileError) {
+      console.error('Error cargando perfil:', profileError);
+      document.getElementById('student-name').innerText = user.email + ' (ver consola: error de perfil)';
+    } else {
+      document.getElementById('student-name').innerText = profile?.full_name || user.email;
+    }
     document.getElementById('credit-count').innerText = profile?.credits ?? 0;
 
     await loadOpenSlots(profile?.credits ?? 0);
@@ -213,12 +218,16 @@
   }
 
   async function loadOpenSlots(credits) {
-    const { data: slots } = await sb
+    const { data: slots, error } = await sb
       .from('schedule_slots')
       .select('id, start_time, end_time')
       .eq('is_booked', false)
       .gt('start_time', new Date().toISOString())
       .order('start_time');
+
+    if (error) {
+      console.error('Error cargando clases disponibles:', error);
+    }
 
     const list = document.getElementById('open-slots');
     const empty = document.getElementById('open-slots-empty');
