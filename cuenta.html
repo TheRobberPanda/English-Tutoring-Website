@@ -62,6 +62,24 @@
   .slot-item button:disabled { opacity: 0.5; cursor: not-allowed; }
   .empty-note { color: var(--ink-soft); font-size: 0.9rem; margin-top: 8px; }
 
+  .week-nav { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+  .week-nav button {
+    background: var(--bg-soft); border: 1px solid var(--peach-line); border-radius: 6px;
+    padding: 6px 12px; cursor: pointer; font-size: 0.85rem; color: var(--ink);
+  }
+  .week-nav button:hover { border-color: var(--orange); }
+  .week-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+  .week-day-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 4px; border-radius: 10px; border: 1.5px solid var(--peach-line);
+    background: var(--bg); cursor: pointer; font-family: 'Work Sans', sans-serif;
+  }
+  .week-day-btn .dow { font-size: 0.7rem; color: var(--ink-soft); text-transform: uppercase; }
+  .week-day-btn .num { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.1rem; }
+  .week-day-btn .avail-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--orange); margin-top: 2px; }
+  .week-day-btn.selected { border-color: var(--orange-deep); border-width: 2px; background: var(--peach); }
+  .week-day-btn:disabled { opacity: 0.4; cursor: default; }
+
   .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
   .logout-link { background: none; border: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 0.88rem; }
 </style>
@@ -107,9 +125,15 @@
 
     <div class="card">
       <h3 style="font-size: 1rem; margin-bottom: 4px;">Clases disponibles</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0;">Reserva una franja horaria. Se descontará un crédito.</p>
-      <ul class="slot-list" id="open-slots"></ul>
-      <p class="empty-note" id="open-slots-empty" style="display:none;">No hay clases disponibles ahora mismo. Vuelve a mirar pronto.</p>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;">Elige un día y reserva una franja horaria. Se descontará un crédito.</p>
+      <div class="week-nav">
+        <button onclick="changeWeek(-1)">&larr; Semana anterior</button>
+        <span id="week-label"></span>
+        <button onclick="changeWeek(1)">Semana siguiente &rarr;</button>
+      </div>
+      <div class="week-days" id="week-days"></div>
+      <div id="week-day-slots" style="margin-top: 16px;"></div>
+      <p class="empty-note" id="open-slots-empty" style="display:none;">No hay clases disponibles esta semana.</p>
     </div>
 
     <div class="card">
@@ -229,35 +253,113 @@
     return `${dateStr}, ${timeStr}`;
   }
 
+  // ---- WEEK CALENDAR ----
+  let weekOffset = 0; // 0 = this week
+  let currentCredits = 0;
+  let weekSlots = [];
+  let selectedDateKey = null;
+
+  function getWeekStart(offset) {
+    const now = new Date();
+    const monday = new Date(now);
+    const dayIdx = (now.getDay() + 6) % 7; // 0 = Monday
+    monday.setDate(now.getDate() - dayIdx + offset * 7);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  }
+
+  function dateKey(d) {
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  }
+
+  function changeWeek(delta) {
+    weekOffset += delta;
+    selectedDateKey = null;
+    loadOpenSlots(currentCredits);
+  }
+
   async function loadOpenSlots(credits) {
+    currentCredits = credits;
+    const weekStart = getWeekStart(weekOffset);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+
     const { data: slots, error } = await sb
       .from('schedule_slots')
       .select('id, start_time, end_time')
       .eq('is_booked', false)
-      .gt('start_time', new Date().toISOString())
+      .gte('start_time', new Date(Math.max(weekStart, new Date())).toISOString())
+      .lt('start_time', weekEnd.toISOString())
       .order('start_time');
 
-    if (error) {
-      console.error('Error cargando clases disponibles:', error);
+    if (error) console.error('Error cargando clases disponibles:', error);
+    weekSlots = slots || [];
+
+    const dowNames = ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+    const monthNames = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    document.getElementById('week-label').innerText =
+      `${weekStart.getDate()} ${monthNames[weekStart.getMonth()]} – ${new Date(weekEnd - 1).getDate()} ${monthNames[new Date(weekEnd - 1).getMonth()]}`;
+
+    const daysContainer = document.getElementById('week-days');
+    daysContainer.innerHTML = '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    let firstAvailableKey = null;
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
+      const key = dateKey(d);
+      const daySlots = weekSlots.filter(s => dateKey(new Date(s.start_time)) === key);
+      const isPast = d < today;
+
+      if (daySlots.length > 0 && !firstAvailableKey) firstAvailableKey = key;
+
+      const btn = document.createElement('button');
+      btn.className = 'week-day-btn' + (selectedDateKey === key ? ' selected' : '');
+      btn.disabled = isPast;
+      btn.innerHTML = `<span class="dow">${dowNames[i]}</span><span class="num">${d.getDate()}</span>${daySlots.length > 0 ? '<span class="avail-dot"></span>' : ''}`;
+      btn.onclick = () => { selectedDateKey = key; loadOpenSlots(currentCredits); };
+      daysContainer.appendChild(btn);
     }
 
-    const list = document.getElementById('open-slots');
-    const empty = document.getElementById('open-slots-empty');
-    list.innerHTML = '';
+    if (!selectedDateKey) selectedDateKey = firstAvailableKey;
 
-    if (!slots || slots.length === 0) {
+    renderDaySlots();
+  }
+
+  function renderDaySlots() {
+    const container = document.getElementById('week-day-slots');
+    const empty = document.getElementById('open-slots-empty');
+
+    if (!selectedDateKey) {
+      container.innerHTML = '';
       empty.style.display = 'block';
       return;
     }
     empty.style.display = 'none';
 
-    slots.forEach(slot => {
+    const daySlots = weekSlots
+      .filter(s => dateKey(new Date(s.start_time)) === selectedDateKey)
+      .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+
+    if (daySlots.length === 0) {
+      container.innerHTML = '<p class="empty-note">No hay clases disponibles ese día.</p>';
+      return;
+    }
+
+    const list = document.createElement('ul');
+    list.className = 'slot-list';
+    daySlots.forEach(slot => {
       const li = document.createElement('li');
       li.className = 'slot-item';
-      li.innerHTML = `<span>${formatSlot(slot.start_time, slot.end_time)}</span>
-        <button ${credits < 1 ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">Reservar</button>`;
+      const start = new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const end = new Date(slot.end_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      li.innerHTML = `<span>${start}–${end}</span>
+        <button ${currentCredits < 1 ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">Reservar</button>`;
       list.appendChild(li);
     });
+    container.innerHTML = '';
+    container.appendChild(list);
   }
 
   async function loadMyBookings() {

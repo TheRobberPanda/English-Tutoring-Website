@@ -137,6 +137,48 @@
       <div id="create-slot-msg"></div>
     </div>
 
+    <!-- BULK CREATE -->
+    <div class="card">
+      <h3>Crear clases en bloque</h3>
+      <p class="hint">Genera automáticamente clases de 50 minutos en punto (ej. 9:00–9:50, 10:00–10:50...), dejando siempre 10 minutos de margen entre una y la siguiente.</p>
+      <div class="form-row">
+        <div>
+          <label for="bulk-start-date">Desde</label>
+          <input type="date" id="bulk-start-date">
+        </div>
+        <div>
+          <label for="bulk-end-date">Hasta</label>
+          <input type="date" id="bulk-end-date">
+        </div>
+      </div>
+      <div style="margin: 14px 0;">
+        <label>Días de la semana</label>
+        <div style="display:flex; gap: 14px; flex-wrap: wrap; margin-top: 6px;">
+          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="1" checked> Lun</label>
+          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="2" checked> Mar</label>
+          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="3" checked> Mié</label>
+          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="4" checked> Jue</label>
+          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="5" checked> Vie</label>
+          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="6"> Sáb</label>
+          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="0"> Dom</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label for="bulk-start-hour">Desde qué hora en punto</label>
+          <input type="time" id="bulk-start-hour" step="3600" value="09:00">
+        </div>
+        <div>
+          <label for="bulk-end-hour">Hasta qué hora en punto (última clase empieza antes de esta hora)</label>
+          <input type="time" id="bulk-end-hour" step="3600" value="14:00">
+        </div>
+        <div style="flex: 0 0 auto;">
+          <button class="btn" onclick="createBulkSlots()">Generar clases</button>
+        </div>
+      </div>
+      <div id="bulk-slot-msg"></div>
+    </div>
+
     <!-- CALENDAR -->
     <div class="card">
       <h3>Calendario de clases</h3>
@@ -266,6 +308,83 @@
     msgBox.innerHTML = '<div class="msg ok">Clase creada.</div>';
     document.getElementById('slot-start').value = '';
     document.getElementById('slot-end').value = '';
+    await loadCalendar();
+  }
+
+  // ---- BULK CREATE ----
+  async function createBulkSlots() {
+    const startDateStr = document.getElementById('bulk-start-date').value;
+    const endDateStr = document.getElementById('bulk-end-date').value;
+    const startHourStr = document.getElementById('bulk-start-hour').value;
+    const endHourStr = document.getElementById('bulk-end-hour').value;
+    const msgBox = document.getElementById('bulk-slot-msg');
+
+    const selectedDays = Array.from(document.querySelectorAll('.bulk-day:checked')).map(cb => parseInt(cb.value, 10));
+
+    if (!startDateStr || !endDateStr || !startHourStr || !endHourStr) {
+      msgBox.innerHTML = '<div class="msg error">Rellena fechas y horas.</div>';
+      return;
+    }
+    if (selectedDays.length === 0) {
+      msgBox.innerHTML = '<div class="msg error">Selecciona al menos un día de la semana.</div>';
+      return;
+    }
+
+    const startHour = parseInt(startHourStr.split(':')[0], 10);
+    const endHour = parseInt(endHourStr.split(':')[0], 10);
+    if (endHour <= startHour) {
+      msgBox.innerHTML = '<div class="msg error">La hora de fin debe ser posterior a la de inicio.</div>';
+      return;
+    }
+
+    const rangeStart = new Date(`${startDateStr}T00:00:00`);
+    const rangeEnd = new Date(`${endDateStr}T23:59:59`);
+    if (rangeEnd < rangeStart) {
+      msgBox.innerHTML = '<div class="msg error">La fecha "Hasta" debe ser posterior a "Desde".</div>';
+      return;
+    }
+
+    // Build candidate slots: one per selected weekday, each hour on the hour,
+    // 50-minute lesson (xx:00–xx:50), 10-minute gap built in automatically
+    // since the next slot starts at the next hour.
+    const candidates = [];
+    for (let d = new Date(rangeStart); d <= rangeEnd; d.setDate(d.getDate() + 1)) {
+      if (!selectedDays.includes(d.getDay())) continue;
+      for (let hour = startHour; hour < endHour; hour++) {
+        const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, 0, 0);
+        const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, 50, 0);
+        candidates.push({ start_time: start.toISOString(), end_time: end.toISOString() });
+      }
+    }
+
+    if (candidates.length === 0) {
+      msgBox.innerHTML = '<div class="msg error">No se generó ninguna clase con esos filtros.</div>';
+      return;
+    }
+
+    // Avoid creating duplicates for slots that already exist in that range.
+    const { data: existing } = await sb
+      .from('schedule_slots')
+      .select('start_time')
+      .gte('start_time', rangeStart.toISOString())
+      .lte('start_time', rangeEnd.toISOString());
+
+    const existingSet = new Set((existing || []).map(s => new Date(s.start_time).getTime()));
+    const toInsert = candidates.filter(c => !existingSet.has(new Date(c.start_time).getTime()));
+
+    if (toInsert.length === 0) {
+      msgBox.innerHTML = '<div class="msg ok">Todas esas clases ya existían — no se creó ninguna nueva.</div>';
+      return;
+    }
+
+    const { error } = await sb.from('schedule_slots').insert(toInsert);
+    if (error) {
+      msgBox.innerHTML = `<div class="msg error">${error.message}</div>`;
+      return;
+    }
+
+    const skipped = candidates.length - toInsert.length;
+    msgBox.innerHTML = `<div class="msg ok">${toInsert.length} clases creadas${skipped > 0 ? ` (${skipped} ya existían y se omitieron)` : ''}.</div>`;
     await loadCalendar();
   }
 
