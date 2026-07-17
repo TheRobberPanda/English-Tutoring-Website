@@ -143,6 +143,19 @@
     </div>
 
     <div class="card">
+      <h3 style="font-size: 1rem; margin-bottom: 4px;">Vincular Telegram</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
+      <button class="btn" onclick="generateTelegramCode()">Generar código</button>
+      <div id="telegram-code-box" style="display:none; margin-top: 14px;">
+        <p style="font-size: 0.88rem; margin-bottom: 8px;">Envía este mensaje a <strong>@TU_BOT_USERNAME</strong> en Telegram:</p>
+        <div class="xmr-address-row" style="background: var(--bg-soft); border: 1px solid var(--peach-line);">
+          <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
+        </div>
+      </div>
+      <div id="telegram-msg"></div>
+    </div>
+
+    <div class="card">
       <h3 style="font-size: 1rem; margin-bottom: 4px;">Deja tu opinión</h3>
       <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 6px;">Tu opinión se revisará antes de publicarse en la web.</p>
       <textarea id="testimonial-text" rows="3" placeholder="Cuenta tu experiencia con las clases..."
@@ -393,6 +406,18 @@
       return;
     }
     await loadDashboard();
+  }
+
+  async function generateTelegramCode() {
+    const { data, error } = await sb.rpc('generate_telegram_link_code');
+    const msgBox = document.getElementById('telegram-msg');
+    if (error) {
+      msgBox.innerHTML = `<div class="msg error">${error.message}</div>`;
+      return;
+    }
+    document.getElementById('telegram-code').innerText = `/vincular ${data}`;
+    document.getElementById('telegram-code-box').style.display = 'block';
+    msgBox.innerHTML = '';
   }
 
   async function submitTestimonial() {
