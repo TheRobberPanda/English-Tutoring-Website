@@ -65,6 +65,8 @@
     color: var(--ink-soft); font-weight: 600; font-size: 0.85rem; cursor: pointer;
   }
   .btn-cancel:hover { border-color: var(--orange-deep); color: var(--orange-deep); }
+  .btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-cancel:disabled:hover { border-color: var(--peach-line); color: var(--ink-soft); }
   .empty-note { color: var(--ink-soft); font-size: 0.9rem; margin-top: 8px; }
 
   .week-nav { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
@@ -367,13 +369,16 @@
 
     const list = document.createElement('ul');
     list.className = 'slot-list';
+    const twelveHoursFromNow = new Date(Date.now() + 12 * 60 * 60 * 1000);
     daySlots.forEach(slot => {
       const li = document.createElement('li');
       li.className = 'slot-item';
       const start = new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       const end = new Date(slot.end_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      li.innerHTML = `<span>${start}–${end}</span>
-        <button ${currentCredits < 1 ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">Reservar</button>`;
+      const tooSoon = new Date(slot.start_time) < twelveHoursFromNow;
+      const disabled = currentCredits < 1 || tooSoon;
+      li.innerHTML = `<span>${start}–${end}${tooSoon ? ' <span style="color: var(--ink-soft); font-size: 0.78rem;">(menos de 12h)</span>' : ''}</span>
+        <button ${disabled ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">Reservar</button>`;
       list.appendChild(li);
     });
     container.innerHTML = '';
@@ -396,11 +401,13 @@
     }
     empty.style.display = 'none';
 
+    const twelveHoursFromNow = new Date(Date.now() + 12 * 60 * 60 * 1000);
     bookings.forEach(b => {
       const li = document.createElement('li');
       li.className = 'slot-item';
-      li.innerHTML = `<span>${formatSlot(b.start_time, b.end_time)}</span>
-        <button class="btn-cancel" onclick="cancelBooking('${b.id}')">Cancelar</button>`;
+      const tooSoon = new Date(b.start_time) < twelveHoursFromNow;
+      li.innerHTML = `<span>${formatSlot(b.start_time, b.end_time)}${tooSoon ? ' <span style="color: var(--ink-soft); font-size: 0.78rem;">(no cancelable, faltan menos de 12h)</span>' : ''}</span>
+        <button class="btn-cancel" ${tooSoon ? 'disabled' : ''} onclick="cancelBooking('${b.id}')">Cancelar</button>`;
       list.appendChild(li);
     });
   }
