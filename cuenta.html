@@ -60,6 +60,11 @@
   }
   .slot-item button:hover { background: var(--orange-deep); }
   .slot-item button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-cancel {
+    padding: 7px 16px; border-radius: 6px; border: 1.5px solid var(--peach-line); background: transparent;
+    color: var(--ink-soft); font-weight: 600; font-size: 0.85rem; cursor: pointer;
+  }
+  .btn-cancel:hover { border-color: var(--orange-deep); color: var(--orange-deep); }
   .empty-note { color: var(--ink-soft); font-size: 0.9rem; margin-top: 8px; }
 
   .week-nav { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
@@ -147,7 +152,7 @@
       <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
       <button class="btn" onclick="generateTelegramCode()">Generar código</button>
       <div id="telegram-code-box" style="display:none; margin-top: 14px;">
-        <p style="font-size: 0.88rem; margin-bottom: 8px;">Envía este mensaje a <strong>@InglesDePauloBot</strong> en Telegram:</p>
+        <p style="font-size: 0.88rem; margin-bottom: 8px;">Envía este mensaje a <strong>@TU_BOT_USERNAME</strong> en Telegram:</p>
         <div class="xmr-address-row" style="background: var(--bg-soft); border: 1px solid var(--peach-line);">
           <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
         </div>
@@ -394,9 +399,20 @@
     bookings.forEach(b => {
       const li = document.createElement('li');
       li.className = 'slot-item';
-      li.innerHTML = `<span>${formatSlot(b.start_time, b.end_time)}</span>`;
+      li.innerHTML = `<span>${formatSlot(b.start_time, b.end_time)}</span>
+        <button class="btn-cancel" onclick="cancelBooking('${b.id}')">Cancelar</button>`;
       list.appendChild(li);
     });
+  }
+
+  async function cancelBooking(slotId) {
+    if (!confirm('¿Cancelar esta clase? Recuperarás el crédito.')) return;
+    const { error } = await sb.rpc('cancel_booking', { _slot_id: slotId });
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    await loadDashboard();
   }
 
   async function bookSlot(slotId) {
