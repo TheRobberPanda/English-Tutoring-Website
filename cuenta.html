@@ -120,7 +120,7 @@
     <div class="top-bar">
       <h1 style="font-size: 1.8rem;">Hola, <span id="student-name">—</span></h1>
       <div>
-        <a href="admin.html" style="color: var(--ink-soft); text-decoration: underline; font-size: 0.88rem; margin-right: 16px;">Panel admin</a>
+        <a href="admin.html" id="admin-link" style="display:none; color: var(--ink-soft); text-decoration: underline; font-size: 0.88rem; margin-right: 16px;">Panel admin</a>
         <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
       </div>
     </div>
@@ -169,6 +169,15 @@
         style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--peach-line); background: var(--bg); font-family: 'Work Sans', sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
       <button class="btn" onclick="submitTestimonial()">Enviar opinión</button>
       <div id="testimonial-msg"></div>
+    </div>
+    <div class="card" style="border-color: #E9C0AE;">
+      <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--orange-deep);">Eliminar mi cuenta</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;">
+        Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer.
+        Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.
+      </p>
+      <button class="btn" style="background: #B23A1E;" onmouseover="this.style.background='#8F2E17'" onmouseout="this.style.background='#B23A1E'" onclick="deleteAccount()">Eliminar mi cuenta</button>
+      <div id="delete-account-msg"></div>
     </div>
   </div>
 </div>
@@ -250,7 +259,7 @@
 
     const { data: profile, error: profileError } = await sb
       .from('profiles')
-      .select('full_name, credits')
+      .select('full_name, credits, is_admin')
       .eq('id', user.id)
       .single();
 
@@ -261,6 +270,7 @@
       document.getElementById('student-name').innerText = profile?.full_name || user.email;
     }
     document.getElementById('credit-count').innerText = profile?.credits ?? 0;
+    document.getElementById('admin-link').style.display = profile?.is_admin ? 'inline' : 'none';
 
     await loadOpenSlots(profile?.credits ?? 0);
     await loadMyBookings();
@@ -473,6 +483,39 @@
 
     document.getElementById('testimonial-text').value = '';
     msgBox.innerHTML = '<div class="msg ok">¡Gracias! Tu opinión se revisará antes de publicarse.</div>';
+  }
+
+  async function deleteAccount() {
+    const first = confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.');
+    if (!first) return;
+    const second = confirm('Última confirmación: se borrarán tu cuenta y tus créditos permanentemente. ¿Continuar?');
+    if (!second) return;
+
+    const msgBox = document.getElementById('delete-account-msg');
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await res.json();
+
+      if (!res.ok) {
+        msgBox.innerHTML = `<div class="msg error">${result.error || 'No se pudo eliminar la cuenta.'}</div>`;
+        return;
+      }
+
+      await sb.auth.signOut();
+      alert('Tu cuenta ha sido eliminada.');
+      window.location.href = 'index.html';
+    } catch (err) {
+      msgBox.innerHTML = `<div class="msg error">Error de conexión. Inténtalo de nuevo.</div>`;
+    }
   }
 
   // On page load, check if already logged in.

@@ -198,6 +198,22 @@
       </div>
     </div>
 
+    <!-- ESTIMATED EARNINGS -->
+    <div class="card">
+      <h3>Ingresos estimados</h3>
+      <p class="hint">Calculado sobre el mes mostrado en el calendario de arriba, suponiendo que todas las clases se pagan con Monero (14€/clase).</p>
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px;">
+        <div>
+          <div class="price-label" style="color: var(--ink-soft); font-family: 'Space Mono', monospace; font-size: 0.78rem; text-transform: uppercase;">Clases reservadas</div>
+          <div style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.8rem;" id="earnings-count">0</div>
+        </div>
+        <div>
+          <div class="price-label" style="color: var(--ink-soft); font-family: 'Space Mono', monospace; font-size: 0.78rem; text-transform: uppercase;">Ingreso estimado</div>
+          <div style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.8rem; color: var(--orange-deep);" id="earnings-total">0€</div>
+        </div>
+      </div>
+    </div>
+
     <!-- STUDENT CREDITS -->
     <div class="card">
       <h3>Créditos de alumnos</h3>
@@ -408,8 +424,17 @@
     }
 
     renderCalendar();
+    renderEarnings();
     selectedDay = null;
     document.getElementById('day-panel').style.display = 'none';
+  }
+
+  const MONERO_PRICE_PER_CLASS = 14;
+
+  function renderEarnings() {
+    const bookedCount = slotsThisMonth.filter(s => s.is_booked).length;
+    document.getElementById('earnings-count').innerText = bookedCount;
+    document.getElementById('earnings-total').innerText = `${bookedCount * MONERO_PRICE_PER_CLASS}€`;
   }
 
   function changeMonth(delta) {
