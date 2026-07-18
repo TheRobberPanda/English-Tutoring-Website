@@ -165,21 +165,17 @@
       </div>
       <div class="form-row">
         <div>
-          <label for="bulk-start-hour">Desde qué hora en punto</label>
-          <input type="time" id="bulk-start-hour" step="3600" value="09:00">
+          <label for="bulk-start-hour">Desde qué hora</label>
+          <input type="time" id="bulk-start-hour" step="900" value="09:00">
         </div>
         <div>
-          <label for="bulk-end-hour">Hasta qué hora en punto (última clase empieza antes de esta hora)</label>
-          <input type="time" id="bulk-end-hour" step="3600" value="14:00">
+          <label for="bulk-end-hour">Hasta qué hora (última clase empieza antes de esta hora)</label>
+          <input type="time" id="bulk-end-hour" step="900" value="14:00">
         </div>
         <div style="flex: 0 0 auto;">
           <button class="btn" onclick="createBulkSlots()">Generar clases</button>
         </div>
       </div>
-      <label style="font-weight: 400; font-size: 0.82rem; margin-top: 10px; display: block;">
-        <input type="checkbox" id="bulk-allow-quarter-hours" onchange="toggleBulkHourPrecision()">
-        Permitir empezar en cuartos de hora (:00, :15, :30, :45) — normalmente las clases empiezan en punto
-      </label>
       <div id="bulk-slot-msg"></div>
     </div>
 
@@ -329,13 +325,6 @@
     document.getElementById('slot-start').value = '';
     document.getElementById('slot-end').value = '';
     await loadCalendar();
-  }
-
-  function toggleBulkHourPrecision() {
-    const allow = document.getElementById('bulk-allow-quarter-hours').checked;
-    const step = allow ? '900' : '3600';
-    document.getElementById('bulk-start-hour').step = step;
-    document.getElementById('bulk-end-hour').step = step;
   }
 
   // ---- BULK CREATE ----
