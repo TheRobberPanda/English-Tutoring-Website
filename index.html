@@ -95,6 +95,19 @@
 
   nav a:hover { color: var(--orange-deep); }
 
+  .lang-btn {
+    border: 1px solid var(--peach-line);
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+  }
+  .lang-btn.active { background: var(--orange); color: var(--white); border-color: var(--orange); }
+
   /* ---- Hero ---- */
   .hero {
     padding: 92px 0 60px;
@@ -468,20 +481,24 @@
   <div class="header-inner">
     <div class="logo">Paulo <span>Crespo</span></div>
     <nav>
-      <a href="#sobre-mi">Sobre mí</a>
-      <a href="#opiniones">Opiniones</a>
-      <a href="#precios">Precios</a>
-      <a href="#contacto">Contacto</a>
-      <a href="cuenta.html" style="color: var(--orange-deep);">Mi cuenta</a>
+      <a href="#sobre-mi" data-i18n="nav_about">Sobre mí</a>
+      <a href="#opiniones" data-i18n="nav_reviews">Opiniones</a>
+      <a href="#precios" data-i18n="nav_pricing">Precios</a>
+      <a href="#contacto" data-i18n="nav_contact">Contacto</a>
+      <a href="cuenta.html" style="color: var(--orange-deep);" data-i18n="nav_account">Mi cuenta</a>
+      <span style="display:inline-flex; gap:4px; margin-left:4px;">
+        <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
+        <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
+      </span>
     </nav>
   </div>
 </header>
 
 <section class="hero">
   <div class="wrap">
-    <span class="eyebrow">Inglés para comunicar, no solo para aprobar</span>
-    <h1>Encuentra tu voz <em>en inglés</em></h1>
-    <p>Clases pensadas para personas tímidas o inseguras que quieren dejar de traducir en su cabeza y empezar a comunicarse de verdad. No es una academia más: es acompañamiento cercano, centrado en que te expreses con naturalidad.</p>
+    <span class="eyebrow" data-i18n="hero_eyebrow">Inglés para comunicar, no solo para aprobar</span>
+    <h1 data-i18n-html="hero_h1">Encuentra tu voz <em>en inglés</em></h1>
+    <p data-i18n="hero_p">Clases pensadas para personas tímidas o inseguras que quieren dejar de traducir en su cabeza y empezar a comunicarse de verdad. No es una academia más: es acompañamiento cercano, centrado en que te expreses con naturalidad.</p>
 
     <div class="wave-holder">
       <svg viewBox="0 0 620 90" xmlns="http://www.w3.org/2000/svg">
@@ -490,8 +507,8 @@
     </div>
 
     <div class="cta-row">
-      <a class="btn btn-solid" href="mailto:yankxwtic@mozmail.com">Escríbeme por email</a>
-      <a class="btn btn-outline" href="https://t.me/frelseisme" target="_blank" rel="noopener">Escríbeme por Telegram</a>
+      <a class="btn btn-solid" href="mailto:yankxwtic@mozmail.com" data-i18n="hero_cta_email">Escríbeme por email</a>
+      <a class="btn btn-outline" href="https://t.me/frelseisme" target="_blank" rel="noopener" data-i18n="hero_cta_telegram">Escríbeme por Telegram</a>
     </div>
   </div>
 </section>
@@ -502,12 +519,12 @@
       <div class="avatar">PC</div>
       <div class="about-text">
         <div class="section-head" style="margin-bottom: 20px;">
-          <span class="eyebrow">Sobre mí</span>
-          <h2>Soy Paulo, y te ayudo a hablar sin miedo</h2>
+          <span class="eyebrow" data-i18n="about_eyebrow">Sobre mí</span>
+          <h2 data-i18n="about_h2">Soy Paulo, y te ayudo a hablar sin miedo</h2>
         </div>
-        <p>Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público, combinando algo parecido a la logopedia con la enseñanza del idioma.</p>
-        <p>El objetivo no es solo que "sepas" inglés, sino que lo <strong>uses</strong> con confianza: en una entrevista, una llamada, un viaje o una conversación cualquiera.</p>
-        <p>Las clases son por videollamada (Zoom o Google Meet), así que puedes conectarte desde donde estés, sin desplazamientos.</p>
+        <p data-i18n="about_p1">Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público, combinando algo parecido a la logopedia con la enseñanza del idioma.</p>
+        <p data-i18n-html="about_p2">El objetivo no es solo que "sepas" inglés, sino que lo <strong>uses</strong> con confianza: en una entrevista, una llamada, un viaje o una conversación cualquiera.</p>
+        <p data-i18n="about_p3">Las clases son por videollamada (Zoom o Google Meet), así que puedes conectarte desde donde estés, sin desplazamientos.</p>
       </div>
     </div>
   </div>
@@ -516,22 +533,22 @@
 <section id="enfoque">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">Cómo trabajo</span>
-      <h2>Comunicación real, no solo teoría</h2>
-      <p>Cada clase se adapta a lo que necesitas practicar, con foco en la confianza tanto como en el idioma.</p>
+      <span class="eyebrow" data-i18n="enfoque_eyebrow">Cómo trabajo</span>
+      <h2 data-i18n="enfoque_h2">Comunicación real, no solo teoría</h2>
+      <p data-i18n="enfoque_p">Cada clase se adapta a lo que necesitas practicar, con foco en la confianza tanto como en el idioma.</p>
     </div>
     <div class="card-grid">
       <div class="card">
-        <h3>Habla desde el primer día</h3>
-        <p>Nada de memorizar listas de verbos sin usarlos. Practicamos conversación real desde la primera sesión.</p>
+        <h3 data-i18n="enfoque_card1_h">Habla desde el primer día</h3>
+        <p data-i18n="enfoque_card1_p">Nada de memorizar listas de verbos sin usarlos. Practicamos conversación real desde la primera sesión.</p>
       </div>
       <div class="card">
-        <h3>Trabajo la seguridad, no solo el idioma</h3>
-        <p>Si te bloqueas al hablar, buscamos juntos por qué pasa y cómo soltarte, con paciencia y sin juicios.</p>
+        <h3 data-i18n="enfoque_card2_h">Trabajo la seguridad, no solo el idioma</h3>
+        <p data-i18n="enfoque_card2_p">Si te bloqueas al hablar, buscamos juntos por qué pasa y cómo soltarte, con paciencia y sin juicios.</p>
       </div>
       <div class="card">
-        <h3>Práctica con propósito</h3>
-        <p>Entrevistas, presentaciones, viajes o el día a día: adaptamos las clases a lo que realmente vas a necesitar.</p>
+        <h3 data-i18n="enfoque_card3_h">Práctica con propósito</h3>
+        <p data-i18n="enfoque_card3_p">Entrevistas, presentaciones, viajes o el día a día: adaptamos las clases a lo que realmente vas a necesitar.</p>
       </div>
     </div>
   </div>
@@ -540,21 +557,21 @@
 <section id="para-quien">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">¿Es esto para ti?</span>
-      <h2>Situaciones que trabajamos juntos</h2>
+      <span class="eyebrow" data-i18n="paraquien_eyebrow">¿Es esto para ti?</span>
+      <h2 data-i18n="paraquien_h2">Situaciones que trabajamos juntos</h2>
     </div>
     <div class="card-grid">
       <div class="card">
-        <h3>Entrevistas de trabajo</h3>
-        <p>Preparamos respuestas claras y naturales para que no te quedes en blanco delante del entrevistador.</p>
+        <h3 data-i18n="paraquien_card1_h">Entrevistas de trabajo</h3>
+        <p data-i18n="paraquien_card1_p">Preparamos respuestas claras y naturales para que no te quedes en blanco delante del entrevistador.</p>
       </div>
       <div class="card">
-        <h3>Reuniones y llamadas de trabajo</h3>
-        <p>Practicamos el inglés que realmente usas en tu día a día profesional, no frases de manual.</p>
+        <h3 data-i18n="paraquien_card2_h">Reuniones y llamadas de trabajo</h3>
+        <p data-i18n="paraquien_card2_p">Practicamos el inglés que realmente usas en tu día a día profesional, no frases de manual.</p>
       </div>
       <div class="card">
-        <h3>Vivir o viajar en el extranjero</h3>
-        <p>Del "sé inglés en teoría" a poder desenvolverte de verdad en una tienda, un aeropuerto o con gente nueva.</p>
+        <h3 data-i18n="paraquien_card3_h">Vivir o viajar en el extranjero</h3>
+        <p data-i18n-html="paraquien_card3_p">Del "sé inglés en teoría" a poder desenvolverte de verdad en una tienda, un aeropuerto o con gente nueva.</p>
       </div>
     </div>
   </div>
@@ -563,9 +580,9 @@
 <section id="opiniones" style="background: var(--bg-soft); border-top: 1px solid var(--peach-line); border-bottom: 1px solid var(--peach-line);">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">Opiniones</span>
-      <h2>Lo que dicen quienes ya han probado las clases</h2>
-      <p style="font-size: 0.85rem;" id="opiniones-note">Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.</p>
+      <span class="eyebrow" data-i18n="opiniones_eyebrow">Opiniones</span>
+      <h2 data-i18n="opiniones_h2">Lo que dicen quienes ya han probado las clases</h2>
+      <p style="font-size: 0.85rem;" id="opiniones-note" data-i18n="opiniones_note">Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.</p>
     </div>
     <div class="card-grid" id="testimonials-grid">
       <div class="card">
@@ -587,39 +604,39 @@
 <section id="precios">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">Precios y pago</span>
-      <h2>Una clase, un precio claro</h2>
-      <p>Pagando con Monero, tienes un 25% de descuento.</p>
+      <span class="eyebrow" data-i18n="precios_eyebrow">Precios y pago</span>
+      <h2 data-i18n="precios_h2">Una clase, un precio claro</h2>
+      <p data-i18n="precios_p">Pagando con Monero, tienes un 25% de descuento.</p>
     </div>
 
-    <div class="payment-note" style="margin-bottom: 20px;">
+    <div class="payment-note" style="margin-bottom: 20px;" data-i18n-html="precios_trial_note">
       <strong>¿Primera vez?</strong> Tu primera clase de prueba cuesta 10€ (7€ pagando con Monero), para que veas cómo trabajamos antes de comprometerte.
     </div>
 
     <div class="price-grid">
       <div class="price-card std">
-        <div class="price-label">Pago estándar</div>
-        <div class="price-amount">19€ <span>/ clase</span></div>
-        <p class="desc">Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.</p>
+        <div class="price-label" data-i18n="precios_std_label">Pago estándar</div>
+        <div class="price-amount">19€ <span data-i18n="precios_per_class">/ clase</span></div>
+        <p class="desc" data-i18n="precios_std_desc">Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.</p>
       </div>
 
       <div class="price-card xmr">
-        <div class="price-label">Pagando con Monero (XMR)</div>
-        <div class="price-amount">14€ <span>/ clase</span></div>
-        <span class="badge-discount">−25% de descuento</span>
-        <p class="desc">Monero es mi método de pago principal. Envía el pago a esta dirección:</p>
+        <div class="price-label" data-i18n="precios_xmr_label">Pagando con Monero (XMR)</div>
+        <div class="price-amount">14€ <span data-i18n="precios_per_class">/ clase</span></div>
+        <span class="badge-discount" data-i18n="precios_discount_badge">−25% de descuento</span>
+        <p class="desc" data-i18n="precios_xmr_desc">Monero es mi método de pago principal. Envía el pago a esta dirección:</p>
         <div class="xmr-address-box">
-          <div class="xmr-address-label">Dirección Monero (XMR)</div>
+          <div class="xmr-address-label" data-i18n="precios_xmr_address_label">Dirección Monero (XMR)</div>
           <div class="xmr-address-row">
             <span class="xmr-address" id="xmr-addr">8A51usuuiVnTZsaM2g1dYG2wvfe3VWwaMJyMQg2kjbiHYb2gKDWPWrARUx5e4yaZzs1rPEdkQAivwJ6TEVRG8osbRkTUWkd</span>
-            <button class="copy-btn" onclick="copyAddress()" id="copy-btn">Copiar</button>
+            <button class="copy-btn" onclick="copyAddress()" id="copy-btn" data-i18n="precios_copy_btn">Copiar</button>
           </div>
         </div>
-        <a href="monero.html" style="display:inline-block; margin-top: 12px; font-size: 0.78rem; color: #E7DCCF; text-decoration: underline;">¿Qué es Monero y cómo se usa?</a>
+        <a href="monero.html" style="display:inline-block; margin-top: 12px; font-size: 0.78rem; color: #E7DCCF; text-decoration: underline;" data-i18n="precios_monero_link">¿Qué es Monero y cómo se usa?</a>
       </div>
     </div>
 
-    <div class="payment-note">
+    <div class="payment-note" data-i18n-html="precios_booking_note">
       <strong>¿Cómo reservar tu clase?</strong> Escríbeme por email o Telegram para cuadrar horarios. Si vas a pagar con un método distinto a Monero, cuéntamelo en el mensaje y te explico cómo hacerlo.
     </div>
   </div>
@@ -628,21 +645,21 @@
 <section id="faq">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow">Preguntas frecuentes</span>
-      <h2>Antes de escribirme</h2>
+      <span class="eyebrow" data-i18n="faq_eyebrow">Preguntas frecuentes</span>
+      <h2 data-i18n="faq_h2">Antes de escribirme</h2>
     </div>
     <div class="card-grid">
       <div class="card">
-        <h3>¿Necesito ya un buen nivel de inglés?</h3>
-        <p>No. Adaptamos las clases a tu nivel real, desde quien tiene una base y quiere soltarse, hasta quien ya se defiende pero se bloquea al hablar.</p>
+        <h3 data-i18n="faq_q1_h">¿Necesito ya un buen nivel de inglés?</h3>
+        <p data-i18n="faq_q1_p">No. Adaptamos las clases a tu nivel real, desde quien tiene una base y quiere soltarse, hasta quien ya se defiende pero se bloquea al hablar.</p>
       </div>
       <div class="card">
-        <h3>¿Cómo son las clases?</h3>
-        <p>Por videollamada (Zoom o Google Meet), individuales, centradas en conversación y en tus situaciones concretas.</p>
+        <h3 data-i18n="faq_q2_h">¿Cómo son las clases?</h3>
+        <p data-i18n="faq_q2_p">Por videollamada (Zoom o Google Meet), individuales, centradas en conversación y en tus situaciones concretas.</p>
       </div>
       <div class="card">
-        <h3>¿Cómo reservo mi clase de prueba?</h3>
-        <p>Escríbeme por email o Telegram, cuadramos horario y te explico cómo hacer el pago.</p>
+        <h3 data-i18n="faq_q3_h">¿Cómo reservo mi clase de prueba?</h3>
+        <p data-i18n="faq_q3_p">Escríbeme por email o Telegram, cuadramos horario y te explico cómo hacer el pago.</p>
       </div>
     </div>
   </div>
@@ -650,26 +667,139 @@
 
 <footer id="contacto">
   <div class="wrap">
-    <h2>Hablemos</h2>
-    <p class="sub">Escríbeme y empezamos cuando quieras.</p>
+    <h2 data-i18n="footer_h2">Hablemos</h2>
+    <p class="sub" data-i18n="footer_sub">Escríbeme y empezamos cuando quieras.</p>
     <div class="contact-row">
       <a class="contact-pill" href="mailto:yankxwtic@mozmail.com"><span class="dot"></span>yankxwtic@mozmail.com</a>
       <a class="contact-pill" href="https://t.me/frelseisme" target="_blank" rel="noopener"><span class="dot"></span>@frelseisme en Telegram</a>
     </div>
-    <div class="copyright">© 2026 Paulo Crespo · Clases de inglés</div>
+    <div class="copyright" data-i18n="footer_copyright">© 2026 Paulo Crespo · Clases de inglés</div>
   </div>
 </footer>
 
 <script>
+const translations = {
+  es: {
+    nav_about: 'Sobre mí', nav_reviews: 'Opiniones', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_account: 'Mi cuenta',
+    hero_eyebrow: 'Inglés para comunicar, no solo para aprobar',
+    hero_h1: 'Encuentra tu voz <em>en inglés</em>',
+    hero_p: 'Clases pensadas para personas tímidas o inseguras que quieren dejar de traducir en su cabeza y empezar a comunicarse de verdad. No es una academia más: es acompañamiento cercano, centrado en que te expreses con naturalidad.',
+    hero_cta_email: 'Escríbeme por email',
+    hero_cta_telegram: 'Escríbeme por Telegram',
+    about_eyebrow: 'Sobre mí',
+    about_h2: 'Soy Paulo, y te ayudo a hablar sin miedo',
+    about_p1: 'Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público, combinando algo parecido a la logopedia con la enseñanza del idioma.',
+    about_p2: 'El objetivo no es solo que "sepas" inglés, sino que lo <strong>uses</strong> con confianza: en una entrevista, una llamada, un viaje o una conversación cualquiera.',
+    about_p3: 'Las clases son por videollamada (Zoom o Google Meet), así que puedes conectarte desde donde estés, sin desplazamientos.',
+    enfoque_eyebrow: 'Cómo trabajo',
+    enfoque_h2: 'Comunicación real, no solo teoría',
+    enfoque_p: 'Cada clase se adapta a lo que necesitas practicar, con foco en la confianza tanto como en el idioma.',
+    enfoque_card1_h: 'Habla desde el primer día', enfoque_card1_p: 'Nada de memorizar listas de verbos sin usarlos. Practicamos conversación real desde la primera sesión.',
+    enfoque_card2_h: 'Trabajo la seguridad, no solo el idioma', enfoque_card2_p: 'Si te bloqueas al hablar, buscamos juntos por qué pasa y cómo soltarte, con paciencia y sin juicios.',
+    enfoque_card3_h: 'Práctica con propósito', enfoque_card3_p: 'Entrevistas, presentaciones, viajes o el día a día: adaptamos las clases a lo que realmente vas a necesitar.',
+    paraquien_eyebrow: '¿Es esto para ti?', paraquien_h2: 'Situaciones que trabajamos juntos',
+    paraquien_card1_h: 'Entrevistas de trabajo', paraquien_card1_p: 'Preparamos respuestas claras y naturales para que no te quedes en blanco delante del entrevistador.',
+    paraquien_card2_h: 'Reuniones y llamadas de trabajo', paraquien_card2_p: 'Practicamos el inglés que realmente usas en tu día a día profesional, no frases de manual.',
+    paraquien_card3_h: 'Vivir o viajar en el extranjero', paraquien_card3_p: 'Del "sé inglés en teoría" a poder desenvolverte de verdad en una tienda, un aeropuerto o con gente nueva.',
+    opiniones_eyebrow: 'Opiniones', opiniones_h2: 'Lo que dicen quienes ya han probado las clases',
+    opiniones_note: 'Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.',
+    opiniones_note_real: 'Opiniones reales de alumnos.',
+    precios_eyebrow: 'Precios y pago', precios_h2: 'Una clase, un precio claro', precios_p: 'Pagando con Monero, tienes un 25% de descuento.',
+    precios_trial_note: '<strong>¿Primera vez?</strong> Tu primera clase de prueba cuesta 10€ (7€ pagando con Monero), para que veas cómo trabajamos antes de comprometerte.',
+    precios_std_label: 'Pago estándar', precios_per_class: '/ clase',
+    precios_std_desc: 'Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.',
+    precios_xmr_label: 'Pagando con Monero (XMR)', precios_discount_badge: '−25% de descuento',
+    precios_xmr_desc: 'Monero es mi método de pago principal. Envía el pago a esta dirección:',
+    precios_xmr_address_label: 'Dirección Monero (XMR)', precios_copy_btn: 'Copiar',
+    precios_monero_link: '¿Qué es Monero y cómo se usa?',
+    precios_booking_note: '<strong>¿Cómo reservar tu clase?</strong> Escríbeme por email o Telegram para cuadrar horarios. Si vas a pagar con un método distinto a Monero, cuéntamelo en el mensaje y te explico cómo hacerlo.',
+    faq_eyebrow: 'Preguntas frecuentes', faq_h2: 'Antes de escribirme',
+    faq_q1_h: '¿Necesito ya un buen nivel de inglés?', faq_q1_p: 'No. Adaptamos las clases a tu nivel real, desde quien tiene una base y quiere soltarse, hasta quien ya se defiende pero se bloquea al hablar.',
+    faq_q2_h: '¿Cómo son las clases?', faq_q2_p: 'Por videollamada (Zoom o Google Meet), individuales, centradas en conversación y en tus situaciones concretas.',
+    faq_q3_h: '¿Cómo reservo mi clase de prueba?', faq_q3_p: 'Escríbeme por email o Telegram, cuadramos horario y te explico cómo hacer el pago.',
+    footer_h2: 'Hablemos', footer_sub: 'Escríbeme y empezamos cuando quieras.',
+    footer_copyright: '© 2026 Paulo Crespo · Clases de inglés',
+    copy_copied: '¡Copiado!', copy_error: 'Error'
+  },
+  pl: {
+    nav_about: 'O mnie', nav_reviews: 'Opinie', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_account: 'Moje konto',
+    hero_eyebrow: 'Angielski, by się komunikować, nie tylko zdać egzamin',
+    hero_h1: 'Znajdź swój głos <em>po angielsku</em>',
+    hero_p: 'Lekcje dla osób nieśmiałych lub niepewnych siebie, które chcą przestać tłumaczyć w głowie i zacząć naprawdę się komunikować. To nie kolejna szkoła językowa — to bliskie wsparcie skupione na tym, byś wyrażał się naturalnie.',
+    hero_cta_email: 'Napisz do mnie e-mail',
+    hero_cta_telegram: 'Napisz do mnie na Telegramie',
+    about_eyebrow: 'O mnie',
+    about_h2: 'Jestem Paulo i pomagam mówić bez strachu',
+    about_p1: 'Uczę angielskiego od wielu lat, ale to, co naprawdę robi różnicę, to nie gramatyka — to pokonanie wstydu przed mówieniem. Pracuję szczególnie z osobami nieśmiałymi lub takimi, które blokują się mówiąc publicznie, łącząc coś na kształt logopedii z nauką języka.',
+    about_p2: 'Celem nie jest tylko „znajomość" angielskiego, ale <strong>używanie</strong> go pewnie: na rozmowie kwalifikacyjnej, w rozmowie telefonicznej, w podróży czy w zwykłej rozmowie.',
+    about_p3: 'Lekcje odbywają się przez wideorozmowę (Zoom lub Google Meet), więc możesz się połączyć skądkolwiek jesteś, bez dojazdów.',
+    enfoque_eyebrow: 'Jak pracuję',
+    enfoque_h2: 'Prawdziwa komunikacja, nie tylko teoria',
+    enfoque_p: 'Każda lekcja dostosowana jest do tego, co musisz ćwiczyć, z naciskiem na pewność siebie tak samo jak na język.',
+    enfoque_card1_h: 'Mówisz od pierwszego dnia', enfoque_card1_p: 'Żadnego zapamiętywania list czasowników bez ich używania. Ćwiczymy prawdziwą rozmowę od pierwszej sesji.',
+    enfoque_card2_h: 'Pracuję nad pewnością siebie, nie tylko językiem', enfoque_card2_p: 'Jeśli blokujesz się mówiąc, szukamy razem przyczyny i sposobu, by się uwolnić — cierpliwie i bez oceniania.',
+    enfoque_card3_h: 'Praktyka z celem', enfoque_card3_p: 'Rozmowy kwalifikacyjne, prezentacje, podróże czy codzienność: dostosowujemy lekcje do tego, czego naprawdę potrzebujesz.',
+    paraquien_eyebrow: 'Czy to dla ciebie?', paraquien_h2: 'Sytuacje, nad którymi razem pracujemy',
+    paraquien_card1_h: 'Rozmowy kwalifikacyjne', paraquien_card1_p: 'Przygotowujemy jasne i naturalne odpowiedzi, byś nie zaniemówił przed rekruterem.',
+    paraquien_card2_h: 'Spotkania i rozmowy służbowe', paraquien_card2_p: 'Ćwiczymy angielski, którego naprawdę używasz w codziennej pracy, a nie zdania z podręcznika.',
+    paraquien_card3_h: 'Życie lub podróże za granicą', paraquien_card3_p: 'Od „znam angielski w teorii" do faktycznego radzenia sobie w sklepie, na lotnisku czy wśród nowych ludzi.',
+    opiniones_eyebrow: 'Opinie', opiniones_h2: 'Co mówią ci, którzy już wypróbowali lekcje',
+    opiniones_note: 'Przykładowe opinie — zostaną zaktualizowane prawdziwymi opiniami uczniów.',
+    opiniones_note_real: 'Prawdziwe opinie uczniów.',
+    precios_eyebrow: 'Cennik i płatność', precios_h2: 'Jedna lekcja, jasna cena', precios_p: 'Płacąc Monero, otrzymujesz 25% zniżki.',
+    precios_trial_note: '<strong>Pierwszy raz?</strong> Twoja pierwsza lekcja próbna kosztuje 10€ (7€ płacąc Monero), byś zobaczył, jak pracujemy, zanim się zdecydujesz.',
+    precios_std_label: 'Płatność standardowa', precios_per_class: '/ lekcja',
+    precios_std_desc: 'Przelew, PayPal lub inne metody. Napisz do mnie, by ustalić sposób płatności.',
+    precios_xmr_label: 'Płacąc Monero (XMR)', precios_discount_badge: '−25% zniżki',
+    precios_xmr_desc: 'Monero to mój główny sposób płatności. Wyślij płatność na ten adres:',
+    precios_xmr_address_label: 'Adres Monero (XMR)', precios_copy_btn: 'Kopiuj',
+    precios_monero_link: 'Czym jest Monero i jak go używać?',
+    precios_booking_note: '<strong>Jak zarezerwować lekcję?</strong> Napisz do mnie e-mail lub na Telegramie, by ustalić termin. Jeśli chcesz zapłacić inną metodą niż Monero, napisz o tym w wiadomości, a wytłumaczę jak to zrobić.',
+    faq_eyebrow: 'Najczęstsze pytania', faq_h2: 'Zanim napiszesz',
+    faq_q1_h: 'Czy muszę już znać dobrze angielski?', faq_q1_p: 'Nie. Dostosowujemy lekcje do twojego rzeczywistego poziomu — od osób z podstawami, które chcą się otworzyć, po te, które radzą sobie, ale blokują się mówiąc.',
+    faq_q2_h: 'Jak wyglądają lekcje?', faq_q2_p: 'Przez wideorozmowę (Zoom lub Google Meet), indywidualnie, skupione na konwersacji i twoich konkretnych sytuacjach.',
+    faq_q3_h: 'Jak zarezerwować lekcję próbną?', faq_q3_p: 'Napisz do mnie e-mail lub na Telegramie, ustalimy termin i wytłumaczę jak dokonać płatności.',
+    footer_h2: 'Porozmawiajmy', footer_sub: 'Napisz do mnie i zaczynamy, kiedy chcesz.',
+    footer_copyright: '© 2026 Paulo Crespo · Lekcje angielskiego',
+    copy_copied: 'Skopiowano!', copy_error: 'Błąd'
+  }
+};
+
+let currentLang = localStorage.getItem('site_lang') || 'es';
+
+function applyTranslations() {
+  const dict = translations[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (dict[key]) el.innerHTML = dict[key];
+  });
+  document.getElementById('lang-btn-es').classList.toggle('active', currentLang === 'es');
+  document.getElementById('lang-btn-pl').classList.toggle('active', currentLang === 'pl');
+  document.documentElement.lang = currentLang;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('site_lang', lang);
+  applyTranslations();
+}
+
+applyTranslations();
+
 function copyAddress() {
   const text = document.getElementById('xmr-addr').innerText;
   const btn = document.getElementById('copy-btn');
+  const original = translations[currentLang].precios_copy_btn;
   navigator.clipboard.writeText(text).then(() => {
-    btn.innerText = '¡Copiado!';
-    setTimeout(() => { btn.innerText = 'Copiar'; }, 1800);
+    btn.innerText = translations[currentLang].copy_copied;
+    setTimeout(() => { btn.innerText = original; }, 1800);
   }).catch(() => {
-    btn.innerText = 'Error';
-    setTimeout(() => { btn.innerText = 'Copiar'; }, 1800);
+    btn.innerText = translations[currentLang].copy_error;
+    setTimeout(() => { btn.innerText = original; }, 1800);
   });
 }
 </script>
@@ -698,7 +828,8 @@ function copyAddress() {
 
     const grid = document.getElementById('testimonials-grid');
     const note = document.getElementById('opiniones-note');
-    note.innerText = 'Opiniones reales de alumnos.';
+    note.removeAttribute('data-i18n');
+    note.innerText = translations[currentLang].opiniones_note_real;
     grid.innerHTML = testimonials.map(t => `
       <div class="card">
         <p style="color: var(--ink); font-style: italic;">"${escapeHtml(t.content)}"</p>

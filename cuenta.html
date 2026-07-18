@@ -89,28 +89,40 @@
 
   .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
   .logout-link { background: none; border: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 0.88rem; }
+  .lang-btn {
+    border: 1px solid var(--peach-line); background: transparent; color: var(--ink-soft);
+    font-size: 0.78rem; font-weight: 600; padding: 4px 8px; border-radius: 5px; cursor: pointer;
+    font-family: 'Space Mono', monospace; margin-left: 4px;
+  }
+  .lang-btn.active { background: var(--orange); color: var(--white); border-color: var(--orange); }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a class="back" href="index.html">&larr; Volver a la web</a>
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <a class="back" href="index.html" data-i18n="back_link">&larr; Volver a la web</a>
+    <span>
+      <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
+      <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
+    </span>
+  </div>
 
   <!-- LOGIN / SIGNUP VIEW -->
   <div id="auth-view">
-    <h1 style="font-size: 1.8rem; margin-bottom: 26px;">Mi cuenta</h1>
+    <h1 style="font-size: 1.8rem; margin-bottom: 26px;" data-i18n="my_account">Mi cuenta</h1>
     <div class="card">
-      <h3 id="auth-title" style="font-size: 1.1rem;">Iniciar sesión</h3>
-      <label for="email">Email</label>
+      <h3 id="auth-title" style="font-size: 1.1rem;" data-i18n="login_title">Iniciar sesión</h3>
+      <label for="email" data-i18n="label_email">Email</label>
       <input type="email" id="email" placeholder="tu@email.com">
-      <label for="password">Contraseña</label>
+      <label for="password" data-i18n="label_password">Contraseña</label>
       <input type="password" id="password" placeholder="••••••••">
       <div id="name-field" style="display:none;">
-        <label for="full_name">Nombre</label>
+        <label for="full_name" data-i18n="label_name">Nombre</label>
         <input type="text" id="full_name" placeholder="Tu nombre">
       </div>
-      <button class="btn" id="submit-btn" onclick="handleSubmit()">Entrar</button>
+      <button class="btn" id="submit-btn" onclick="handleSubmit()" data-i18n="btn_login">Entrar</button>
       <br>
-      <button class="btn-link" id="toggle-mode" onclick="toggleMode()">¿No tienes cuenta? Regístrate</button>
+      <button class="btn-link" id="toggle-mode" onclick="toggleMode()" data-i18n="link_to_signup">¿No tienes cuenta? Regístrate</button>
       <div id="auth-msg"></div>
     </div>
   </div>
@@ -118,44 +130,44 @@
   <!-- DASHBOARD VIEW (shown after login) -->
   <div id="dashboard-view" style="display:none;">
     <div class="top-bar">
-      <h1 style="font-size: 1.8rem;">Hola, <span id="student-name">—</span></h1>
+      <h1 style="font-size: 1.8rem;"><span data-i18n="hello_prefix">Hola,</span> <span id="student-name">—</span></h1>
       <div>
-        <a href="admin.html" id="admin-link" style="display:none; color: var(--ink-soft); text-decoration: underline; font-size: 0.88rem; margin-right: 16px;">Panel admin</a>
-        <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
+        <a href="admin.html" id="admin-link" style="display:none; color: var(--ink-soft); text-decoration: underline; font-size: 0.88rem; margin-right: 16px;" data-i18n="admin_panel_link">Panel admin</a>
+        <button class="logout-link" onclick="handleLogout()" data-i18n="logout_link">Cerrar sesión</button>
       </div>
     </div>
 
     <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 12px;">Tus créditos</h3>
-      <div class="credit-badge"><b id="credit-count">0</b> clases disponibles</div>
+      <h3 style="font-size: 1rem; margin-bottom: 12px;" data-i18n="your_credits">Tus créditos</h3>
+      <div class="credit-badge"><b id="credit-count">0</b> <span data-i18n="credits_available">clases disponibles</span></div>
     </div>
 
     <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;">Clases disponibles</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;">Elige un día y reserva una franja horaria. Se descontará un crédito.</p>
+      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="available_classes">Clases disponibles</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;" data-i18n="available_classes_hint">Elige un día y reserva una franja horaria. Se descontará un crédito.</p>
       <div class="week-nav">
-        <button onclick="changeWeek(-1)">&larr; Semana anterior</button>
+        <button onclick="changeWeek(-1)" data-i18n="prev_week">&larr; Semana anterior</button>
         <span id="week-label"></span>
-        <button onclick="changeWeek(1)">Semana siguiente &rarr;</button>
+        <button onclick="changeWeek(1)" data-i18n="next_week">Semana siguiente &rarr;</button>
       </div>
       <div class="week-days" id="week-days"></div>
       <div id="week-day-slots" style="margin-top: 16px;"></div>
-      <p class="empty-note" id="open-slots-empty" style="display:none;">No hay clases disponibles esta semana.</p>
+      <p class="empty-note" id="open-slots-empty" style="display:none;" data-i18n="no_classes_this_week">No hay clases disponibles esta semana.</p>
     </div>
 
     <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;">Tus próximas clases</h3>
+      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="upcoming_classes">Tus próximas clases</h3>
       <ul class="slot-list" id="my-slots"></ul>
-      <p class="empty-note" id="my-slots-empty" style="display:none;">Aún no tienes clases reservadas.</p>
+      <p class="empty-note" id="my-slots-empty" style="display:none;" data-i18n="no_bookings_yet">Aún no tienes clases reservadas.</p>
     </div>
 
     <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;">Vincular Telegram</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
-      <button class="btn" onclick="generateTelegramCode()">Generar código</button>
-      <button class="btn-cancel" onclick="unlinkTelegram()">Desvincular Telegram</button>
+      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="link_telegram_title">Vincular Telegram</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="link_telegram_hint">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
+      <button class="btn" onclick="generateTelegramCode()" data-i18n="generate_code_btn">Generar código</button>
+      <button class="btn-cancel" onclick="unlinkTelegram()" data-i18n="unlink_telegram_btn">Desvincular Telegram</button>
       <div id="telegram-code-box" style="display:none; margin-top: 14px;">
-        <p style="font-size: 0.88rem; margin-bottom: 8px;">Envía este mensaje a <strong>@InglesDePauloBot</strong> en Telegram:</p>
+        <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <strong>@InglesDePauloBot</strong> en Telegram:</p>
         <div class="xmr-address-row" style="background: var(--bg-soft); border: 1px solid var(--peach-line);">
           <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
         </div>
@@ -164,20 +176,20 @@
     </div>
 
     <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;">Deja tu opinión</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 6px;">Tu opinión se revisará antes de publicarse en la web.</p>
-      <textarea id="testimonial-text" rows="3" placeholder="Cuenta tu experiencia con las clases..."
+      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="leave_review_title">Deja tu opinión</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 6px;" data-i18n="leave_review_hint">Tu opinión se revisará antes de publicarse en la web.</p>
+      <textarea id="testimonial-text" rows="3" data-i18n-placeholder="review_placeholder" placeholder="Cuenta tu experiencia con las clases..."
         style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--peach-line); background: var(--bg); font-family: 'Work Sans', sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
-      <button class="btn" onclick="submitTestimonial()">Enviar opinión</button>
+      <button class="btn" onclick="submitTestimonial()" data-i18n="send_review_btn">Enviar opinión</button>
       <div id="testimonial-msg"></div>
     </div>
     <div class="card" style="border-color: #E9C0AE;">
-      <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--orange-deep);">Eliminar mi cuenta</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;">
+      <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--orange-deep);" data-i18n="delete_account_title">Eliminar mi cuenta</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="delete_account_hint">
         Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer.
         Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.
       </p>
-      <button class="btn" style="background: #B23A1E;" onmouseover="this.style.background='#8F2E17'" onmouseout="this.style.background='#B23A1E'" onclick="deleteAccount()">Eliminar mi cuenta</button>
+      <button class="btn" style="background: #B23A1E;" onmouseover="this.style.background='#8F2E17'" onmouseout="this.style.background='#B23A1E'" onclick="deleteAccount()" data-i18n="delete_account_btn">Eliminar mi cuenta</button>
       <div id="delete-account-msg"></div>
     </div>
   </div>
@@ -192,13 +204,134 @@
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let mode = 'login'; // or 'signup'
 
+  // ---- TRANSLATIONS ----
+  const translations = {
+    es: {
+      back_link: 'Volver a la web', my_account: 'Mi cuenta',
+      login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
+      label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre',
+      btn_login: 'Entrar', btn_signup: 'Registrarme',
+      link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
+      hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
+      your_credits: 'Tus créditos', credits_available: 'clases disponibles',
+      available_classes: 'Clases disponibles', available_classes_hint: 'Elige un día y reserva una franja horaria. Se descontará un crédito.',
+      prev_week: '← Semana anterior', next_week: 'Semana siguiente →', no_classes_this_week: 'No hay clases disponibles esta semana.',
+      upcoming_classes: 'Tus próximas clases', no_bookings_yet: 'Aún no tienes clases reservadas.',
+      link_telegram_title: 'Vincular Telegram', link_telegram_hint: 'Vincula tu cuenta para reservar clases y recibir avisos por Telegram.',
+      generate_code_btn: 'Generar código', unlink_telegram_btn: 'Desvincular Telegram',
+      telegram_send_msg: 'Envía este mensaje a <strong>@InglesDePauloBot</strong> en Telegram:',
+      leave_review_title: 'Deja tu opinión', leave_review_hint: 'Tu opinión se revisará antes de publicarse en la web.',
+      review_placeholder: 'Cuenta tu experiencia con las clases...', send_review_btn: 'Enviar opinión',
+      delete_account_title: 'Eliminar mi cuenta',
+      delete_account_hint: 'Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer. Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.',
+      delete_account_btn: 'Eliminar mi cuenta',
+      fill_email_password: 'Rellena email y contraseña.', account_created: 'Cuenta creada. Ya puedes iniciar sesión.',
+      no_classes_that_day: 'No hay clases disponibles ese día.', reserve_btn: 'Reservar', cancel_btn: 'Cancelar',
+      less_than_12h: '(menos de 12h)', not_cancelable_12h: '(no cancelable, faltan menos de 12h)',
+      join_meet: '🔗 Unirse con Google Meet',
+      confirm_cancel_booking: '¿Cancelar esta clase? Recuperarás el crédito.',
+      confirm_unlink_telegram: '¿Desvincular tu cuenta de Telegram? Dejarás de recibir avisos ahí.',
+      telegram_unlinked: 'Tu cuenta de Telegram ha sido desvinculada.',
+      write_something: 'Escribe algo antes de enviar.',
+      review_thanks: '¡Gracias! Tu opinión se revisará antes de publicarse.',
+      confirm_delete_1: '¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.',
+      confirm_delete_2: 'Última confirmación: se borrarán tu cuenta y tus créditos permanentemente. ¿Continuar?',
+      account_deleted: 'Tu cuenta ha sido eliminada.', delete_failed: 'No se pudo eliminar la cuenta.',
+      connection_error: 'Error de conexión. Inténtalo de nuevo.',
+      profile_error_suffix: ' (ver consola: error de perfil)',
+      dow: ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'],
+      months: ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'],
+      locale: 'es-ES'
+    },
+    pl: {
+      back_link: 'Wróć do strony', my_account: 'Moje konto',
+      login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
+      label_email: 'Email', label_password: 'Hasło', label_name: 'Imię',
+      btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
+      link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
+      hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
+      your_credits: 'Twoje kredyty', credits_available: 'dostępnych lekcji',
+      available_classes: 'Dostępne lekcje', available_classes_hint: 'Wybierz dzień i zarezerwuj termin. Zostanie odjęty jeden kredyt.',
+      prev_week: '← Poprzedni tydzień', next_week: 'Następny tydzień →', no_classes_this_week: 'Brak dostępnych lekcji w tym tygodniu.',
+      upcoming_classes: 'Twoje nadchodzące lekcje', no_bookings_yet: 'Nie masz jeszcze zarezerwowanych lekcji.',
+      link_telegram_title: 'Połącz Telegram', link_telegram_hint: 'Połącz swoje konto, by rezerwować lekcje i otrzymywać powiadomienia na Telegramie.',
+      generate_code_btn: 'Wygeneruj kod', unlink_telegram_btn: 'Odłącz Telegram',
+      telegram_send_msg: 'Wyślij tę wiadomość do <strong>@InglesDePauloBot</strong> na Telegramie:',
+      leave_review_title: 'Zostaw opinię', leave_review_hint: 'Twoja opinia zostanie sprawdzona przed publikacją na stronie.',
+      review_placeholder: 'Opisz swoje doświadczenie z lekcjami...', send_review_btn: 'Wyślij opinię',
+      delete_account_title: 'Usuń moje konto',
+      delete_account_hint: 'To trwale usuwa twoje konto, kredyty i połączenie z Telegramem. Nie da się tego cofnąć. Twoje zarezerwowane lekcje zostaną zwolnione, a opublikowane opinie zostaną zachowane, ale bez powiązania z twoim kontem.',
+      delete_account_btn: 'Usuń moje konto',
+      fill_email_password: 'Uzupełnij email i hasło.', account_created: 'Konto utworzone. Możesz się teraz zalogować.',
+      no_classes_that_day: 'Brak dostępnych lekcji tego dnia.', reserve_btn: 'Zarezerwuj', cancel_btn: 'Anuluj',
+      less_than_12h: '(mniej niż 12h)', not_cancelable_12h: '(nie można anulować, zostało mniej niż 12h)',
+      join_meet: '🔗 Dołącz przez Google Meet',
+      confirm_cancel_booking: 'Anulować tę lekcję? Kredyt zostanie zwrócony.',
+      confirm_unlink_telegram: 'Odłączyć konto Telegram? Przestaniesz tam otrzymywać powiadomienia.',
+      telegram_unlinked: 'Twoje konto Telegram zostało odłączone.',
+      write_something: 'Napisz coś przed wysłaniem.',
+      review_thanks: 'Dziękuję! Twoja opinia zostanie sprawdzona przed publikacją.',
+      confirm_delete_1: 'Na pewno chcesz usunąć swoje konto? Tej czynności nie można cofnąć.',
+      confirm_delete_2: 'Ostatnie potwierdzenie: twoje konto i kredyty zostaną trwale usunięte. Kontynuować?',
+      account_deleted: 'Twoje konto zostało usunięte.', delete_failed: 'Nie udało się usunąć konta.',
+      connection_error: 'Błąd połączenia. Spróbuj ponownie.',
+      profile_error_suffix: ' (sprawdź konsolę: błąd profilu)',
+      dow: ['PON','WT','ŚR','CZW','PT','SOB','NDZ'],
+      months: ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'],
+      locale: 'pl-PL'
+    }
+  };
+
+  let currentLang = localStorage.getItem('site_lang') || 'es';
+  function t(key) { return translations[currentLang][key]; }
+
+  function applyTranslations() {
+    const dict = translations[currentLang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key]) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if (dict[key]) el.innerHTML = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (dict[key]) el.placeholder = dict[key];
+    });
+    document.getElementById('lang-btn-es').classList.toggle('active', currentLang === 'es');
+    document.getElementById('lang-btn-pl').classList.toggle('active', currentLang === 'pl');
+    document.documentElement.lang = currentLang;
+
+    // Keep dynamic auth-mode text (login/signup toggle) in sync too.
+    document.getElementById('auth-title').textContent = mode === 'login' ? dict.login_title : dict.signup_title;
+    document.getElementById('submit-btn').textContent = mode === 'login' ? dict.btn_login : dict.btn_signup;
+    document.getElementById('toggle-mode').textContent = mode === 'login' ? dict.link_to_signup : dict.link_to_login;
+  }
+
+  async function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('site_lang', lang);
+    applyTranslations();
+
+    // If logged in, persist the preference so Telegram/notifications match too.
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      await sb.from('profiles').update({ language: lang }).eq('id', user.id);
+    }
+    // Refresh dynamic content that depends on language (dates, buttons).
+    if (document.getElementById('dashboard-view').style.display !== 'none') {
+      await loadDashboard();
+    }
+  }
+
+  applyTranslations();
+
   function toggleMode() {
     mode = mode === 'login' ? 'signup' : 'login';
-    document.getElementById('auth-title').innerText = mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta';
-    document.getElementById('submit-btn').innerText = mode === 'login' ? 'Entrar' : 'Registrarme';
-    document.getElementById('toggle-mode').innerText = mode === 'login'
-      ? '¿No tienes cuenta? Regístrate'
-      : '¿Ya tienes cuenta? Inicia sesión';
+    document.getElementById('auth-title').innerText = mode === 'login' ? t('login_title') : t('signup_title');
+    document.getElementById('submit-btn').innerText = mode === 'login' ? t('btn_login') : t('btn_signup');
+    document.getElementById('toggle-mode').innerText = mode === 'login' ? t('link_to_signup') : t('link_to_login');
     document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('auth-msg').innerHTML = '';
   }
@@ -215,7 +348,7 @@
     btn.disabled = true;
 
     if (!email || !password) {
-      showMsg('Rellena email y contraseña.', 'error');
+      showMsg(t('fill_email_password'), 'error');
       btn.disabled = false;
       return;
     }
@@ -231,7 +364,7 @@
         btn.disabled = false;
         return;
       }
-      showMsg('Cuenta creada. Ya puedes iniciar sesión.', 'ok');
+      showMsg(t('account_created'), 'ok');
       toggleMode();
       btn.disabled = false;
     } else {
@@ -260,13 +393,21 @@
 
     const { data: profile, error: profileError } = await sb
       .from('profiles')
-      .select('full_name, credits, is_admin')
+      .select('full_name, credits, is_admin, language')
       .eq('id', user.id)
       .single();
 
+    // Sync the student's saved language preference (e.g. set from another
+    // device, or defaulted server-side) with what's shown here.
+    if (profile?.language && profile.language !== currentLang) {
+      currentLang = profile.language;
+      localStorage.setItem('site_lang', currentLang);
+      applyTranslations();
+    }
+
     if (profileError) {
       console.error('Error cargando perfil:', profileError);
-      document.getElementById('student-name').innerText = user.email + ' (ver consola: error de perfil)';
+      document.getElementById('student-name').innerText = user.email + t('profile_error_suffix');
     } else {
       document.getElementById('student-name').innerText = profile?.full_name || user.email;
     }
@@ -279,8 +420,8 @@
 
   function formatSlot(start, end) {
     const s = new Date(start), e = new Date(end);
-    const dateStr = s.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-    const timeStr = `${s.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })}–${e.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })}`;
+    const dateStr = s.toLocaleDateString(t('locale'), { weekday: 'long', day: 'numeric', month: 'long' });
+    const timeStr = `${s.toLocaleTimeString(t('locale'), { hour: '2-digit', minute: '2-digit', hour12: false })}–${e.toLocaleTimeString(t('locale'), { hour: '2-digit', minute: '2-digit', hour12: false })}`;
     return `${dateStr}, ${timeStr}`;
   }
 
@@ -326,8 +467,8 @@
     if (error) console.error('Error cargando clases disponibles:', error);
     weekSlots = slots || [];
 
-    const dowNames = ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
-    const monthNames = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const dowNames = t('dow');
+    const monthNames = t('months');
     document.getElementById('week-label').innerText =
       `${weekStart.getDate()} ${monthNames[weekStart.getMonth()]} – ${new Date(weekEnd - 1).getDate()} ${monthNames[new Date(weekEnd - 1).getMonth()]}`;
 
@@ -374,7 +515,7 @@
       .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
 
     if (daySlots.length === 0) {
-      container.innerHTML = '<p class="empty-note">No hay clases disponibles ese día.</p>';
+      container.innerHTML = `<p class="empty-note">${t('no_classes_that_day')}</p>`;
       return;
     }
 
@@ -384,12 +525,12 @@
     daySlots.forEach(slot => {
       const li = document.createElement('li');
       li.className = 'slot-item';
-      const start = new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
-      const end = new Date(slot.end_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const start = new Date(slot.start_time).toLocaleTimeString(t('locale'), { hour: '2-digit', minute: '2-digit', hour12: false });
+      const end = new Date(slot.end_time).toLocaleTimeString(t('locale'), { hour: '2-digit', minute: '2-digit', hour12: false });
       const tooSoon = new Date(slot.start_time) < twelveHoursFromNow;
       const disabled = currentCredits < 1 || tooSoon;
-      li.innerHTML = `<span>${start}–${end}${tooSoon ? ' <span style="color: var(--ink-soft); font-size: 0.78rem;">(menos de 12h)</span>' : ''}</span>
-        <button ${disabled ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">Reservar</button>`;
+      li.innerHTML = `<span>${start}–${end}${tooSoon ? ` <span style="color: var(--ink-soft); font-size: 0.78rem;">${t('less_than_12h')}</span>` : ''}</span>
+        <button ${disabled ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">${t('reserve_btn')}</button>`;
       list.appendChild(li);
     });
     container.innerHTML = '';
@@ -421,12 +562,12 @@
       li.style.gap = '6px';
       const tooSoon = new Date(b.start_time) < twelveHoursFromNow;
       const meetHtml = b.google_meet_link
-        ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--orange-deep);">🔗 Unirse con Google Meet</a>`
+        ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--orange-deep);">${t('join_meet')}</a>`
         : '';
       li.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <span>${formatSlot(b.start_time, b.end_time)}${tooSoon ? ' <span style="color: var(--ink-soft); font-size: 0.78rem;">(no cancelable, faltan menos de 12h)</span>' : ''}</span>
-          <button class="btn-cancel" ${tooSoon ? 'disabled' : ''} onclick="cancelBooking('${b.id}')">Cancelar</button>
+          <span>${formatSlot(b.start_time, b.end_time)}${tooSoon ? ` <span style="color: var(--ink-soft); font-size: 0.78rem;">${t('not_cancelable_12h')}</span>` : ''}</span>
+          <button class="btn-cancel" ${tooSoon ? 'disabled' : ''} onclick="cancelBooking('${b.id}')">${t('cancel_btn')}</button>
         </div>
         ${meetHtml}`;
       list.appendChild(li);
@@ -434,7 +575,7 @@
   }
 
   async function cancelBooking(slotId) {
-    if (!confirm('¿Cancelar esta clase? Recuperarás el crédito.')) return;
+    if (!confirm(t('confirm_cancel_booking'))) return;
     const { error } = await sb.rpc('cancel_booking', { _slot_id: slotId });
     if (error) {
       alert(error.message);
@@ -453,7 +594,7 @@
   }
 
   async function unlinkTelegram() {
-    if (!confirm('¿Desvincular tu cuenta de Telegram? Dejarás de recibir avisos ahí.')) return;
+    if (!confirm(t('confirm_unlink_telegram'))) return;
     const { error } = await sb.rpc('unlink_telegram');
     const msgBox = document.getElementById('telegram-msg');
     if (error) {
@@ -461,7 +602,7 @@
       return;
     }
     document.getElementById('telegram-code-box').style.display = 'none';
-    msgBox.innerHTML = '<div class="msg ok">Tu cuenta de Telegram ha sido desvinculada.</div>';
+    msgBox.innerHTML = `<div class="msg ok">${t('telegram_unlinked')}</div>`;
   }
 
   async function generateTelegramCode() {
@@ -480,7 +621,7 @@
     const text = document.getElementById('testimonial-text').value.trim();
     const msgBox = document.getElementById('testimonial-msg');
     if (!text) {
-      msgBox.innerHTML = '<div class="msg error">Escribe algo antes de enviar.</div>';
+      msgBox.innerHTML = `<div class="msg error">${t('write_something')}</div>`;
       return;
     }
 
@@ -505,13 +646,13 @@
     }
 
     document.getElementById('testimonial-text').value = '';
-    msgBox.innerHTML = '<div class="msg ok">¡Gracias! Tu opinión se revisará antes de publicarse.</div>';
+    msgBox.innerHTML = `<div class="msg ok">${t('review_thanks')}</div>`;
   }
 
   async function deleteAccount() {
-    const first = confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.');
+    const first = confirm(t('confirm_delete_1'));
     if (!first) return;
-    const second = confirm('Última confirmación: se borrarán tu cuenta y tus créditos permanentemente. ¿Continuar?');
+    const second = confirm(t('confirm_delete_2'));
     if (!second) return;
 
     const msgBox = document.getElementById('delete-account-msg');
@@ -529,15 +670,15 @@
       const result = await res.json();
 
       if (!res.ok) {
-        msgBox.innerHTML = `<div class="msg error">${result.error || 'No se pudo eliminar la cuenta.'}</div>`;
+        msgBox.innerHTML = `<div class="msg error">${result.error || t('delete_failed')}</div>`;
         return;
       }
 
       await sb.auth.signOut();
-      alert('Tu cuenta ha sido eliminada.');
+      alert(t('account_deleted'));
       window.location.href = 'index.html';
     } catch (err) {
-      msgBox.innerHTML = `<div class="msg error">Error de conexión. Inténtalo de nuevo.</div>`;
+      msgBox.innerHTML = `<div class="msg error">${t('connection_error')}</div>`;
     }
   }
 
