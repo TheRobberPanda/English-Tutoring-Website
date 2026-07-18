@@ -176,6 +176,10 @@
           <button class="btn" onclick="createBulkSlots()">Generar clases</button>
         </div>
       </div>
+      <label style="font-weight: 400; font-size: 0.82rem; margin-top: 10px; display: block;">
+        <input type="checkbox" id="bulk-allow-quarter-hours" onchange="toggleBulkHourPrecision()">
+        Permitir empezar en cuartos de hora (:00, :15, :30, :45) — normalmente las clases empiezan en punto
+      </label>
       <div id="bulk-slot-msg"></div>
     </div>
 
@@ -327,6 +331,13 @@
     await loadCalendar();
   }
 
+  function toggleBulkHourPrecision() {
+    const allow = document.getElementById('bulk-allow-quarter-hours').checked;
+    const step = allow ? '900' : '3600';
+    document.getElementById('bulk-start-hour').step = step;
+    document.getElementById('bulk-end-hour').step = step;
+  }
+
   // ---- BULK CREATE ----
   async function createBulkSlots() {
     const startDateStr = document.getElementById('bulk-start-date').value;
@@ -347,8 +358,12 @@
     }
 
     const startHour = parseInt(startHourStr.split(':')[0], 10);
+    const startMinute = parseInt(startHourStr.split(':')[1] || '0', 10);
     const endHour = parseInt(endHourStr.split(':')[0], 10);
-    if (endHour <= startHour) {
+    const endMinute = parseInt(endHourStr.split(':')[1] || '0', 10);
+    const startMinutesOfDay = startHour * 60 + startMinute;
+    const endMinutesOfDay = endHour * 60 + endMinute;
+    if (endMinutesOfDay <= startMinutesOfDay) {
       msgBox.innerHTML = '<div class="msg error">La hora de fin debe ser posterior a la de inicio.</div>';
       return;
     }
@@ -360,15 +375,17 @@
       return;
     }
 
-    // Build candidate slots: one per selected weekday, each hour on the hour,
-    // 50-minute lesson (xx:00–xx:50), 10-minute gap built in automatically
-    // since the next slot starts at the next hour.
+    // Build candidate slots: one per selected weekday, starting at the
+    // chosen time and repeating every 60 minutes (50-minute lesson +
+    // 10-minute gap built in automatically) until the end time.
     const candidates = [];
     for (let d = new Date(rangeStart); d <= rangeEnd; d.setDate(d.getDate() + 1)) {
       if (!selectedDays.includes(d.getDay())) continue;
-      for (let hour = startHour; hour < endHour; hour++) {
-        const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, 0, 0);
-        const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, 50, 0);
+      for (let m = startMinutesOfDay; m < endMinutesOfDay; m += 60) {
+        const hour = Math.floor(m / 60);
+        const minute = m % 60;
+        const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, minute, 0);
+        const end = new Date(start.getTime() + 50 * 60 * 1000);
         candidates.push({ start_time: start.toISOString(), end_time: end.toISOString() });
       }
     }
@@ -514,28 +531,50 @@
     }
 
     list.innerHTML = daySlots.map(s => {
-      const start = new Date(s.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-      const end = new Date(s.end_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const start = new Date(s.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const end = new Date(s.end_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
       const statusHtml = s.is_booked
         ? `<span class="status booked">Reservada — ${escapeHtml(namesById[s.student_id] || 'Alumno/a')}</span>`
         : `<span class="status open">Disponible</span>`;
+      const refundToggle = s.is_booked
+        ? `<label style="font-size: 0.78rem; margin-right: 10px; white-space: nowrap;">
+             <input type="checkbox" id="refund-${s.id}" checked> Devolver crédito
+           </label>`
+        : '';
       return `
         <div class="slot-row">
           <span>${start}–${end} ${statusHtml}</span>
-          <button class="btn btn-small btn-danger" onclick="cancelSlot('${s.id}')">Eliminar</button>
+          <span style="display:flex; align-items:center;">
+            ${refundToggle}
+            <button class="btn btn-small btn-danger" onclick="cancelSlot('${s.id}', ${s.is_booked})">Eliminar</button>
+          </span>
         </div>`;
     }).join('');
   }
 
-  async function cancelSlot(slotId) {
-    if (!confirm('¿Eliminar esta clase? Si estaba reservada, el alumno no recupera el crédito automáticamente.')) return;
-    const { error } = await sb.from('schedule_slots').delete().eq('id', slotId);
+  async function cancelSlot(slotId, wasBooked) {
+    let refund = true;
+    if (wasBooked) {
+      const checkbox = document.getElementById(`refund-${slotId}`);
+      refund = checkbox ? checkbox.checked : true;
+    }
+
+    const confirmMsg = wasBooked
+      ? `¿Eliminar esta clase reservada? ${refund ? 'Se devolverá el crédito al alumno.' : 'NO se devolverá el crédito al alumno.'}`
+      : '¿Eliminar esta clase disponible?';
+    if (!confirm(confirmMsg)) return;
+
+    const { error } = await sb.rpc('admin_cancel_slot', { _slot_id: slotId, _refund: wasBooked ? refund : false });
     if (error) {
       alert(error.message);
       return;
     }
+
+    // loadCalendar() resets the selected day, so remember it and restore
+    // it afterward — otherwise the day panel collapses after every delete.
+    const dayToRestore = selectedDay;
     await loadCalendar();
-    if (selectedDay) await selectDay(selectedDay);
+    if (dayToRestore) await selectDay(dayToRestore);
   }
 
   // ---- STUDENT CREDITS ----
