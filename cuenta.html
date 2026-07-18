@@ -153,6 +153,7 @@
       <h3 style="font-size: 1rem; margin-bottom: 4px;">Vincular Telegram</h3>
       <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
       <button class="btn" onclick="generateTelegramCode()">Generar código</button>
+      <button class="btn-cancel" onclick="unlinkTelegram()">Desvincular Telegram</button>
       <div id="telegram-code-box" style="display:none; margin-top: 14px;">
         <p style="font-size: 0.88rem; margin-bottom: 8px;">Envía este mensaje a <strong>@InglesDePauloBot</strong> en Telegram:</p>
         <div class="xmr-address-row" style="background: var(--bg-soft); border: 1px solid var(--peach-line);">
@@ -398,7 +399,7 @@
   async function loadMyBookings() {
     const { data: bookings } = await sb
       .from('my_bookings')
-      .select('id, start_time, end_time')
+      .select('id, start_time, end_time, google_meet_link')
       .order('start_time');
 
     const list = document.getElementById('my-slots');
@@ -415,9 +416,19 @@
     bookings.forEach(b => {
       const li = document.createElement('li');
       li.className = 'slot-item';
+      li.style.flexDirection = 'column';
+      li.style.alignItems = 'flex-start';
+      li.style.gap = '6px';
       const tooSoon = new Date(b.start_time) < twelveHoursFromNow;
-      li.innerHTML = `<span>${formatSlot(b.start_time, b.end_time)}${tooSoon ? ' <span style="color: var(--ink-soft); font-size: 0.78rem;">(no cancelable, faltan menos de 12h)</span>' : ''}</span>
-        <button class="btn-cancel" ${tooSoon ? 'disabled' : ''} onclick="cancelBooking('${b.id}')">Cancelar</button>`;
+      const meetHtml = b.google_meet_link
+        ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--orange-deep);">🔗 Unirse con Google Meet</a>`
+        : '';
+      li.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <span>${formatSlot(b.start_time, b.end_time)}${tooSoon ? ' <span style="color: var(--ink-soft); font-size: 0.78rem;">(no cancelable, faltan menos de 12h)</span>' : ''}</span>
+          <button class="btn-cancel" ${tooSoon ? 'disabled' : ''} onclick="cancelBooking('${b.id}')">Cancelar</button>
+        </div>
+        ${meetHtml}`;
       list.appendChild(li);
     });
   }
@@ -439,6 +450,18 @@
       return;
     }
     await loadDashboard();
+  }
+
+  async function unlinkTelegram() {
+    if (!confirm('¿Desvincular tu cuenta de Telegram? Dejarás de recibir avisos ahí.')) return;
+    const { error } = await sb.rpc('unlink_telegram');
+    const msgBox = document.getElementById('telegram-msg');
+    if (error) {
+      msgBox.innerHTML = `<div class="msg error">${error.message}</div>`;
+      return;
+    }
+    document.getElementById('telegram-code-box').style.display = 'none';
+    msgBox.innerHTML = '<div class="msg ok">Tu cuenta de Telegram ha sido desvinculada.</div>';
   }
 
   async function generateTelegramCode() {
