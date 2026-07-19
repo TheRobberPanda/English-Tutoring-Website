@@ -150,6 +150,11 @@
     <div class="card">
       <h3 style="font-size: 1rem; margin-bottom: 12px;" data-i18n="your_credits">Tus créditos</h3>
       <div class="credit-badge"><b id="credit-count">0</b> <span data-i18n="credits_available">clases disponibles</span></div>
+      <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 12px 0 8px;" data-i18n="need_more_credits">¿Necesitas más créditos? Contáctame:</p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a class="btn-cancel" href="mailto:yankxwtic@mozmail.com" style="text-decoration: none; display: inline-block;" data-i18n="contact_email_link">Email</a>
+        <a class="btn-cancel" href="https://t.me/frelseisme" target="_blank" rel="noopener" style="text-decoration: none; display: inline-block;" data-i18n="contact_telegram_link">Telegram</a>
+      </div>
     </div>
 
     <div class="card">
@@ -177,7 +182,7 @@
       <button class="btn" onclick="generateTelegramCode()" data-i18n="generate_code_btn">Generar código</button>
       <button class="btn-cancel" onclick="unlinkTelegram()" data-i18n="unlink_telegram_btn">Desvincular Telegram</button>
       <div id="telegram-code-box" style="display:none; margin-top: 14px;">
-        <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <strong>@InglesDePauloBot</strong> en Telegram:</p>
+        <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:</p>
         <div class="xmr-address-row" style="background: var(--bg-soft); border: 1px solid var(--peach-line);">
           <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
         </div>
@@ -225,12 +230,13 @@
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
       hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
       your_credits: 'Tus créditos', credits_available: 'clases disponibles',
+      need_more_credits: '¿Necesitas más créditos? Contáctame:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       available_classes: 'Clases disponibles', available_classes_hint: 'Elige un día y reserva una franja horaria. Se descontará un crédito.',
       prev_week: '← Semana anterior', next_week: 'Semana siguiente →', no_classes_this_week: 'No hay clases disponibles esta semana.',
       upcoming_classes: 'Tus próximas clases', no_bookings_yet: 'Aún no tienes clases reservadas.',
       link_telegram_title: 'Vincular Telegram', link_telegram_hint: 'Vincula tu cuenta para reservar clases y recibir avisos por Telegram.',
       generate_code_btn: 'Generar código', unlink_telegram_btn: 'Desvincular Telegram',
-      telegram_send_msg: 'Envía este mensaje a <strong>@InglesDePauloBot</strong> en Telegram:',
+      telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
       leave_review_title: 'Deja tu opinión', leave_review_hint: 'Tu opinión se revisará antes de publicarse en la web.',
       review_placeholder: 'Cuenta tu experiencia con las clases...', send_review_btn: 'Enviar opinión',
       delete_account_title: 'Eliminar mi cuenta',
@@ -263,12 +269,13 @@
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
       hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
       your_credits: 'Twoje kredyty', credits_available: 'dostępnych lekcji',
+      need_more_credits: 'Potrzebujesz więcej kredytów? Napisz do mnie:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       available_classes: 'Dostępne lekcje', available_classes_hint: 'Wybierz dzień i zarezerwuj termin. Zostanie odjęty jeden kredyt.',
       prev_week: '← Poprzedni tydzień', next_week: 'Następny tydzień →', no_classes_this_week: 'Brak dostępnych lekcji w tym tygodniu.',
       upcoming_classes: 'Twoje nadchodzące lekcje', no_bookings_yet: 'Nie masz jeszcze zarezerwowanych lekcji.',
       link_telegram_title: 'Połącz Telegram', link_telegram_hint: 'Połącz swoje konto, by rezerwować lekcje i otrzymywać powiadomienia na Telegramie.',
       generate_code_btn: 'Wygeneruj kod', unlink_telegram_btn: 'Odłącz Telegram',
-      telegram_send_msg: 'Wyślij tę wiadomość do <strong>@InglesDePauloBot</strong> na Telegramie:',
+      telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
       leave_review_title: 'Zostaw opinię', leave_review_hint: 'Twoja opinia zostanie sprawdzona przed publikacją na stronie.',
       review_placeholder: 'Opisz swoje doświadczenie z lekcjami...', send_review_btn: 'Wyślij opinię',
       delete_account_title: 'Usuń moje konto',
@@ -301,12 +308,13 @@
       link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
       hello_prefix: 'Hi,', admin_panel_link: 'Admin panel', logout_link: 'Log out',
       your_credits: 'Your credits', credits_available: 'lessons available',
+      need_more_credits: 'Need more credits? Contact me:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       available_classes: 'Available lessons', available_classes_hint: 'Choose a day and book a time slot. One credit will be deducted.',
       prev_week: '← Previous week', next_week: 'Next week →', no_classes_this_week: 'No lessons available this week.',
       upcoming_classes: 'Your upcoming lessons', no_bookings_yet: 'You don\'t have any lessons booked yet.',
       link_telegram_title: 'Link Telegram', link_telegram_hint: 'Link your account to book lessons and get notified on Telegram.',
       generate_code_btn: 'Generate code', unlink_telegram_btn: 'Unlink Telegram',
-      telegram_send_msg: 'Send this message to <strong>@InglesDePauloBot</strong> on Telegram:',
+      telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
       leave_review_title: 'Leave a review', leave_review_hint: 'Your review will be checked before being published on the site.',
       review_placeholder: 'Tell us about your experience with the lessons...', send_review_btn: 'Send review',
       delete_account_title: 'Delete my account',
