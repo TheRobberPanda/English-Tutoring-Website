@@ -456,7 +456,10 @@
       const full_name = document.getElementById('full_name').value.trim();
       const { data, error } = await sb.auth.signUp({
         email, password,
-        options: { data: { full_name, language: currentLang } }
+        options: {
+          data: { full_name, language: currentLang },
+          emailRedirectTo: window.location.origin + window.location.pathname
+        }
       });
       if (error) {
         showMsg(error.message, 'error');
@@ -844,6 +847,14 @@
       document.getElementById('reset-password-view').style.display = 'block';
     }
   });
+
+  // Defensive backup: check the URL hash directly too, in case the async
+  // event above doesn't fire before other page logic runs.
+  if (window.location.hash.includes('type=recovery')) {
+    document.getElementById('auth-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('reset-password-view').style.display = 'block';
+  }
 
   // On page load, check if already logged in.
   (async () => {
