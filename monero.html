@@ -145,7 +145,14 @@ const translations = {
   }
 };
 
-let currentLang = localStorage.getItem('site_lang') || 'es';
+function detectBrowserLang() {
+  const nav = (navigator.language || 'es').toLowerCase();
+  if (nav.startsWith('pl')) return 'pl';
+  if (nav.startsWith('en')) return 'en';
+  return 'es';
+}
+
+let currentLang = localStorage.getItem('site_lang') || detectBrowserLang();
 if (!translations[currentLang]) currentLang = 'es';
 
 function applyTranslations() {

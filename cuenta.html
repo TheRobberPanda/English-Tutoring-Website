@@ -104,6 +104,7 @@
     <span>
       <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
       <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
+      <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
     </span>
   </div>
 
@@ -122,6 +123,13 @@
       <div id="name-field" style="display:none;">
         <label for="full_name" data-i18n="label_name">Nombre</label>
         <input type="text" id="full_name" placeholder="Tu nombre">
+        <label style="margin-top: 16px;" data-i18n="label_want_learn">¿Qué quieres aprender?</label>
+        <label style="font-weight: 400; display: block; margin-top: 4px;">
+          <input type="checkbox" id="learn_english"> <span data-i18n="want_english">Inglés</span>
+        </label>
+        <label style="font-weight: 400; display: block; margin-top: 4px;">
+          <input type="checkbox" id="learn_spanish"> <span data-i18n="want_spanish">Español</span>
+        </label>
       </div>
       <button class="btn" id="submit-btn" onclick="handleSubmit()" data-i18n="btn_login">Entrar</button>
       <br>
@@ -213,6 +221,7 @@
       back_link: 'Volver a la web', my_account: 'Mi cuenta',
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
       label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre',
+      label_want_learn: '¿Qué quieres aprender?', want_english: 'Inglés', want_spanish: 'Español',
       email_note: 'Este email se usa solo para iniciar sesión — no tendrás que confirmarlo. Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
       btn_login: 'Entrar', btn_signup: 'Registrarme',
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
@@ -251,6 +260,7 @@
       back_link: 'Wróć do strony', my_account: 'Moje konto',
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
       label_email: 'Email', label_password: 'Hasło', label_name: 'Imię',
+      label_want_learn: 'Czego chcesz się uczyć?', want_english: 'Angielskiego', want_spanish: 'Hiszpańskiego',
       email_note: 'Ten email służy wyłącznie do logowania — nie będziesz musiał go potwierdzać. Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
       btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
@@ -284,10 +294,56 @@
       dow: ['PON','WT','ŚR','CZW','PT','SOB','NDZ'],
       months: ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'],
       locale: 'pl-PL'
+    },
+    en: {
+      back_link: 'Back to the site', my_account: 'My account',
+      login_title: 'Log in', signup_title: 'Create account',
+      label_email: 'Email', label_password: 'Password', label_name: 'Name',
+      label_want_learn: 'What do you want to learn?', want_english: 'English', want_spanish: 'Spanish',
+      email_note: 'This email is only used to log in — you won\'t need to confirm it. Use the same email you use on Google Meet, since that\'s the one that will receive your class invitations.',
+      btn_login: 'Log in', btn_signup: 'Sign up',
+      link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
+      hello_prefix: 'Hi,', admin_panel_link: 'Admin panel', logout_link: 'Log out',
+      your_credits: 'Your credits', credits_available: 'lessons available',
+      available_classes: 'Available lessons', available_classes_hint: 'Choose a day and book a time slot. One credit will be deducted.',
+      prev_week: '← Previous week', next_week: 'Next week →', no_classes_this_week: 'No lessons available this week.',
+      upcoming_classes: 'Your upcoming lessons', no_bookings_yet: 'You don\'t have any lessons booked yet.',
+      link_telegram_title: 'Link Telegram', link_telegram_hint: 'Link your account to book lessons and get notified on Telegram.',
+      generate_code_btn: 'Generate code', unlink_telegram_btn: 'Unlink Telegram',
+      telegram_send_msg: 'Send this message to <strong>@InglesDePauloBot</strong> on Telegram:',
+      leave_review_title: 'Leave a review', leave_review_hint: 'Your review will be checked before being published on the site.',
+      review_placeholder: 'Tell us about your experience with the lessons...', send_review_btn: 'Send review',
+      delete_account_title: 'Delete my account',
+      delete_account_hint: 'This permanently deletes your account, your credits, and your Telegram link. It can\'t be undone. Your booked lessons will be freed up and any published reviews will stay, but no longer linked to your account.',
+      delete_account_btn: 'Delete my account',
+      fill_email_password: 'Fill in your email and password.', account_created: 'Account created. You can now log in.',
+      no_classes_that_day: 'No lessons available that day.', reserve_btn: 'Book', cancel_btn: 'Cancel',
+      less_than_12h: '(less than 12h)', not_cancelable_12h: '(not cancellable, less than 12h left)',
+      join_meet: '🔗 Join with Google Meet',
+      confirm_cancel_booking: 'Cancel this lesson? You\'ll get your credit back.',
+      confirm_unlink_telegram: 'Unlink your Telegram account? You\'ll stop getting notifications there.',
+      telegram_unlinked: 'Your Telegram account has been unlinked.',
+      write_something: 'Write something before sending.',
+      review_thanks: 'Thank you! Your review will be checked before being published.',
+      confirm_delete_1: 'Are you sure you want to delete your account? This action can\'t be undone.',
+      confirm_delete_2: 'Final confirmation: your account and credits will be permanently deleted. Continue?',
+      account_deleted: 'Your account has been deleted.', delete_failed: 'Couldn\'t delete the account.',
+      connection_error: 'Connection error. Please try again.',
+      profile_error_suffix: ' (check console: profile error)',
+      dow: ['MON','TUE','WED','THU','FRI','SAT','SUN'],
+      months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      locale: 'en-GB'
     }
   };
 
-  let currentLang = localStorage.getItem('site_lang') || 'es';
+  function detectBrowserLang() {
+    const nav = (navigator.language || 'es').toLowerCase();
+    if (nav.startsWith('pl')) return 'pl';
+    if (nav.startsWith('en')) return 'en';
+    return 'es';
+  }
+
+  let currentLang = localStorage.getItem('site_lang') || detectBrowserLang();
   if (!translations[currentLang]) currentLang = 'es';
   function t(key) { return translations[currentLang][key]; }
 
@@ -307,6 +363,7 @@
     });
     document.getElementById('lang-btn-es').classList.toggle('active', currentLang === 'es');
     document.getElementById('lang-btn-pl').classList.toggle('active', currentLang === 'pl');
+    document.getElementById('lang-btn-en').classList.toggle('active', currentLang === 'en');
     document.documentElement.lang = currentLang;
 
     // Keep dynamic auth-mode text (login/signup toggle) in sync too.
@@ -320,10 +377,12 @@
     localStorage.setItem('site_lang', lang);
     applyTranslations();
 
-    // If logged in, persist the preference so Telegram/notifications match too.
+    // If logged in, persist the preference (as a deliberate choice) so
+    // Telegram/notifications match too, and stop auto-detection from
+    // ever overriding it in the future.
     const { data: { user } } = await sb.auth.getUser();
     if (user) {
-      await sb.from('profiles').update({ language: lang }).eq('id', user.id);
+      await sb.rpc('set_language', { _language: lang });
     }
     // Refresh dynamic content that depends on language (dates, buttons).
     if (document.getElementById('dashboard-view').style.display !== 'none') {
@@ -362,9 +421,11 @@
 
     if (mode === 'signup') {
       const full_name = document.getElementById('full_name').value.trim();
+      const learn_english = document.getElementById('learn_english').checked;
+      const learn_spanish = document.getElementById('learn_spanish').checked;
       const { error } = await sb.auth.signUp({
         email, password,
-        options: { data: { full_name } }
+        options: { data: { full_name, learn_english, learn_spanish, language: currentLang } }
       });
       if (error) {
         showMsg(error.message, 'error');

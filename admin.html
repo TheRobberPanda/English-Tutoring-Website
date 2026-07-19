@@ -232,7 +232,7 @@
       <input type="text" id="student-search" placeholder="Buscar por nombre o email..." oninput="renderStudents()">
       <table>
         <thead>
-          <tr><th>Nombre</th><th>Email</th><th>Créditos</th><th></th></tr>
+          <tr><th>Nombre</th><th>Email</th><th>Idiomas</th><th>Créditos</th><th></th></tr>
         </thead>
         <tbody id="students-tbody"></tbody>
       </table>
@@ -588,7 +588,7 @@
   async function loadStudents() {
     const { data, error } = await sb
       .from('profiles')
-      .select('id, full_name, email, credits, is_admin')
+      .select('id, full_name, email, credits, is_admin, learn_english, learn_spanish, language')
       .order('full_name');
 
     if (error) {
@@ -618,10 +618,16 @@
     empty.style.display = 'none';
 
     filtered.forEach(s => {
+      const langs = [];
+      if (s.learn_english) langs.push('Inglés');
+      if (s.learn_spanish) langs.push('Español');
+      const langsLabel = langs.length ? langs.join(' + ') : '—';
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${escapeHtml(s.full_name || '—')}</td>
         <td>${escapeHtml(s.email || '—')}</td>
+        <td>${escapeHtml(langsLabel)}</td>
         <td><input type="number" min="0" value="${s.credits}" id="credit-input-${s.id}"></td>
         <td><button class="btn btn-small btn-outline" onclick="saveCredits('${s.id}')">Guardar</button></td>
       `;
