@@ -114,6 +114,9 @@
       <h3 id="auth-title" style="font-size: 1.1rem;" data-i18n="login_title">Iniciar sesión</h3>
       <label for="email" data-i18n="label_email">Email</label>
       <input type="email" id="email" placeholder="tu@email.com">
+      <p id="email-note" style="display:none; font-size: 0.8rem; color: var(--ink-soft); margin: 6px 0 0; line-height: 1.5;" data-i18n-html="email_note">
+        Este email se usa solo para iniciar sesión — no tendrás que confirmarlo. Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.
+      </p>
       <label for="password" data-i18n="label_password">Contraseña</label>
       <input type="password" id="password" placeholder="••••••••">
       <div id="name-field" style="display:none;">
@@ -210,6 +213,7 @@
       back_link: 'Volver a la web', my_account: 'Mi cuenta',
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
       label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre',
+      email_note: 'Este email se usa solo para iniciar sesión — no tendrás que confirmarlo. Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
       btn_login: 'Entrar', btn_signup: 'Registrarme',
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
       hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
@@ -247,6 +251,7 @@
       back_link: 'Wróć do strony', my_account: 'Moje konto',
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
       label_email: 'Email', label_password: 'Hasło', label_name: 'Imię',
+      email_note: 'Ten email służy wyłącznie do logowania — nie będziesz musiał go potwierdzać. Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
       btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
       hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
@@ -334,6 +339,7 @@
     document.getElementById('submit-btn').innerText = mode === 'login' ? t('btn_login') : t('btn_signup');
     document.getElementById('toggle-mode').innerText = mode === 'login' ? t('link_to_signup') : t('link_to_login');
     document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('email-note').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('auth-msg').innerHTML = '';
   }
 
