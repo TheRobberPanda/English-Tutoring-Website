@@ -71,6 +71,7 @@
   .cal-dot { width: 7px; height: 7px; border-radius: 50%; }
   .cal-dot.open { background: var(--orange); }
   .cal-dot.booked { background: var(--ink); }
+  .cal-dot.blocked { background: #B23A1E; }
 
   .day-panel { margin-top: 18px; border-top: 1px solid var(--peach-line); padding-top: 16px; }
   .slot-row {
@@ -184,7 +185,8 @@
       <h3>Calendario de clases</h3>
       <p class="hint">
         <span class="cal-dot open" style="display:inline-block; vertical-align:middle;"></span> disponible &nbsp;
-        <span class="cal-dot booked" style="display:inline-block; vertical-align:middle;"></span> reservada
+        <span class="cal-dot booked" style="display:inline-block; vertical-align:middle;"></span> reservada &nbsp;
+        <span class="cal-dot blocked" style="display:inline-block; vertical-align:middle;"></span> bloqueada (evento personal)
       </p>
       <div class="cal-header">
         <button onclick="changeMonth(-1)">&larr; Anterior</button>
@@ -417,7 +419,7 @@
 
     const { data: slots, error } = await sb
       .from('schedule_slots')
-      .select('id, start_time, end_time, is_booked, student_id')
+      .select('id, start_time, end_time, is_booked, is_blocked, student_id')
       .gte('start_time', monthStart.toISOString())
       .lt('start_time', monthEnd.toISOString())
       .order('start_time');
@@ -480,7 +482,7 @@
       const daySlots = slotsThisMonth.filter(s => new Date(s.start_time).getDate() === day);
 
       const dots = daySlots.slice(0, 6).map(s =>
-        `<span class="cal-dot ${s.is_booked ? 'booked' : 'open'}"></span>`
+        `<span class="cal-dot ${s.is_booked ? 'booked' : (s.is_blocked ? 'blocked' : 'open')}"></span>`
       ).join('');
 
       cell.innerHTML = `<div class="cal-daynum">${day}</div><div class="cal-dot-row">${dots}</div>`;
@@ -524,7 +526,9 @@
       const end = new Date(s.end_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
       const statusHtml = s.is_booked
         ? `<span class="status booked">Reservada — ${escapeHtml(namesById[s.student_id] || 'Alumno/a')}</span>`
-        : `<span class="status open">Disponible</span>`;
+        : (s.is_blocked
+            ? `<span class="status booked" style="background: #B23A1E;">Bloqueada (evento personal)</span>`
+            : `<span class="status open">Disponible</span>`);
       const refundToggle = s.is_booked
         ? `<label style="font-size: 0.78rem; margin-right: 10px; white-space: nowrap;">
              <input type="checkbox" id="refund-${s.id}" checked> Devolver crédito

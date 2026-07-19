@@ -766,6 +766,7 @@ const translations = {
 };
 
 let currentLang = localStorage.getItem('site_lang') || 'es';
+if (!translations[currentLang]) currentLang = 'es';
 
 function applyTranslations() {
   const dict = translations[currentLang];

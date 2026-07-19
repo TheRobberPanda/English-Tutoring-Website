@@ -283,6 +283,7 @@
   };
 
   let currentLang = localStorage.getItem('site_lang') || 'es';
+  if (!translations[currentLang]) currentLang = 'es';
   function t(key) { return translations[currentLang][key]; }
 
   function applyTranslations() {
@@ -460,6 +461,7 @@
       .from('schedule_slots')
       .select('id, start_time, end_time')
       .eq('is_booked', false)
+      .eq('is_blocked', false)
       .gte('start_time', new Date(Math.max(weekStart, new Date())).toISOString())
       .lt('start_time', weekEnd.toISOString())
       .order('start_time');
