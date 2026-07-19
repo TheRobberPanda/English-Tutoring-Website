@@ -122,7 +122,7 @@
       <label for="email" data-i18n="label_email">Email</label>
       <input type="email" id="email" placeholder="tu@email.com">
       <p id="email-note" style="display:none; font-size: 0.8rem; color: var(--ink-soft); margin: 6px 0 0; line-height: 1.5;" data-i18n-html="email_note">
-        Este email se usa solo para iniciar sesión — no tendrás que confirmarlo. Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.
+        Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.
       </p>
       <label for="password" data-i18n="label_password">Contraseña</label>
       <input type="password" id="password" placeholder="••••••••">
@@ -133,7 +133,21 @@
       <button class="btn" id="submit-btn" onclick="handleSubmit()" data-i18n="btn_login">Entrar</button>
       <br>
       <button class="btn-link" id="toggle-mode" onclick="toggleMode()" data-i18n="link_to_signup">¿No tienes cuenta? Regístrate</button>
+      <br>
+      <button class="btn-link" id="forgot-password-link" onclick="handleForgotPassword()" data-i18n="forgot_password_link">¿Olvidaste tu contraseña?</button>
       <div id="auth-msg"></div>
+    </div>
+  </div>
+
+  <!-- PASSWORD RECOVERY VIEW (shown after clicking the reset link in email) -->
+  <div id="reset-password-view" style="display:none;">
+    <h1 style="font-size: 1.8rem; margin-bottom: 26px;" data-i18n="reset_password_title">Nueva contraseña</h1>
+    <div class="card">
+      <p style="color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 16px;" data-i18n="reset_password_hint">Escribe tu nueva contraseña.</p>
+      <label for="new-password" data-i18n="label_password">Contraseña</label>
+      <input type="password" id="new-password" placeholder="••••••••">
+      <button class="btn" onclick="handleResetPassword()" data-i18n="reset_password_btn">Guardar contraseña</button>
+      <div id="reset-password-msg"></div>
     </div>
   </div>
 
@@ -225,7 +239,14 @@
       back_link: 'Volver a la web', my_account: 'Mi cuenta',
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
       label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre',
-      email_note: 'Este email se usa solo para iniciar sesión — no tendrás que confirmarlo. Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
+      email_note: 'Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
+      forgot_password_link: '¿Olvidaste tu contraseña?',
+      reset_password_title: 'Nueva contraseña', reset_password_hint: 'Escribe tu nueva contraseña.', reset_password_btn: 'Guardar contraseña',
+      confirm_email_sent: 'Cuenta creada. Revisa tu email (y la carpeta de spam) y haz clic en el enlace de confirmación antes de iniciar sesión.',
+      email_not_confirmed: 'Tu email todavía no está confirmado. Revisa tu bandeja de entrada.',
+      resend_confirmation_link: 'Reenviar email de confirmación', confirmation_resent: 'Email de confirmación reenviado. Revisa tu bandeja de entrada.',
+      enter_email_first: 'Escribe tu email arriba primero.', reset_email_sent: 'Te hemos enviado un email para restablecer tu contraseña.',
+      password_too_short: 'La contraseña debe tener al menos 6 caracteres.',
       btn_login: 'Entrar', btn_signup: 'Registrarme',
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
       hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
@@ -264,7 +285,14 @@
       back_link: 'Wróć do strony', my_account: 'Moje konto',
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
       label_email: 'Email', label_password: 'Hasło', label_name: 'Imię',
-      email_note: 'Ten email służy wyłącznie do logowania — nie będziesz musiał go potwierdzać. Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
+      email_note: 'Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
+      forgot_password_link: 'Zapomniałeś hasła?',
+      reset_password_title: 'Nowe hasło', reset_password_hint: 'Wpisz swoje nowe hasło.', reset_password_btn: 'Zapisz hasło',
+      confirm_email_sent: 'Konto utworzone. Sprawdź swoją skrzynkę e-mail (i folder spam) i kliknij link potwierdzający przed zalogowaniem.',
+      email_not_confirmed: 'Twój email nie został jeszcze potwierdzony. Sprawdź swoją skrzynkę odbiorczą.',
+      resend_confirmation_link: 'Wyślij ponownie email potwierdzający', confirmation_resent: 'Email potwierdzający wysłany ponownie. Sprawdź swoją skrzynkę odbiorczą.',
+      enter_email_first: 'Najpierw wpisz swój email powyżej.', reset_email_sent: 'Wysłaliśmy ci email do zresetowania hasła.',
+      password_too_short: 'Hasło musi mieć co najmniej 6 znaków.',
       btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
       hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
@@ -303,7 +331,14 @@
       back_link: 'Back to the site', my_account: 'My account',
       login_title: 'Log in', signup_title: 'Create account',
       label_email: 'Email', label_password: 'Password', label_name: 'Name',
-      email_note: 'This email is only used to log in — you won\'t need to confirm it. Use the same email you use on Google Meet, since that\'s the one that will receive your class invitations.',
+      email_note: 'Use the same email you use on Google Meet, since that\'s the one that will receive your class invitations.',
+      forgot_password_link: 'Forgot your password?',
+      reset_password_title: 'New password', reset_password_hint: 'Enter your new password.', reset_password_btn: 'Save password',
+      confirm_email_sent: 'Account created. Check your email (and spam folder) and click the confirmation link before logging in.',
+      email_not_confirmed: 'Your email hasn\'t been confirmed yet. Check your inbox.',
+      resend_confirmation_link: 'Resend confirmation email', confirmation_resent: 'Confirmation email resent. Check your inbox.',
+      enter_email_first: 'Enter your email above first.', reset_email_sent: 'We\'ve sent you an email to reset your password.',
+      password_too_short: 'Password must be at least 6 characters.',
       btn_login: 'Log in', btn_signup: 'Sign up',
       link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
       hello_prefix: 'Hi,', admin_panel_link: 'Admin panel', logout_link: 'Log out',
@@ -396,6 +431,7 @@
     document.getElementById('toggle-mode').innerText = mode === 'login' ? t('link_to_signup') : t('link_to_login');
     document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('email-note').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('forgot-password-link').style.display = mode === 'login' ? 'inline' : 'none';
     document.getElementById('auth-msg').innerHTML = '';
   }
 
@@ -418,7 +454,7 @@
 
     if (mode === 'signup') {
       const full_name = document.getElementById('full_name').value.trim();
-      const { error } = await sb.auth.signUp({
+      const { data, error } = await sb.auth.signUp({
         email, password,
         options: { data: { full_name, language: currentLang } }
       });
@@ -427,18 +463,69 @@
         btn.disabled = false;
         return;
       }
-      showMsg(t('account_created'), 'ok');
-      toggleMode();
+      // If email confirmation is required, signUp succeeds but returns no
+      // session (they aren't actually logged in yet). If confirmation is
+      // off, a session comes back immediately and we can log them straight in.
+      if (data.session) {
+        await loadDashboard();
+      } else {
+        showMsg(t('confirm_email_sent'), 'ok');
+        toggleMode();
+      }
       btn.disabled = false;
     } else {
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) {
-        showMsg(error.message, 'error');
+        if (error.message.toLowerCase().includes('email not confirmed')) {
+          showMsg(
+            `${t('email_not_confirmed')} <button class="btn-link" style="display:inline;" onclick="resendConfirmation()">${t('resend_confirmation_link')}</button>`,
+            'error'
+          );
+        } else {
+          showMsg(error.message, 'error');
+        }
         btn.disabled = false;
         return;
       }
       await loadDashboard();
     }
+  }
+
+  async function resendConfirmation() {
+    const email = document.getElementById('email').value.trim();
+    if (!email) return;
+    const { error } = await sb.auth.resend({ type: 'signup', email });
+    showMsg(error ? error.message : t('confirmation_resent'), error ? 'error' : 'ok');
+  }
+
+  async function handleForgotPassword() {
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+      showMsg(t('enter_email_first'), 'error');
+      return;
+    }
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    showMsg(error ? error.message : t('reset_email_sent'), error ? 'error' : 'ok');
+  }
+
+  async function handleResetPassword() {
+    const newPassword = document.getElementById('new-password').value;
+    const msgBox = document.getElementById('reset-password-msg');
+    if (!newPassword || newPassword.length < 6) {
+      msgBox.innerHTML = `<div class="msg error">${t('password_too_short')}</div>`;
+      return;
+    }
+    const { error } = await sb.auth.updateUser({ password: newPassword });
+    if (error) {
+      msgBox.innerHTML = `<div class="msg error">${error.message}</div>`;
+      return;
+    }
+    // They're already authenticated via the recovery link, so we can drop
+    // them straight into their account instead of asking them to log in again.
+    document.getElementById('reset-password-view').style.display = 'none';
+    await loadDashboard();
   }
 
   async function handleLogout() {
@@ -746,6 +833,17 @@
       msgBox.innerHTML = `<div class="msg error">${t('connection_error')}</div>`;
     }
   }
+
+  // If the person arrived via a password-reset email link, Supabase fires
+  // this event once it's parsed the recovery token from the URL — show
+  // the "set a new password" view instead of the normal login form.
+  sb.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      document.getElementById('auth-view').style.display = 'none';
+      document.getElementById('dashboard-view').style.display = 'none';
+      document.getElementById('reset-password-view').style.display = 'block';
+    }
+  });
 
   // On page load, check if already logged in.
   (async () => {
