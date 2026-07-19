@@ -676,7 +676,8 @@
       msgBox.innerHTML = `<div class="msg error">${error.message}</div>`;
       return;
     }
-    document.getElementById('telegram-code').innerText = `/vincular ${data}`;
+    const linkCommand = currentLang === 'pl' ? '/polacz' : (currentLang === 'en' ? '/link' : '/vincular');
+    document.getElementById('telegram-code').innerText = `${linkCommand} ${data}`;
     document.getElementById('telegram-code-box').style.display = 'block';
     msgBox.innerHTML = '';
   }
