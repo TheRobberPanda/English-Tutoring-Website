@@ -129,13 +129,6 @@
       <div id="name-field" style="display:none;">
         <label for="full_name" data-i18n="label_name">Nombre</label>
         <input type="text" id="full_name" placeholder="Tu nombre">
-        <label style="margin-top: 16px;" data-i18n="label_want_learn">¿Qué quieres aprender?</label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="learn_english"> <span data-i18n="want_english">Inglés</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="learn_spanish"> <span data-i18n="want_spanish">Español</span>
-        </label>
       </div>
       <button class="btn" id="submit-btn" onclick="handleSubmit()" data-i18n="btn_login">Entrar</button>
       <br>
@@ -227,7 +220,6 @@
       back_link: 'Volver a la web', my_account: 'Mi cuenta',
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
       label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre',
-      label_want_learn: '¿Qué quieres aprender?', want_english: 'Inglés', want_spanish: 'Español',
       email_note: 'Este email se usa solo para iniciar sesión — no tendrás que confirmarlo. Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
       btn_login: 'Entrar', btn_signup: 'Registrarme',
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
@@ -266,7 +258,6 @@
       back_link: 'Wróć do strony', my_account: 'Moje konto',
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
       label_email: 'Email', label_password: 'Hasło', label_name: 'Imię',
-      label_want_learn: 'Czego chcesz się uczyć?', want_english: 'Angielskiego', want_spanish: 'Hiszpańskiego',
       email_note: 'Ten email służy wyłącznie do logowania — nie będziesz musiał go potwierdzać. Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
       btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
@@ -305,7 +296,6 @@
       back_link: 'Back to the site', my_account: 'My account',
       login_title: 'Log in', signup_title: 'Create account',
       label_email: 'Email', label_password: 'Password', label_name: 'Name',
-      label_want_learn: 'What do you want to learn?', want_english: 'English', want_spanish: 'Spanish',
       email_note: 'This email is only used to log in — you won\'t need to confirm it. Use the same email you use on Google Meet, since that\'s the one that will receive your class invitations.',
       btn_login: 'Log in', btn_signup: 'Sign up',
       link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
@@ -420,11 +410,9 @@
 
     if (mode === 'signup') {
       const full_name = document.getElementById('full_name').value.trim();
-      const learn_english = document.getElementById('learn_english').checked;
-      const learn_spanish = document.getElementById('learn_spanish').checked;
       const { error } = await sb.auth.signUp({
         email, password,
-        options: { data: { full_name, learn_english, learn_spanish, language: currentLang } }
+        options: { data: { full_name, language: currentLang } }
       });
       if (error) {
         showMsg(error.message, 'error');
