@@ -71,7 +71,16 @@
   .cal-dot { width: 7px; height: 7px; border-radius: 50%; }
   .cal-dot.open { background: var(--orange); }
   .cal-dot.booked { background: var(--ink); }
-  .cal-dot.blocked { background: #B23A1E; }
+  .cal-dot.blocked { background: #DC2626; }
+  .cal-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+    font-size: 0.62rem; font-weight: 700; color: var(--white); line-height: 1;
+    font-family: 'Space Mono', monospace;
+  }
+  .cal-badge.open { background: var(--orange); }
+  .cal-badge.booked { background: var(--ink); }
+  .cal-badge.blocked { background: #DC2626; }
 
   .day-panel { margin-top: 18px; border-top: 1px solid var(--peach-line); padding-top: 16px; }
   .slot-row {
@@ -481,11 +490,16 @@
       cell.className = 'cal-cell';
       const daySlots = slotsThisMonth.filter(s => new Date(s.start_time).getDate() === day);
 
-      const dots = daySlots.slice(0, 6).map(s =>
-        `<span class="cal-dot ${s.is_booked ? 'booked' : (s.is_blocked ? 'blocked' : 'open')}"></span>`
-      ).join('');
+      const openCount = daySlots.filter(s => !s.is_booked && !s.is_blocked).length;
+      const bookedCount = daySlots.filter(s => s.is_booked).length;
+      const blockedCount = daySlots.filter(s => !s.is_booked && s.is_blocked).length;
 
-      cell.innerHTML = `<div class="cal-daynum">${day}</div><div class="cal-dot-row">${dots}</div>`;
+      let badges = '';
+      if (openCount) badges += `<span class="cal-badge open">${openCount}</span>`;
+      if (bookedCount) badges += `<span class="cal-badge booked">${bookedCount}</span>`;
+      if (blockedCount) badges += `<span class="cal-badge blocked">${blockedCount}</span>`;
+
+      cell.innerHTML = `<div class="cal-daynum">${day}</div><div class="cal-dot-row">${badges}</div>`;
       cell.onclick = () => selectDay(day);
       if (selectedDay === day) cell.classList.add('selected');
       grid.appendChild(cell);
@@ -527,7 +541,7 @@
       const statusHtml = s.is_booked
         ? `<span class="status booked">Reservada — ${escapeHtml(namesById[s.student_id] || 'Alumno/a')}</span>`
         : (s.is_blocked
-            ? `<span class="status booked" style="background: #B23A1E;">Bloqueada (evento personal)</span>`
+            ? `<span class="status booked" style="background: #DC2626;">Bloqueada (evento personal)</span>`
             : `<span class="status open">Disponible</span>`);
       const refundToggle = s.is_booked
         ? `<label style="font-size: 0.78rem; margin-right: 10px; white-space: nowrap;">
