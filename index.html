@@ -67,12 +67,16 @@
 
   .header-inner {
     display: flex;
+    flex-wrap: wrap;
+    row-gap: 10px;
     justify-content: space-between;
     align-items: center;
     padding: 20px 32px;
     max-width: 1040px;
     margin: 0 auto;
   }
+
+  .lang-switcher { display: inline-flex; gap: 4px; }
 
   .logo {
     font-family: 'Fraunces', serif;
@@ -459,7 +463,8 @@
   /* ---- Responsive ---- */
   @media (max-width: 720px) {
     .header-inner { padding: 16px 20px; }
-    nav { gap: 16px; }
+    nav { gap: 14px; flex-wrap: wrap; row-gap: 8px; }
+    .lang-btn { padding: 6px 10px; font-size: 0.82rem; }
     .wrap { padding: 0 20px; }
     .hero { padding: 56px 0 40px; }
     .about-grid { grid-template-columns: 1fr; }
@@ -479,18 +484,20 @@
 
 <header>
   <div class="header-inner">
-    <div class="logo">Paulo <span>Crespo</span></div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="logo">Paulo <span>Crespo</span></div>
+      <span class="lang-switcher">
+        <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
+        <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
+        <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
+      </span>
+    </div>
     <nav>
       <a href="#sobre-mi" data-i18n="nav_about">Sobre mí</a>
       <a href="#opiniones" data-i18n="nav_reviews">Opiniones</a>
       <a href="#precios" data-i18n="nav_pricing">Precios</a>
       <a href="#contacto" data-i18n="nav_contact">Contacto</a>
       <a href="cuenta.html" style="color: var(--orange-deep);" data-i18n="nav_account">Mi cuenta</a>
-      <span style="display:inline-flex; gap:4px; margin-left:4px;">
-        <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
-        <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
-        <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
-      </span>
     </nav>
   </div>
 </header>
@@ -808,14 +815,7 @@ const translations = {
   }
 };
 
-function detectBrowserLang() {
-  const nav = (navigator.language || 'es').toLowerCase();
-  if (nav.startsWith('pl')) return 'pl';
-  if (nav.startsWith('en')) return 'en';
-  return 'es';
-}
-
-let currentLang = localStorage.getItem('site_lang') || detectBrowserLang();
+let currentLang = localStorage.getItem('site_lang') || 'es';
 if (!translations[currentLang]) currentLang = 'es';
 
 function applyTranslations() {
