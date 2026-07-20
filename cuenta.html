@@ -75,6 +75,14 @@
   .btn-cancel:disabled:hover { border-color: var(--peach-line); color: var(--ink-soft); }
   .empty-note { color: var(--ink-soft); font-size: 0.9rem; margin-top: 8px; }
 
+  .mini-spinner {
+    display: inline-block; width: 11px; height: 11px; margin-right: 6px; vertical-align: middle;
+    border: 2px solid var(--peach-line); border-top-color: var(--orange); border-radius: 50%;
+    animation: mini-spin 0.8s linear infinite;
+  }
+  @keyframes mini-spin { to { transform: rotate(360deg); } }
+  .meet-loading { display: inline-flex; align-items: center; font-size: 0.82rem; color: var(--ink-soft); }
+
   .week-nav { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
   .week-nav button {
     background: var(--bg-soft); border: 1px solid var(--peach-line); border-radius: 6px;
@@ -192,7 +200,13 @@
 
     <div class="card">
       <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="link_telegram_title">Vincular Telegram</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="link_telegram_hint">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 10px;" data-i18n="link_telegram_hint">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
+      <ul style="color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 14px; padding-left: 20px; line-height: 1.7;">
+        <li data-i18n="telegram_benefit_1">Reserva y cancela clases directamente desde el chat, sin abrir la web</li>
+        <li data-i18n="telegram_benefit_2">Recibe el enlace de Google Meet de cada clase al instante</li>
+        <li data-i18n="telegram_benefit_3">Avisos automáticos si una clase se cancela o hay que reprogramarla</li>
+        <li data-i18n="telegram_benefit_4">Cambia el idioma del bot cuando quieras con /idioma</li>
+      </ul>
       <button class="btn" onclick="generateTelegramCode()" data-i18n="generate_code_btn">Generar código</button>
       <button class="btn-cancel" onclick="unlinkTelegram()" data-i18n="unlink_telegram_btn">Desvincular Telegram</button>
       <div id="telegram-code-box" style="display:none; margin-top: 14px;">
@@ -245,7 +259,7 @@
       confirm_email_sent: 'Cuenta creada. Revisa tu email (y la carpeta de spam) y haz clic en el enlace de confirmación antes de iniciar sesión.',
       email_not_confirmed: 'Tu email todavía no está confirmado. Revisa tu bandeja de entrada.',
       resend_confirmation_link: 'Reenviar email de confirmación', confirmation_resent: 'Email de confirmación reenviado. Revisa tu bandeja de entrada.',
-      enter_email_first: 'Escribe tu email arriba primero.', reset_email_sent: 'Te hemos enviado un email para restablecer tu contraseña. Comprueba la carpeta de Spam si no lo has recibido aún',
+      enter_email_first: 'Escribe tu email arriba primero.', reset_email_sent: 'Te hemos enviado un email para restablecer tu contraseña. Si no lo ves en tu bandeja de entrada en unos minutos, revisa también la carpeta de spam.',
       password_too_short: 'La contraseña debe tener al menos 6 caracteres.',
       btn_login: 'Entrar', btn_signup: 'Registrarme',
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
@@ -256,6 +270,10 @@
       prev_week: '← Semana anterior', next_week: 'Semana siguiente →', no_classes_this_week: 'No hay clases disponibles esta semana.',
       upcoming_classes: 'Tus próximas clases', no_bookings_yet: 'Aún no tienes clases reservadas.',
       link_telegram_title: 'Vincular Telegram', link_telegram_hint: 'Vincula tu cuenta para reservar clases y recibir avisos por Telegram.',
+      telegram_benefit_1: 'Reserva y cancela clases directamente desde el chat, sin abrir la web',
+      telegram_benefit_2: 'Recibe el enlace de Google Meet de cada clase al instante',
+      telegram_benefit_3: 'Avisos automáticos si una clase se cancela o hay que reprogramarla',
+      telegram_benefit_4: 'Cambia el idioma del bot cuando quieras con /idioma',
       generate_code_btn: 'Generar código', unlink_telegram_btn: 'Desvincular Telegram',
       telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
       leave_review_title: 'Deja tu opinión', leave_review_hint: 'Tu opinión se revisará antes de publicarse en la web.',
@@ -266,7 +284,7 @@
       fill_email_password: 'Rellena email y contraseña.', account_created: 'Cuenta creada. Ya puedes iniciar sesión.',
       no_classes_that_day: 'No hay clases disponibles ese día.', reserve_btn: 'Reservar', cancel_btn: 'Cancelar',
       less_than_12h: '(menos de 12h)', not_cancelable_12h: '(no cancelable, faltan menos de 12h)',
-      join_meet: '🔗 Unirse con Google Meet',
+      join_meet: '🔗 Unirse con Google Meet', meet_link_loading: 'Generando enlace de Google Meet…',
       confirm_cancel_booking: '¿Cancelar esta clase? Recuperarás el crédito.',
       confirm_unlink_telegram: '¿Desvincular tu cuenta de Telegram? Dejarás de recibir avisos ahí.',
       telegram_unlinked: 'Tu cuenta de Telegram ha sido desvinculada.',
@@ -291,7 +309,7 @@
       confirm_email_sent: 'Konto utworzone. Sprawdź swoją skrzynkę e-mail (i folder spam) i kliknij link potwierdzający przed zalogowaniem.',
       email_not_confirmed: 'Twój email nie został jeszcze potwierdzony. Sprawdź swoją skrzynkę odbiorczą.',
       resend_confirmation_link: 'Wyślij ponownie email potwierdzający', confirmation_resent: 'Email potwierdzający wysłany ponownie. Sprawdź swoją skrzynkę odbiorczą.',
-      enter_email_first: 'Najpierw wpisz swój email powyżej.', reset_email_sent: 'Wysłaliśmy ci email do zresetowania hasła. Sprawdź folder ze spamem, jeśli jeszcze go nie otrzymałeś.',
+      enter_email_first: 'Najpierw wpisz swój email powyżej.', reset_email_sent: 'Wysłaliśmy ci email do zresetowania hasła. Jeśli nie widzisz go w skrzynce odbiorczej w ciągu kilku minut, sprawdź też folder ze spamem.',
       password_too_short: 'Hasło musi mieć co najmniej 6 znaków.',
       btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
@@ -302,6 +320,10 @@
       prev_week: '← Poprzedni tydzień', next_week: 'Następny tydzień →', no_classes_this_week: 'Brak dostępnych lekcji w tym tygodniu.',
       upcoming_classes: 'Twoje nadchodzące lekcje', no_bookings_yet: 'Nie masz jeszcze zarezerwowanych lekcji.',
       link_telegram_title: 'Połącz Telegram', link_telegram_hint: 'Połącz swoje konto, by rezerwować lekcje i otrzymywać powiadomienia na Telegramie.',
+      telegram_benefit_1: 'Rezerwuj i anuluj lekcje bezpośrednio na czacie, bez otwierania strony',
+      telegram_benefit_2: 'Otrzymuj link do Google Meet dla każdej lekcji natychmiast',
+      telegram_benefit_3: 'Automatyczne powiadomienia, jeśli lekcja zostanie odwołana lub przełożona',
+      telegram_benefit_4: 'Zmień język bota, kiedy chcesz, komendą /jezyk',
       generate_code_btn: 'Wygeneruj kod', unlink_telegram_btn: 'Odłącz Telegram',
       telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
       leave_review_title: 'Zostaw opinię', leave_review_hint: 'Twoja opinia zostanie sprawdzona przed publikacją na stronie.',
@@ -312,7 +334,7 @@
       fill_email_password: 'Uzupełnij email i hasło.', account_created: 'Konto utworzone. Możesz się teraz zalogować.',
       no_classes_that_day: 'Brak dostępnych lekcji tego dnia.', reserve_btn: 'Zarezerwuj', cancel_btn: 'Anuluj',
       less_than_12h: '(mniej niż 12h)', not_cancelable_12h: '(nie można anulować, zostało mniej niż 12h)',
-      join_meet: '🔗 Dołącz przez Google Meet',
+      join_meet: '🔗 Dołącz przez Google Meet', meet_link_loading: 'Generowanie linku do Google Meet…',
       confirm_cancel_booking: 'Anulować tę lekcję? Kredyt zostanie zwrócony.',
       confirm_unlink_telegram: 'Odłączyć konto Telegram? Przestaniesz tam otrzymywać powiadomienia.',
       telegram_unlinked: 'Twoje konto Telegram zostało odłączone.',
@@ -337,7 +359,7 @@
       confirm_email_sent: 'Account created. Check your email (and spam folder) and click the confirmation link before logging in.',
       email_not_confirmed: 'Your email hasn\'t been confirmed yet. Check your inbox.',
       resend_confirmation_link: 'Resend confirmation email', confirmation_resent: 'Confirmation email resent. Check your inbox.',
-      enter_email_first: 'Enter your email above first.', reset_email_sent: 'We\'ve sent you an email to reset your password. Check your spam folder if you haven\'t received it yet',
+      enter_email_first: 'Enter your email above first.', reset_email_sent: 'We\'ve sent you an email to reset your password. If you don\'t see it in your inbox within a few minutes, check your spam folder too.',
       password_too_short: 'Password must be at least 6 characters.',
       btn_login: 'Log in', btn_signup: 'Sign up',
       link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
@@ -348,6 +370,10 @@
       prev_week: '← Previous week', next_week: 'Next week →', no_classes_this_week: 'No lessons available this week.',
       upcoming_classes: 'Your upcoming lessons', no_bookings_yet: 'You don\'t have any lessons booked yet.',
       link_telegram_title: 'Link Telegram', link_telegram_hint: 'Link your account to book lessons and get notified on Telegram.',
+      telegram_benefit_1: 'Book and cancel lessons directly from the chat, no need to open the site',
+      telegram_benefit_2: 'Get the Google Meet link for each lesson instantly',
+      telegram_benefit_3: 'Automatic alerts if a lesson gets cancelled or needs rescheduling',
+      telegram_benefit_4: 'Change the bot\'s language any time with /language',
       generate_code_btn: 'Generate code', unlink_telegram_btn: 'Unlink Telegram',
       telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
       leave_review_title: 'Leave a review', leave_review_hint: 'Your review will be checked before being published on the site.',
@@ -358,7 +384,7 @@
       fill_email_password: 'Fill in your email and password.', account_created: 'Account created. You can now log in.',
       no_classes_that_day: 'No lessons available that day.', reserve_btn: 'Book', cancel_btn: 'Cancel',
       less_than_12h: '(less than 12h)', not_cancelable_12h: '(not cancellable, less than 12h left)',
-      join_meet: '🔗 Join with Google Meet',
+      join_meet: '🔗 Join with Google Meet', meet_link_loading: 'Generating Google Meet link…',
       confirm_cancel_booking: 'Cancel this lesson? You\'ll get your credit back.',
       confirm_unlink_telegram: 'Unlink your Telegram account? You\'ll stop getting notifications there.',
       telegram_unlinked: 'Your Telegram account has been unlinked.',
@@ -717,7 +743,7 @@
       const tooSoon = new Date(b.start_time) < twelveHoursFromNow;
       const meetHtml = b.google_meet_link
         ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--orange-deep);">${t('join_meet')}</a>`
-        : '';
+        : `<span class="meet-loading"><span class="mini-spinner"></span>${t('meet_link_loading')}</span>`;
       li.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
           <span>${formatSlot(b.start_time, b.end_time)}${tooSoon ? ` <span style="color: var(--ink-soft); font-size: 0.78rem;">${t('not_cancelable_12h')}</span>` : ''}</span>
@@ -745,6 +771,19 @@
       return;
     }
     await loadDashboard();
+    pollForMeetLink();
+  }
+
+  // The Meet link isn't created instantly — it's generated by a background
+  // process a moment after booking. Poll briefly so it appears on its own
+  // instead of the student needing to refresh the page.
+  function pollForMeetLink(attemptsLeft = 6) {
+    if (attemptsLeft <= 0) return;
+    setTimeout(async () => {
+      if (!document.querySelector('.meet-loading')) return; // already showed up
+      await loadMyBookings();
+      pollForMeetLink(attemptsLeft - 1);
+    }, 4000);
   }
 
   async function unlinkTelegram() {
