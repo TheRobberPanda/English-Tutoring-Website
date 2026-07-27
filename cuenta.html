@@ -138,6 +138,9 @@
         <label for="full_name" data-i18n="label_name">Nombre</label>
         <input type="text" id="full_name" placeholder="Tu nombre">
       </div>
+      <div id="spam-warning" style="display:none; margin: 16px 0 4px; padding: 14px 16px; background: #FBE4DC; border: 1.5px solid var(--orange-deep); border-radius: 10px; font-size: 0.85rem; color: var(--orange-deep); line-height: 1.55;" data-i18n-html="spam_warning">
+        ⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.
+      </div>
       <button class="btn" id="submit-btn" onclick="handleSubmit()" data-i18n="btn_login">Entrar</button>
       <br>
       <button class="btn-link" id="toggle-mode" onclick="toggleMode()" data-i18n="link_to_signup">¿No tienes cuenta? Regístrate</button>
@@ -253,6 +256,7 @@
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
       label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre',
       email_note: 'Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
+      spam_warning: '⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.',
       forgot_password_link: '¿Olvidaste tu contraseña?',
       reset_password_title: 'Nueva contraseña', reset_password_hint: 'Escribe tu nueva contraseña.', reset_password_btn: 'Guardar contraseña',
       confirm_email_sent: 'Cuenta creada. Revisa tu email (y la carpeta de spam) y haz clic en el enlace de confirmación antes de iniciar sesión.',
@@ -303,6 +307,7 @@
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
       label_email: 'Email', label_password: 'Hasło', label_name: 'Imię',
       email_note: 'Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
+      spam_warning: '⚠️ <strong>Ważne:</strong> email z potwierdzeniem zwykle trafia do folderu spam lub niechciana poczta, a nie do głównej skrzynki odbiorczej. Sprawdź ten folder, jeśli nie widzisz wiadomości w ciągu kilku minut, i oznacz ją jako "to nie spam", by nie przegapić powiadomień o swoich lekcjach.',
       forgot_password_link: 'Zapomniałeś hasła?',
       reset_password_title: 'Nowe hasło', reset_password_hint: 'Wpisz swoje nowe hasło.', reset_password_btn: 'Zapisz hasło',
       confirm_email_sent: 'Konto utworzone. Sprawdź swoją skrzynkę e-mail (i folder spam) i kliknij link potwierdzający przed zalogowaniem.',
@@ -353,6 +358,7 @@
       login_title: 'Log in', signup_title: 'Create account',
       label_email: 'Email', label_password: 'Password', label_name: 'Name',
       email_note: 'Use the same email you use on Google Meet, since that\'s the one that will receive your class invitations.',
+      spam_warning: '⚠️ <strong>Important:</strong> the verification email usually lands in your spam or junk folder, not your main inbox. Check there if you don\'t see it within a few minutes, and mark it as "not spam" so you don\'t miss notifications about your lessons.',
       forgot_password_link: 'Forgot your password?',
       reset_password_title: 'New password', reset_password_hint: 'Enter your new password.', reset_password_btn: 'Save password',
       confirm_email_sent: 'Account created. Check your email (and spam folder) and click the confirmation link before logging in.',
@@ -456,6 +462,7 @@
     document.getElementById('toggle-mode').innerText = mode === 'login' ? t('link_to_signup') : t('link_to_login');
     document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('email-note').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('spam-warning').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('forgot-password-link').style.display = mode === 'login' ? 'inline' : 'none';
     document.getElementById('auth-msg').innerHTML = '';
   }
