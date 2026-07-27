@@ -91,6 +91,25 @@
   .slot-row .status.open { background: var(--peach); color: var(--orange-deep); }
   .slot-row .status.booked { background: var(--ink); color: var(--bg); }
 
+  /* Next lessons */
+  .lesson-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 12px 14px; border: 1px solid var(--peach-line); border-radius: 10px; margin-bottom: 8px; font-size: 0.9rem;
+  }
+  .lesson-row .who { font-weight: 600; }
+  .lesson-row .when { color: var(--ink-soft); font-size: 0.85rem; }
+  .lesson-row .soon { border-color: var(--orange); background: var(--peach); }
+  .join-meet-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: none;
+    background: var(--orange); color: var(--white); font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    text-decoration: none; white-space: nowrap;
+  }
+  .join-meet-btn:hover { background: var(--orange-deep); }
+  .join-meet-btn.pending {
+    background: var(--bg-soft); color: var(--ink-soft); border: 1.5px solid var(--peach-line); cursor: default;
+  }
+  .join-meet-btn.pending:hover { background: var(--bg-soft); }
+
   /* Students table */
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
   th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--peach-line); }
@@ -121,6 +140,14 @@
     <div class="top-bar">
       <h1 style="font-size: 1.8rem;">Panel de administración</h1>
       <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
+    </div>
+
+    <!-- NEXT LESSONS -->
+    <div class="card">
+      <h3>Próximas clases</h3>
+      <p class="hint">Tus clases reservadas más próximas, con acceso directo a Google Meet.</p>
+      <div id="next-lessons-list"></div>
+      <p class="empty-note" id="next-lessons-empty" style="display:none;">No tienes clases reservadas próximamente.</p>
     </div>
 
     <!-- CREATE SLOT -->
@@ -297,9 +324,68 @@
     const now = new Date();
     calYear = now.getFullYear();
     calMonth = now.getMonth();
+    await loadNextLessons();
     await loadStudents();
     await loadCalendar();
     await loadPendingTestimonials();
+  }
+
+  // ---- NEXT LESSONS ----
+  async function loadNextLessons() {
+    const { data: slots, error } = await sb
+      .from('schedule_slots')
+      .select('id, start_time, end_time, student_id, google_meet_link')
+      .eq('is_booked', true)
+      .gte('start_time', new Date().toISOString())
+      .order('start_time')
+      .limit(8);
+
+    const container = document.getElementById('next-lessons-list');
+    const empty = document.getElementById('next-lessons-empty');
+    container.innerHTML = '';
+
+    if (error) {
+      console.error('Error cargando próximas clases:', error);
+      return;
+    }
+
+    if (!slots || slots.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    const studentIds = [...new Set(slots.map(s => s.student_id).filter(Boolean))];
+    let namesById = {};
+    if (studentIds.length > 0) {
+      const { data: profiles } = await sb.from('profiles').select('id, full_name, email').in('id', studentIds);
+      (profiles || []).forEach(p => { namesById[p.id] = p.full_name || p.email || 'Alumno/a'; });
+    }
+
+    const soonThreshold = new Date(Date.now() + 2 * 60 * 60 * 1000); // starting within 2h
+
+    container.innerHTML = slots.map(s => {
+      const start = new Date(s.start_time);
+      const end = new Date(s.end_time);
+      const dateStr = start.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+      const startStr = start.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const endStr = end.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const isSoon = start < soonThreshold;
+      const studentName = escapeHtml(namesById[s.student_id] || 'Alumno/a');
+
+      const joinHtml = s.google_meet_link
+        ? `<a class="join-meet-btn" href="${s.google_meet_link}" target="_blank" rel="noopener">🔗 Unirse</a>`
+        : `<span class="join-meet-btn pending" title="El enlace se genera automáticamente poco después de la reserva. Si tarda mucho, revisa la sincronización con Google.">⏳ Enlace pendiente</span>`;
+
+      return `
+        <div class="lesson-row${isSoon ? ' soon' : ''}">
+          <span>
+            <span class="who">${studentName}</span><br>
+            <span class="when">${dateStr}, ${startStr}–${endStr}</span>
+          </span>
+          ${joinHtml}
+        </div>`;
+    }).join('');
   }
 
   // ---- CREATE SLOT ----
@@ -428,7 +514,7 @@
 
     const { data: slots, error } = await sb
       .from('schedule_slots')
-      .select('id, start_time, end_time, is_booked, is_blocked, student_id')
+      .select('id, start_time, end_time, is_booked, is_blocked, student_id, google_meet_link')
       .gte('start_time', monthStart.toISOString())
       .lt('start_time', monthEnd.toISOString())
       .order('start_time');
@@ -548,10 +634,16 @@
              <input type="checkbox" id="refund-${s.id}" checked> Devolver crédito
            </label>`
         : '';
+      const meetHtml = s.is_booked
+        ? (s.google_meet_link
+            ? `<a href="${s.google_meet_link}" target="_blank" rel="noopener" class="join-meet-btn btn-small" style="padding: 5px 12px; font-size: 0.78rem; margin-right: 10px;">🔗 Meet</a>`
+            : `<span class="join-meet-btn pending btn-small" style="padding: 5px 12px; font-size: 0.78rem; margin-right: 10px;" title="El enlace se genera automáticamente poco después de la reserva.">⏳ Pendiente</span>`)
+        : '';
       return `
         <div class="slot-row">
           <span>${start}–${end} ${statusHtml}</span>
           <span style="display:flex; align-items:center;">
+            ${meetHtml}
             ${refundToggle}
             <button class="btn btn-small btn-danger" onclick="cancelSlot('${s.id}', ${s.is_booked})">Eliminar</button>
           </span>
@@ -582,6 +674,7 @@
     const dayToRestore = selectedDay;
     await loadCalendar();
     if (dayToRestore) await selectDay(dayToRestore);
+    await loadNextLessons();
   }
 
   // ---- STUDENT CREDITS ----
