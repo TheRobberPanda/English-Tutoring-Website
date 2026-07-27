@@ -146,6 +146,8 @@
       <button class="btn-link" id="toggle-mode" onclick="toggleMode()" data-i18n="link_to_signup">¿No tienes cuenta? Regístrate</button>
       <br>
       <button class="btn-link" id="forgot-password-link" onclick="handleForgotPassword()" data-i18n="forgot_password_link">¿Olvidaste tu contraseña?</button>
+      <br>
+      <button class="btn-link" id="resend-confirmation-link" onclick="resendConfirmation()" data-i18n="resend_confirmation_link">Reenviar email de confirmación</button>
       <div id="auth-msg"></div>
     </div>
   </div>
@@ -261,7 +263,7 @@
       reset_password_title: 'Nueva contraseña', reset_password_hint: 'Escribe tu nueva contraseña.', reset_password_btn: 'Guardar contraseña',
       confirm_email_sent: 'Cuenta creada. Revisa tu email (y la carpeta de spam) y haz clic en el enlace de confirmación antes de iniciar sesión.',
       email_not_confirmed: 'Tu email todavía no está confirmado. Revisa tu bandeja de entrada.',
-      resend_confirmation_link: 'Reenviar email de confirmación', confirmation_resent: 'Email de confirmación reenviado. Revisa tu bandeja de entrada.',
+      resend_confirmation_link: 'Reenviar email de confirmación', confirmation_resent: 'Email de confirmación reenviado. Revisa tu bandeja de entrada Y la carpeta de spam.',
       enter_email_first: 'Escribe tu email arriba primero.', reset_email_sent: 'Te hemos enviado un email para restablecer tu contraseña. Si no lo ves en tu bandeja de entrada en unos minutos, revisa también la carpeta de spam.',
       password_too_short: 'La contraseña debe tener al menos 6 caracteres.',
       btn_login: 'Entrar', btn_signup: 'Registrarme',
@@ -312,7 +314,7 @@
       reset_password_title: 'Nowe hasło', reset_password_hint: 'Wpisz swoje nowe hasło.', reset_password_btn: 'Zapisz hasło',
       confirm_email_sent: 'Konto utworzone. Sprawdź swoją skrzynkę e-mail (i folder spam) i kliknij link potwierdzający przed zalogowaniem.',
       email_not_confirmed: 'Twój email nie został jeszcze potwierdzony. Sprawdź swoją skrzynkę odbiorczą.',
-      resend_confirmation_link: 'Wyślij ponownie email potwierdzający', confirmation_resent: 'Email potwierdzający wysłany ponownie. Sprawdź swoją skrzynkę odbiorczą.',
+      resend_confirmation_link: 'Wyślij ponownie email potwierdzający', confirmation_resent: 'Email potwierdzający wysłany ponownie. Sprawdź skrzynkę odbiorczą ORAZ folder spam.',
       enter_email_first: 'Najpierw wpisz swój email powyżej.', reset_email_sent: 'Wysłaliśmy ci email do zresetowania hasła. Jeśli nie widzisz go w skrzynce odbiorczej w ciągu kilku minut, sprawdź też folder ze spamem.',
       password_too_short: 'Hasło musi mieć co najmniej 6 znaków.',
       btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
@@ -363,7 +365,7 @@
       reset_password_title: 'New password', reset_password_hint: 'Enter your new password.', reset_password_btn: 'Save password',
       confirm_email_sent: 'Account created. Check your email (and spam folder) and click the confirmation link before logging in.',
       email_not_confirmed: 'Your email hasn\'t been confirmed yet. Check your inbox.',
-      resend_confirmation_link: 'Resend confirmation email', confirmation_resent: 'Confirmation email resent. Check your inbox.',
+      resend_confirmation_link: 'Resend confirmation email', confirmation_resent: 'Confirmation email resent. Check your inbox AND your spam folder.',
       enter_email_first: 'Enter your email above first.', reset_email_sent: 'We\'ve sent you an email to reset your password. If you don\'t see it in your inbox within a few minutes, check your spam folder too.',
       password_too_short: 'Password must be at least 6 characters.',
       btn_login: 'Log in', btn_signup: 'Sign up',
@@ -464,6 +466,7 @@
     document.getElementById('email-note').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('spam-warning').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('forgot-password-link').style.display = mode === 'login' ? 'inline' : 'none';
+    document.getElementById('resend-confirmation-link').style.display = mode === 'login' ? 'inline' : 'none';
     document.getElementById('auth-msg').innerHTML = '';
   }
 
@@ -528,7 +531,10 @@
 
   async function resendConfirmation() {
     const email = document.getElementById('email').value.trim();
-    if (!email) return;
+    if (!email) {
+      showMsg(t('enter_email_first'), 'error');
+      return;
+    }
     const { error } = await sb.auth.resend({ type: 'signup', email });
     showMsg(error ? error.message : t('confirmation_resent'), error ? 'error' : 'ok');
   }
