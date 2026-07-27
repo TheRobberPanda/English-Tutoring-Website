@@ -164,7 +164,6 @@
     <div class="top-bar">
       <h1 style="font-size: 1.8rem;"><span data-i18n="hello_prefix">Hola,</span> <span id="student-name">—</span></h1>
       <div>
-        <a href="admin.html" id="admin-link" style="display:none; color: var(--ink-soft); text-decoration: underline; font-size: 0.88rem; margin-right: 16px;" data-i18n="admin_panel_link">Panel admin</a>
         <button class="logout-link" onclick="handleLogout()" data-i18n="logout_link">Cerrar sesión</button>
       </div>
     </div>
@@ -567,14 +566,22 @@
     const { data: { user } } = await sb.auth.getUser();
     if (!user) return;
 
-    document.getElementById('auth-view').style.display = 'none';
-    document.getElementById('dashboard-view').style.display = 'block';
-
     const { data: profile, error: profileError } = await sb
       .from('profiles')
       .select('full_name, credits, is_admin, language')
       .eq('id', user.id)
       .single();
+
+    // Admins go straight to the admin panel — cuenta.html is only ever a
+    // login/landing screen for them, never the student dashboard. Checked
+    // before anything else is shown, so there's no flash of student UI.
+    if (profile?.is_admin) {
+      window.location.href = 'admin.html';
+      return;
+    }
+
+    document.getElementById('auth-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'block';
 
     // Sync the student's saved language preference (e.g. set from another
     // device, or defaulted server-side) with what's shown here.
@@ -591,7 +598,6 @@
       document.getElementById('student-name').innerText = profile?.full_name || user.email;
     }
     document.getElementById('credit-count').innerText = profile?.credits ?? 0;
-    document.getElementById('admin-link').style.display = profile?.is_admin ? 'inline' : 'none';
 
     await loadOpenSlots(profile?.credits ?? 0);
     await loadMyBookings();
