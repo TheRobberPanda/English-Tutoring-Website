@@ -729,7 +729,10 @@
       alert('Introduce un número válido de créditos.');
       return;
     }
-    const { error } = await sb.from('profiles').update({ credits: newCredits }).eq('id', studentId);
+    // Uses admin_grant_credits instead of a raw update so that a genuine
+    // top-up (not a refund — those go through separate RPCs) correctly
+    // triggers the referral reward the first time it happens.
+    const { error } = await sb.rpc('admin_grant_credits', { _student_id: studentId, _new_credits: newCredits });
     if (error) {
       alert(error.message);
       return;
