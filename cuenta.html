@@ -145,6 +145,14 @@
       <div id="spam-warning" style="display:none; margin: 16px 0 4px; padding: 14px 16px; background: #FBE4DC; border: 1.5px solid var(--orange-deep); border-radius: 10px; font-size: 0.85rem; color: var(--orange-deep); line-height: 1.55;" data-i18n-html="spam_warning">
         ⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.
       </div>
+      <div id="terms-field" style="display:none; margin-top: 14px;">
+        <label class="checkbox-label" style="align-items:flex-start;">
+          <input type="checkbox" id="terms-checkbox" style="margin-top:3px;">
+          <span data-i18n-html="terms_checkbox_label" style="font-size:0.85rem; color:var(--ink-soft); line-height:1.5;">
+            He leído la <a href="legal.html" target="_blank" style="color:var(--orange-deep);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.
+          </span>
+        </label>
+      </div>
       <button class="btn" id="submit-btn" onclick="handleSubmit()" data-i18n="btn_login">Entrar</button>
       <br>
       <button class="btn-link" id="toggle-mode" onclick="toggleMode()" data-i18n="link_to_signup">¿No tienes cuenta? Regístrate</button>
@@ -304,6 +312,8 @@
       delete_account_hint: 'Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer. Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.',
       delete_account_btn: 'Eliminar mi cuenta',
       fill_email_password: 'Rellena email y contraseña.', account_created: 'Cuenta creada. Ya puedes iniciar sesión.',
+      must_accept_terms: 'Debes aceptar la Política de Privacidad y los Términos para crear tu cuenta.',
+      terms_checkbox_label: 'He leído la <a href="legal.html" target="_blank" style="color:var(--orange-deep);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.',
       no_classes_that_day: 'No hay clases disponibles ese día.', reserve_btn: 'Reservar', cancel_btn: 'Cancelar',
       less_than_12h: '(menos de 12h)', not_cancelable_12h: '(no cancelable, faltan menos de 12h)',
       join_meet: '🔗 Unirse con Google Meet', meet_link_loading: 'Generando enlace de Google Meet…',
@@ -358,6 +368,8 @@
       delete_account_hint: 'To trwale usuwa twoje konto, kredyty i połączenie z Telegramem. Nie da się tego cofnąć. Twoje zarezerwowane lekcje zostaną zwolnione, a opublikowane opinie zostaną zachowane, ale bez powiązania z twoim kontem.',
       delete_account_btn: 'Usuń moje konto',
       fill_email_password: 'Uzupełnij email i hasło.', account_created: 'Konto utworzone. Możesz się teraz zalogować.',
+      must_accept_terms: 'Musisz zaakceptować Politykę Prywatności i Regulamin, by utworzyć konto.',
+      terms_checkbox_label: 'Przeczytałem/am <a href="legal.html" target="_blank" style="color:var(--orange-deep);">Politykę Prywatności i Regulamin</a> i rozumiem, że mogę poprosić o pierwszą lekcję od razu, rezygnując tym samym z prawa do odstąpienia od umowy w ciągu 14 dni dla tej lekcji.',
       no_classes_that_day: 'Brak dostępnych lekcji tego dnia.', reserve_btn: 'Zarezerwuj', cancel_btn: 'Anuluj',
       less_than_12h: '(mniej niż 12h)', not_cancelable_12h: '(nie można anulować, zostało mniej niż 12h)',
       join_meet: '🔗 Dołącz przez Google Meet', meet_link_loading: 'Generowanie linku do Google Meet…',
@@ -412,6 +424,8 @@
       delete_account_hint: 'This permanently deletes your account, your credits, and your Telegram link. It can\'t be undone. Your booked lessons will be freed up and any published reviews will stay, but no longer linked to your account.',
       delete_account_btn: 'Delete my account',
       fill_email_password: 'Fill in your email and password.', account_created: 'Account created. You can now log in.',
+      must_accept_terms: 'You must accept the Privacy Policy and Terms to create your account.',
+      terms_checkbox_label: 'I\'ve read the <a href="legal.html" target="_blank" style="color:var(--orange-deep);">Privacy Policy and Terms</a>, and I understand I can request my first lesson right away, thereby waiving my 14-day withdrawal right for that lesson.',
       no_classes_that_day: 'No lessons available that day.', reserve_btn: 'Book', cancel_btn: 'Cancel',
       less_than_12h: '(less than 12h)', not_cancelable_12h: '(not cancellable, less than 12h left)',
       join_meet: '🔗 Join with Google Meet', meet_link_loading: 'Generating Google Meet link…',
@@ -500,6 +514,7 @@
     document.getElementById('referral-field').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('email-note').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('spam-warning').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('terms-field').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('forgot-password-link').style.display = mode === 'login' ? 'inline' : 'none';
     document.getElementById('resend-confirmation-link').style.display = mode === 'login' ? 'inline' : 'none';
     document.getElementById('auth-msg').innerHTML = '';
@@ -525,10 +540,15 @@
     if (mode === 'signup') {
       const full_name = document.getElementById('full_name').value.trim();
       const referral_code = document.getElementById('referral_code_input').value.trim();
+      if (!document.getElementById('terms-checkbox').checked) {
+        showMsg(t('must_accept_terms'), 'error');
+        btn.disabled = false;
+        return;
+      }
       const { data, error } = await sb.auth.signUp({
         email, password,
         options: {
-          data: { full_name, language: currentLang, referral_code },
+          data: { full_name, language: currentLang, referral_code, waive_withdrawal: true },
           emailRedirectTo: window.location.origin + window.location.pathname
         }
       });

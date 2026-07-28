@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacidad y Términos — Paulo Crespo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBF4EC; --bg-soft: #F5EBDD; --ink: #2A1F16; --ink-soft: #6B5A48;
+    --orange: #F26822; --orange-deep: #C1440E; --peach: #FBDDC5; --peach-line: #E9C8A6; --white: #FFFCF8;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Work Sans', sans-serif; line-height: 1.65; }
+  h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 600; margin: 0; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 56px 24px 80px; }
+  a.back { display: inline-block; margin-bottom: 24px; color: var(--ink-soft); text-decoration: none; font-size: 0.9rem; }
+  a.back:hover { color: var(--orange-deep); }
+  h1 { font-size: clamp(1.9rem, 4vw, 2.5rem); margin-bottom: 8px; }
+  .lede { color: var(--ink-soft); font-size: 0.95rem; margin-bottom: 36px; }
+  h2 { font-size: 1.25rem; margin-top: 40px; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid var(--peach-line); }
+  h2:first-of-type { border-top: none; padding-top: 0; }
+  h3 { font-size: 1.02rem; margin-top: 20px; margin-bottom: 8px; }
+  p { margin: 0 0 14px; }
+  ul, ol { padding-left: 22px; margin: 0 0 14px; }
+  li { margin-bottom: 6px; }
+  .card { background: var(--white); border: 1px solid var(--peach-line); border-radius: 14px; padding: 22px 26px; margin: 18px 0; }
+  .placeholder { background: var(--peach); color: var(--orange-deep); padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+  .withdrawal-box { background: var(--ink); color: var(--bg); border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+  .withdrawal-box h3 { color: var(--bg); }
+  .withdrawal-box a { color: var(--peach); }
+  .toc { font-size: 0.88rem; }
+  .toc a { color: var(--orange-deep); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--peach-line); vertical-align: top; }
+  th { font-size: 0.78rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; }
+  .lang-btn {
+    border: 1px solid var(--peach-line); background: transparent; color: var(--ink-soft);
+    font-size: 0.78rem; font-weight: 600; padding: 4px 8px; border-radius: 5px; cursor: pointer;
+    font-family: 'Space Mono', monospace; margin-left: 4px;
+  }
+  .lang-btn.active { background: var(--orange); color: var(--white); border-color: var(--orange); }
+  .updated { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <a class="back" href="index.html" data-i18n="back_link" style="margin-bottom:0;">&larr; Volver a la web</a>
+    <span>
+      <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
+      <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
+      <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
+    </span>
+  </div>
+
+  <h1 data-i18n="h1">Privacidad y Términos</h1>
+  <p class="updated" data-i18n="last_updated">Última actualización: 27 de julio de 2026</p>
+  <p class="lede" data-i18n="lede">Esta página explica qué datos recogemos, por qué, con quién los compartimos, y cuáles son tus derechos — incluido tu derecho de desistimiento como consumidor de la Unión Europea. Si tienes cualquier duda, escríbeme directamente.</p>
+
+  <div class="card toc">
+    <strong data-i18n="toc_title">Índice</strong>
+    <ol style="margin-top:8px;">
+      <li><a href="#responsable" data-i18n="toc_1">Quién es el responsable de tus datos</a></li>
+      <li><a href="#datos" data-i18n="toc_2">Qué datos recogemos</a></li>
+      <li><a href="#base-legal" data-i18n="toc_3">Por qué los usamos (base legal)</a></li>
+      <li><a href="#terceros" data-i18n="toc_4">Con quién los compartimos</a></li>
+      <li><a href="#conservacion" data-i18n="toc_5">Cuánto tiempo los conservamos</a></li>
+      <li><a href="#derechos" data-i18n="toc_6">Tus derechos</a></li>
+      <li><a href="#cookies" data-i18n="toc_7">Cookies y almacenamiento local</a></li>
+      <li><a href="#terminos" data-i18n="toc_8">Términos del servicio</a></li>
+      <li><a href="#desistimiento" data-i18n="toc_9">Derecho de desistimiento (14 días)</a></li>
+      <li><a href="#contacto" data-i18n="toc_10">Contacto y reclamaciones</a></li>
+    </ol>
+  </div>
+
+  <h2 id="responsable" data-i18n="h2_responsable">1. Quién es el responsable de tus datos</h2>
+  <div class="card">
+    <p data-i18n-html="responsable_p1">
+      El responsable del tratamiento de tus datos personales es:<br><br>
+      <strong>Nombre legal:</strong> <span class="placeholder">[Paulo — completa aquí tu nombre legal completo]</span><br>
+      <strong>Dirección:</strong> <span class="placeholder">[completa tu dirección postal en Polonia]</span><br>
+      <strong>NIP / actividad:</strong> <span class="placeholder">[completa tu NIP si estás dado de alta como autónomo — jednoosobowa działalność gospodarcza]</span><br>
+      <strong>Email de contacto:</strong> yankxwtic@mozmail.com
+    </p>
+    <p data-i18n="responsable_p2" style="font-size:0.85rem; color:var(--ink-soft);">
+      (Nota interna: estos campos deben rellenarse con tus datos reales antes de publicar esta página — es un requisito legal, no solo una formalidad.)
+    </p>
+  </div>
+
+  <h2 id="datos" data-i18n="h2_datos">2. Qué datos recogemos</h2>
+  <table>
+    <tr><th data-i18n="table_dato">Dato</th><th data-i18n="table_para_que">Para qué</th></tr>
+    <tr><td data-i18n="dato_1">Nombre y email</td><td data-i18n="para_que_1">Crear tu cuenta, enviarte confirmaciones y facturarte</td></tr>
+    <tr><td data-i18n="dato_2">Contraseña (cifrada)</td><td data-i18n="para_que_2">Acceso seguro a tu cuenta</td></tr>
+    <tr><td data-i18n="dato_3">Historial de clases reservadas</td><td data-i18n="para_que_3">Gestionar tu calendario de clases y créditos</td></tr>
+    <tr><td data-i18n="dato_4">Usuario y chat_id de Telegram (si vinculas tu cuenta)</td><td data-i18n="para_que_4">Enviarte avisos y permitirte reservar desde el bot</td></tr>
+    <tr><td data-i18n="dato_5">Dirección de email para invitación de Google Meet</td><td data-i18n="para_que_5">Crear el enlace de videollamada de tu clase</td></tr>
+    <tr><td data-i18n="dato_6">Idioma preferido</td><td data-i18n="para_que_6">Mostrarte la web y los mensajes en tu idioma</td></tr>
+    <tr><td data-i18n="dato_7">Opiniones que envíes voluntariamente</td><td data-i18n="para_que_7">Publicarlas en la web (solo si las aprobamos y tú las enviaste)</td></tr>
+  </table>
+  <p data-i18n="datos_p2">No recogemos datos de pago directamente: si pagas con Monero, la transacción ocurre en la red Monero, no en nuestros servidores. No almacenamos números de tarjeta ni datos bancarios.</p>
+
+  <h2 id="base-legal" data-i18n="h2_base_legal">3. Por qué los usamos (base legal)</h2>
+  <ul>
+    <li data-i18n="legal_1"><strong>Ejecución de un contrato:</strong> necesitamos tus datos para darte las clases que reservas.</li>
+    <li data-i18n="legal_2"><strong>Consentimiento:</strong> para enviarte avisos por Telegram (solo si vinculas tu cuenta voluntariamente) y para publicar tu opinión (solo si la envías tú mismo/a).</li>
+    <li data-i18n="legal_3"><strong>Interés legítimo:</strong> para mantener la seguridad de la web y prevenir abusos.</li>
+    <li data-i18n="legal_4"><strong>Obligación legal:</strong> para conservar registros de facturación según la normativa fiscal polaca.</li>
+  </ul>
+
+  <h2 id="terceros" data-i18n="h2_terceros">4. Con quién los compartimos</h2>
+  <p data-i18n="terceros_p1">Usamos los siguientes proveedores para operar la web. Todos actúan como encargados del tratamiento bajo nuestras instrucciones:</p>
+  <table>
+    <tr><th data-i18n="table_proveedor">Proveedor</th><th data-i18n="table_para">Para qué</th><th data-i18n="table_ubicacion">Ubicación</th></tr>
+    <tr><td>Supabase</td><td data-i18n="prov_supabase">Base de datos, autenticación</td><td data-i18n="loc_eu_us">UE / EE.UU.</td></tr>
+    <tr><td>Google (Calendar, Meet)</td><td data-i18n="prov_google">Videollamadas y calendario</td><td data-i18n="loc_us">EE.UU.</td></tr>
+    <tr><td>Resend</td><td data-i18n="prov_resend">Envío de emails</td><td data-i18n="loc_us">EE.UU.</td></tr>
+    <tr><td>Telegram</td><td data-i18n="prov_telegram">Notificaciones (opcional)</td><td data-i18n="loc_eu">UE (Dubái/global, self-hosted por Telegram)</td></tr>
+    <tr><td>Vercel / Cloudflare</td><td data-i18n="prov_vercel">Alojamiento web y DNS</td><td data-i18n="loc_global">Global (red de distribución)</td></tr>
+  </table>
+  <p data-i18n="terceros_p2">Cuando tus datos salen de la Unión Europea (por ejemplo, hacia servidores en EE.UU.), esos proveedores se acogen a cláusulas contractuales tipo (SCCs) aprobadas por la Comisión Europea como garantía de protección equivalente.</p>
+  <p data-i18n="terceros_p3">Nunca vendemos tus datos a terceros ni los usamos con fines publicitarios.</p>
+
+  <h2 id="conservacion" data-i18n="h2_conservacion">5. Cuánto tiempo los conservamos</h2>
+  <p data-i18n="conservacion_p1">Conservamos tus datos mientras tengas una cuenta activa. Si eliminas tu cuenta desde el panel, tus datos personales y tu vínculo de Telegram se borran de forma permanente e inmediata; tus clases reservadas quedan liberadas y tus opiniones publicadas se mantienen, pero sin asociarlas a tu identidad. Los registros de facturación se conservan el tiempo exigido por la ley fiscal polaca (habitualmente 5 años).</p>
+
+  <h2 id="derechos" data-i18n="h2_derechos">6. Tus derechos</h2>
+  <p data-i18n="derechos_p1">Bajo el RODO (GDPR), tienes derecho a:</p>
+  <ul>
+    <li data-i18n="derecho_1"><strong>Acceso:</strong> saber qué datos tenemos sobre ti.</li>
+    <li data-i18n="derecho_2"><strong>Rectificación:</strong> corregir datos incorrectos.</li>
+    <li data-i18n="derecho_3"><strong>Supresión:</strong> pedir que borremos tus datos (puedes hacerlo tú mismo/a desde tu cuenta, en cualquier momento).</li>
+    <li data-i18n="derecho_4"><strong>Portabilidad:</strong> recibir tus datos en un formato reutilizable.</li>
+    <li data-i18n="derecho_5"><strong>Oposición y limitación:</strong> oponerte a ciertos usos de tus datos.</li>
+    <li data-i18n="derecho_6"><strong>Retirar el consentimiento</strong> en cualquier momento (por ejemplo, desvincular tu Telegram).</li>
+  </ul>
+  <p data-i18n="derechos_p2">Para ejercer cualquiera de estos derechos, escríbeme a yankxwtic@mozmail.com. Responderé en un plazo máximo de 30 días.</p>
+
+  <h2 id="cookies" data-i18n="h2_cookies">7. Cookies y almacenamiento local</h2>
+  <p data-i18n="cookies_p1">Esta web no usa cookies de seguimiento ni de publicidad. Usamos <code>localStorage</code> del navegador únicamente para recordar tu idioma preferido — un dato técnico, no personal, que nunca sale de tu dispositivo hacia terceros con fines publicitarios.</p>
+
+  <h2 id="terminos" data-i18n="h2_terminos">8. Términos del servicio</h2>
+  <ul>
+    <li data-i18n="termino_1">Las clases se reservan mediante créditos, que se añaden manualmente tras confirmar tu pago.</li>
+    <li data-i18n="termino_2">Puedes cancelar una clase reservada hasta 12 horas antes de su inicio y recuperar el crédito automáticamente.</li>
+    <li data-i18n="termino_3">Los precios y descuentos vigentes son los publicados en la sección de precios de la web en cada momento.</li>
+    <li data-i18n="termino_4">Nos reservamos el derecho a cancelar una clase por causa de fuerza mayor, devolviendo siempre el crédito correspondiente.</li>
+  </ul>
+
+  <div class="withdrawal-box" id="desistimiento">
+    <h3 data-i18n="h2_desistimiento" style="margin-top:0;">9. Derecho de desistimiento (14 días)</h3>
+    <p data-i18n="desistimiento_p1">Como consumidor/a en la Unión Europea, tienes derecho a desistir de cualquier contrato de servicios celebrado online en un plazo de <strong>14 días naturales</strong>, sin necesidad de justificación, según la Directiva 2011/83/UE y su transposición en la ley polaca (Ustawa o prawach konsumenta).</p>
+    <p data-i18n="desistimiento_p2">Sin embargo, este derecho tiene una excepción legal: si solicitas expresamente que el servicio comience <strong>antes</strong> de que termine ese plazo de 14 días (por ejemplo, para poder dar tu primera clase de prueba de inmediato en lugar de esperar dos semanas), y confirmas que entiendes que esto supone renunciar a tu derecho de desistimiento para ese servicio ya prestado, dicho derecho se pierde en la medida en que el servicio ya se haya ejecutado.</p>
+    <p data-i18n="desistimiento_p3">Por eso, al crear tu cuenta, te pedimos que marques una casilla explícita confirmando que entiendes esto — así puedes tener tu clase de prueba de inmediato si lo prefieres, en lugar de esperar. Si aún no has recibido ninguna clase, siempre puedes ejercer tu derecho de desistimiento sobre las clases futuras aún no impartidas, contactándonos directamente.</p>
+  </div>
+
+  <h2 id="contacto" data-i18n="h2_contacto">10. Contacto y reclamaciones</h2>
+  <p data-i18n="contacto_p1">Para cualquier duda sobre tus datos o estos términos, escríbeme a <strong>yankxwtic@mozmail.com</strong>.</p>
+  <p data-i18n="contacto_p2">Si consideras que no hemos resuelto tu duda adecuadamente, tienes derecho a presentar una reclamación ante la autoridad de protección de datos polaca:</p>
+  <div class="card">
+    <strong>Urząd Ochrony Danych Osobowych (UODO)</strong><br>
+    ul. Stawki 2, 00-193 Warszawa, Polska<br>
+    <a href="https://uodo.gov.pl" target="_blank" rel="noopener" style="color:var(--orange-deep);">uodo.gov.pl</a>
+  </div>
+
+</div>
+
+<script>
+const translations = {
+  es: {
+    back_link: 'Volver a la web', h1: 'Privacidad y Términos',
+    last_updated: 'Última actualización: 27 de julio de 2026',
+    lede: 'Esta página explica qué datos recogemos, por qué, con quién los compartimos, y cuáles son tus derechos — incluido tu derecho de desistimiento como consumidor de la Unión Europea. Si tienes cualquier duda, escríbeme directamente.',
+    toc_title: 'Índice',
+    toc_1: 'Quién es el responsable de tus datos', toc_2: 'Qué datos recogemos', toc_3: 'Por qué los usamos (base legal)',
+    toc_4: 'Con quién los compartimos', toc_5: 'Cuánto tiempo los conservamos', toc_6: 'Tus derechos',
+    toc_7: 'Cookies y almacenamiento local', toc_8: 'Términos del servicio', toc_9: 'Derecho de desistimiento (14 días)', toc_10: 'Contacto y reclamaciones',
+    h2_responsable: '1. Quién es el responsable de tus datos',
+    responsable_p1: 'El responsable del tratamiento de tus datos personales es:<br><br><strong>Nombre legal:</strong> <span class="placeholder">[Paulo — completa aquí tu nombre legal completo]</span><br><strong>Dirección:</strong> <span class="placeholder">[completa tu dirección postal en Polonia]</span><br><strong>NIP / actividad:</strong> <span class="placeholder">[completa tu NIP si estás dado de alta como autónomo — jednoosobowa działalność gospodarcza]</span><br><strong>Email de contacto:</strong> yankxwtic@mozmail.com',
+    responsable_p2: '(Nota interna: estos campos deben rellenarse con tus datos reales antes de publicar esta página — es un requisito legal, no solo una formalidad.)',
+    h2_datos: '2. Qué datos recogemos',
+    table_dato: 'Dato', table_para_que: 'Para qué',
+    dato_1: 'Nombre y email', para_que_1: 'Crear tu cuenta, enviarte confirmaciones y facturarte',
+    dato_2: 'Contraseña (cifrada)', para_que_2: 'Acceso seguro a tu cuenta',
+    dato_3: 'Historial de clases reservadas', para_que_3: 'Gestionar tu calendario de clases y créditos',
+    dato_4: 'Usuario y chat_id de Telegram (si vinculas tu cuenta)', para_que_4: 'Enviarte avisos y permitirte reservar desde el bot',
+    dato_5: 'Dirección de email para invitación de Google Meet', para_que_5: 'Crear el enlace de videollamada de tu clase',
+    dato_6: 'Idioma preferido', para_que_6: 'Mostrarte la web y los mensajes en tu idioma',
+    dato_7: 'Opiniones que envíes voluntariamente', para_que_7: 'Publicarlas en la web (solo si las aprobamos y tú las enviaste)',
+    datos_p2: 'No recogemos datos de pago directamente: si pagas con Monero, la transacción ocurre en la red Monero, no en nuestros servidores. No almacenamos números de tarjeta ni datos bancarios.',
+    h2_base_legal: '3. Por qué los usamos (base legal)',
+    legal_1: '<strong>Ejecución de un contrato:</strong> necesitamos tus datos para darte las clases que reservas.',
+    legal_2: '<strong>Consentimiento:</strong> para enviarte avisos por Telegram (solo si vinculas tu cuenta voluntariamente) y para publicar tu opinión (solo si la envías tú mismo/a).',
+    legal_3: '<strong>Interés legítimo:</strong> para mantener la seguridad de la web y prevenir abusos.',
+    legal_4: '<strong>Obligación legal:</strong> para conservar registros de facturación según la normativa fiscal polaca.',
+    h2_terceros: '4. Con quién los compartimos',
+    terceros_p1: 'Usamos los siguientes proveedores para operar la web. Todos actúan como encargados del tratamiento bajo nuestras instrucciones:',
+    table_proveedor: 'Proveedor', table_para: 'Para qué', table_ubicacion: 'Ubicación',
+    prov_supabase: 'Base de datos, autenticación', prov_google: 'Videollamadas y calendario', prov_resend: 'Envío de emails',
+    prov_telegram: 'Notificaciones (opcional)', prov_vercel: 'Alojamiento web y DNS',
+    loc_eu_us: 'UE / EE.UU.', loc_us: 'EE.UU.', loc_eu: 'UE (Dubái/global, self-hosted por Telegram)', loc_global: 'Global (red de distribución)',
+    terceros_p2: 'Cuando tus datos salen de la Unión Europea (por ejemplo, hacia servidores en EE.UU.), esos proveedores se acogen a cláusulas contractuales tipo (SCCs) aprobadas por la Comisión Europea como garantía de protección equivalente.',
+    terceros_p3: 'Nunca vendemos tus datos a terceros ni los usamos con fines publicitarios.',
+    h2_conservacion: '5. Cuánto tiempo los conservamos',
+    conservacion_p1: 'Conservamos tus datos mientras tengas una cuenta activa. Si eliminas tu cuenta desde el panel, tus datos personales y tu vínculo de Telegram se borran de forma permanente e inmediata; tus clases reservadas quedan liberadas y tus opiniones publicadas se mantienen, pero sin asociarlas a tu identidad. Los registros de facturación se conservan el tiempo exigido por la ley fiscal polaca (habitualmente 5 años).',
+    h2_derechos: '6. Tus derechos',
+    derechos_p1: 'Bajo el RODO (GDPR), tienes derecho a:',
+    derecho_1: '<strong>Acceso:</strong> saber qué datos tenemos sobre ti.',
+    derecho_2: '<strong>Rectificación:</strong> corregir datos incorrectos.',
+    derecho_3: '<strong>Supresión:</strong> pedir que borremos tus datos (puedes hacerlo tú mismo/a desde tu cuenta, en cualquier momento).',
+    derecho_4: '<strong>Portabilidad:</strong> recibir tus datos en un formato reutilizable.',
+    derecho_5: '<strong>Oposición y limitación:</strong> oponerte a ciertos usos de tus datos.',
+    derecho_6: '<strong>Retirar el consentimiento</strong> en cualquier momento (por ejemplo, desvincular tu Telegram).',
+    derechos_p2: 'Para ejercer cualquiera de estos derechos, escríbeme a yankxwtic@mozmail.com. Responderé en un plazo máximo de 30 días.',
+    h2_cookies: '7. Cookies y almacenamiento local',
+    cookies_p1: 'Esta web no usa cookies de seguimiento ni de publicidad. Usamos localStorage del navegador únicamente para recordar tu idioma preferido — un dato técnico, no personal, que nunca sale de tu dispositivo hacia terceros con fines publicitarios.',
+    h2_terminos: '8. Términos del servicio',
+    termino_1: 'Las clases se reservan mediante créditos, que se añaden manualmente tras confirmar tu pago.',
+    termino_2: 'Puedes cancelar una clase reservada hasta 12 horas antes de su inicio y recuperar el crédito automáticamente.',
+    termino_3: 'Los precios y descuentos vigentes son los publicados en la sección de precios de la web en cada momento.',
+    termino_4: 'Nos reservamos el derecho a cancelar una clase por causa de fuerza mayor, devolviendo siempre el crédito correspondiente.',
+    h2_desistimiento: '9. Derecho de desistimiento (14 días)',
+    desistimiento_p1: 'Como consumidor/a en la Unión Europea, tienes derecho a desistir de cualquier contrato de servicios celebrado online en un plazo de 14 días naturales, sin necesidad de justificación, según la Directiva 2011/83/UE y su transposición en la ley polaca (Ustawa o prawach konsumenta).',
+    desistimiento_p2: 'Sin embargo, este derecho tiene una excepción legal: si solicitas expresamente que el servicio comience antes de que termine ese plazo de 14 días (por ejemplo, para poder dar tu primera clase de prueba de inmediato en lugar de esperar dos semanas), y confirmas que entiendes que esto supone renunciar a tu derecho de desistimiento para ese servicio ya prestado, dicho derecho se pierde en la medida en que el servicio ya se haya ejecutado.',
+    desistimiento_p3: 'Por eso, al crear tu cuenta, te pedimos que marques una casilla explícita confirmando que entiendes esto — así puedes tener tu clase de prueba de inmediato si lo prefieres, en lugar de esperar. Si aún no has recibido ninguna clase, siempre puedes ejercer tu derecho de desistimiento sobre las clases futuras aún no impartidas, contactándonos directamente.',
+    h2_contacto: '10. Contacto y reclamaciones',
+    contacto_p1: 'Para cualquier duda sobre tus datos o estos términos, escríbeme a yankxwtic@mozmail.com.',
+    contacto_p2: 'Si consideras que no hemos resuelto tu duda adecuadamente, tienes derecho a presentar una reclamación ante la autoridad de protección de datos polaca:'
+  },
+  pl: {
+    back_link: 'Wróć do strony', h1: 'Prywatność i regulamin',
+    last_updated: 'Ostatnia aktualizacja: 27 lipca 2026',
+    lede: 'Ta strona wyjaśnia jakie dane zbieramy, dlaczego, komu je udostępniamy i jakie masz prawa — w tym prawo do odstąpienia od umowy jako konsument Unii Europejskiej. Jeśli masz jakiekolwiek wątpliwości, napisz do mnie bezpośrednio.',
+    toc_title: 'Spis treści',
+    toc_1: 'Kto jest administratorem twoich danych', toc_2: 'Jakie dane zbieramy', toc_3: 'Dlaczego ich używamy (podstawa prawna)',
+    toc_4: 'Komu je udostępniamy', toc_5: 'Jak długo je przechowujemy', toc_6: 'Twoje prawa',
+    toc_7: 'Pliki cookie i pamięć lokalna', toc_8: 'Regulamin usługi', toc_9: 'Prawo do odstąpienia od umowy (14 dni)', toc_10: 'Kontakt i skargi',
+    h2_responsable: '1. Kto jest administratorem twoich danych',
+    responsable_p1: 'Administratorem twoich danych osobowych jest:<br><br><strong>Imię i nazwisko:</strong> <span class="placeholder">[Paulo — uzupełnij swoje pełne dane prawne]</span><br><strong>Adres:</strong> <span class="placeholder">[uzupełnij swój adres w Polsce]</span><br><strong>NIP / działalność:</strong> <span class="placeholder">[uzupełnij NIP, jeśli prowadzisz jednoosobową działalność gospodarczą]</span><br><strong>Email kontaktowy:</strong> yankxwtic@mozmail.com',
+    responsable_p2: '(Notatka wewnętrzna: te pola muszą zostać uzupełnione twoimi prawdziwymi danymi przed publikacją tej strony — to wymóg prawny, nie tylko formalność.)',
+    h2_datos: '2. Jakie dane zbieramy',
+    table_dato: 'Dane', table_para_que: 'Cel',
+    dato_1: 'Imię i email', para_que_1: 'Utworzenie konta, wysyłanie potwierdzeń i fakturowanie',
+    dato_2: 'Hasło (zaszyfrowane)', para_que_2: 'Bezpieczny dostęp do konta',
+    dato_3: 'Historia zarezerwowanych lekcji', para_que_3: 'Zarządzanie kalendarzem lekcji i kredytami',
+    dato_4: 'Nazwa użytkownika i chat_id Telegramu (jeśli połączysz konto)', para_que_4: 'Wysyłanie powiadomień i umożliwienie rezerwacji z poziomu bota',
+    dato_5: 'Adres email do zaproszenia Google Meet', para_que_5: 'Utworzenie linku do wideorozmowy',
+    dato_6: 'Preferowany język', para_que_6: 'Wyświetlanie strony i wiadomości w twoim języku',
+    dato_7: 'Dobrowolnie przesłane opinie', para_que_7: 'Publikacja na stronie (tylko po zatwierdzeniu i tylko jeśli sam/a je wysłałeś/aś)',
+    datos_p2: 'Nie zbieramy bezpośrednio danych płatniczych: jeśli płacisz Monero, transakcja odbywa się w sieci Monero, nie na naszych serwerach. Nie przechowujemy numerów kart ani danych bankowych.',
+    h2_base_legal: '3. Dlaczego ich używamy (podstawa prawna)',
+    legal_1: '<strong>Wykonanie umowy:</strong> potrzebujemy twoich danych, by zapewnić zarezerwowane lekcje.',
+    legal_2: '<strong>Zgoda:</strong> do wysyłania powiadomień na Telegramie (tylko jeśli dobrowolnie połączysz konto) i publikacji twojej opinii (tylko jeśli sam/a ją wyślesz).',
+    legal_3: '<strong>Uzasadniony interes:</strong> utrzymanie bezpieczeństwa strony i zapobieganie nadużyciom.',
+    legal_4: '<strong>Obowiązek prawny:</strong> przechowywanie zapisów księgowych zgodnie z polskim prawem podatkowym.',
+    h2_terceros: '4. Komu je udostępniamy',
+    terceros_p1: 'Korzystamy z następujących dostawców do prowadzenia strony. Wszyscy działają jako podmioty przetwarzające na nasze polecenie:',
+    table_proveedor: 'Dostawca', table_para: 'Cel', table_ubicacion: 'Lokalizacja',
+    prov_supabase: 'Baza danych, uwierzytelnianie', prov_google: 'Wideorozmowy i kalendarz', prov_resend: 'Wysyłka emaili',
+    prov_telegram: 'Powiadomienia (opcjonalnie)', prov_vercel: 'Hosting i DNS',
+    loc_eu_us: 'UE / USA', loc_us: 'USA', loc_eu: 'UE (Dubaj/globalnie, self-hosted przez Telegram)', loc_global: 'Globalnie (sieć dystrybucji)',
+    terceros_p2: 'Gdy twoje dane opuszczają Unię Europejską (np. na serwery w USA), dostawcy ci opierają się na standardowych klauzulach umownych (SCC) zatwierdzonych przez Komisję Europejską jako gwarancja równoważnej ochrony.',
+    terceros_p3: 'Nigdy nie sprzedajemy twoich danych osobom trzecim ani nie wykorzystujemy ich w celach reklamowych.',
+    h2_conservacion: '5. Jak długo je przechowujemy',
+    conservacion_p1: 'Przechowujemy twoje dane dopóki masz aktywne konto. Jeśli usuniesz konto z panelu, twoje dane osobowe i połączenie z Telegramem zostają trwale i natychmiast usunięte; zarezerwowane lekcje zostają zwolnione, a opublikowane opinie pozostają, ale bez powiązania z twoją tożsamością. Zapisy księgowe przechowywane są przez okres wymagany przez polskie prawo podatkowe (zwykle 5 lat).',
+    h2_derechos: '6. Twoje prawa',
+    derechos_p1: 'Na mocy RODO masz prawo do:',
+    derecho_1: '<strong>Dostępu:</strong> wiedzieć, jakie dane o tobie posiadamy.',
+    derecho_2: '<strong>Sprostowania:</strong> poprawienia nieprawidłowych danych.',
+    derecho_3: '<strong>Usunięcia:</strong> żądania usunięcia danych (możesz to zrobić samodzielnie w każdej chwili ze swojego konta).',
+    derecho_4: '<strong>Przenoszenia:</strong> otrzymania danych w formacie nadającym się do ponownego wykorzystania.',
+    derecho_5: '<strong>Sprzeciwu i ograniczenia:</strong> sprzeciwienia się określonym sposobom wykorzystania danych.',
+    derecho_6: '<strong>Wycofania zgody</strong> w dowolnym momencie (np. odłączenia Telegramu).',
+    derechos_p2: 'Aby skorzystać z któregokolwiek z tych praw, napisz do mnie na yankxwtic@mozmail.com. Odpowiem w ciągu maksymalnie 30 dni.',
+    h2_cookies: '7. Pliki cookie i pamięć lokalna',
+    cookies_p1: 'Ta strona nie używa plików cookie do śledzenia ani reklam. Używamy localStorage przeglądarki wyłącznie do zapamiętania preferowanego języka — dane techniczne, nie osobowe, które nigdy nie opuszczają twojego urządzenia w celach reklamowych.',
+    h2_terminos: '8. Regulamin usługi',
+    termino_1: 'Lekcje rezerwuje się za pomocą kredytów, które są dodawane ręcznie po potwierdzeniu płatności.',
+    termino_2: 'Możesz odwołać zarezerwowaną lekcję do 12 godzin przed jej rozpoczęciem i automatycznie odzyskać kredyt.',
+    termino_3: 'Obowiązujące ceny i zniżki to te opublikowane w sekcji cennika strony w danym momencie.',
+    termino_4: 'Zastrzegamy sobie prawo do odwołania lekcji z powodu siły wyższej, zawsze zwracając odpowiedni kredyt.',
+    h2_desistimiento: '9. Prawo do odstąpienia od umowy (14 dni)',
+    desistimiento_p1: 'Jako konsument w Unii Europejskiej masz prawo odstąpić od każdej umowy o usługi zawartej online w ciągu 14 dni kalendarzowych, bez podania przyczyny, zgodnie z Dyrektywą 2011/83/UE i jej transpozycją do polskiego prawa (Ustawa o prawach konsumenta).',
+    desistimiento_p2: 'Prawo to ma jednak wyjątek: jeśli wyraźnie zażądasz rozpoczęcia usługi przed upływem tych 14 dni (np. by móc od razu odbyć pierwszą lekcję próbną zamiast czekać dwa tygodnie) i potwierdzisz, że rozumiesz, iż oznacza to utratę prawa do odstąpienia w zakresie już wykonanej usługi, prawo to wygasa w zakresie, w jakim usługa została już zrealizowana.',
+    desistimiento_p3: 'Dlatego przy zakładaniu konta prosimy o zaznaczenie wyraźnego pola potwierdzającego zrozumienie tego — dzięki temu możesz mieć swoją lekcję próbną od razu, jeśli wolisz, zamiast czekać. Jeśli nie odbyłeś/aś jeszcze żadnej lekcji, zawsze możesz skorzystać z prawa do odstąpienia w odniesieniu do przyszłych, jeszcze nieodbytych lekcji, kontaktując się z nami bezpośrednio.',
+    h2_contacto: '10. Kontakt i skargi',
+    contacto_p1: 'W razie jakichkolwiek wątpliwości dotyczących twoich danych lub tego regulaminu, napisz do mnie na yankxwtic@mozmail.com.',
+    contacto_p2: 'Jeśli uważasz, że nie rozwiązaliśmy twojej sprawy odpowiednio, masz prawo złożyć skargę do polskiego organu ochrony danych:'
+  },
+  en: {
+    back_link: 'Back to the site', h1: 'Privacy & Terms',
+    last_updated: 'Last updated: July 27, 2026',
+    lede: 'This page explains what data we collect, why, who we share it with, and what your rights are — including your withdrawal right as an EU consumer. If you have any questions, message me directly.',
+    toc_title: 'Contents',
+    toc_1: 'Who is responsible for your data', toc_2: 'What data we collect', toc_3: 'Why we use it (legal basis)',
+    toc_4: 'Who we share it with', toc_5: 'How long we keep it', toc_6: 'Your rights',
+    toc_7: 'Cookies and local storage', toc_8: 'Terms of service', toc_9: 'Right of withdrawal (14 days)', toc_10: 'Contact and complaints',
+    h2_responsable: '1. Who is responsible for your data',
+    responsable_p1: 'The controller of your personal data is:<br><br><strong>Legal name:</strong> <span class="placeholder">[Paulo — fill in your full legal name here]</span><br><strong>Address:</strong> <span class="placeholder">[fill in your postal address in Poland]</span><br><strong>Tax ID / business:</strong> <span class="placeholder">[fill in your NIP if registered as a sole proprietor — jednoosobowa działalność gospodarcza]</span><br><strong>Contact email:</strong> yankxwtic@mozmail.com',
+    responsable_p2: "(Internal note: these fields must be filled in with your real information before publishing this page — this is a legal requirement, not just a formality.)",
+    h2_datos: '2. What data we collect',
+    table_dato: 'Data', table_para_que: 'Purpose',
+    dato_1: 'Name and email', para_que_1: 'Creating your account, sending confirmations, and invoicing',
+    dato_2: 'Password (encrypted)', para_que_2: 'Secure account access',
+    dato_3: 'Booking history', para_que_3: 'Managing your class schedule and credits',
+    dato_4: 'Telegram username and chat ID (if you link your account)', para_que_4: 'Sending notifications and letting you book from the bot',
+    dato_5: 'Email address for the Google Meet invite', para_que_5: 'Creating your class video-call link',
+    dato_6: 'Preferred language', para_que_6: 'Showing the site and messages in your language',
+    dato_7: 'Reviews you submit voluntarily', para_que_7: 'Publishing them on the site (only if approved and only if you sent them yourself)',
+    datos_p2: "We don't collect payment data directly: if you pay with Monero, the transaction happens on the Monero network, not on our servers. We don't store card numbers or bank details.",
+    h2_base_legal: '3. Why we use it (legal basis)',
+    legal_1: '<strong>Contract performance:</strong> we need your data to deliver the lessons you book.',
+    legal_2: '<strong>Consent:</strong> to send you Telegram notifications (only if you voluntarily link your account) and to publish your review (only if you submit it yourself).',
+    legal_3: '<strong>Legitimate interest:</strong> to keep the site secure and prevent abuse.',
+    legal_4: '<strong>Legal obligation:</strong> to keep billing records as required by Polish tax law.',
+    h2_terceros: '4. Who we share it with',
+    terceros_p1: 'We use the following providers to run the site. All act as data processors under our instructions:',
+    table_proveedor: 'Provider', table_para: 'Purpose', table_ubicacion: 'Location',
+    prov_supabase: 'Database, authentication', prov_google: 'Video calls and calendar', prov_resend: 'Email delivery',
+    prov_telegram: 'Notifications (optional)', prov_vercel: 'Hosting and DNS',
+    loc_eu_us: 'EU / US', loc_us: 'US', loc_eu: 'EU (Dubai/global, self-hosted by Telegram)', loc_global: 'Global (distribution network)',
+    terceros_p2: 'When your data leaves the European Union (e.g. to servers in the US), these providers rely on Standard Contractual Clauses (SCCs) approved by the European Commission as a guarantee of equivalent protection.',
+    terceros_p3: 'We never sell your data to third parties or use it for advertising.',
+    h2_conservacion: '5. How long we keep it',
+    conservacion_p1: "We keep your data while your account is active. If you delete your account from the dashboard, your personal data and Telegram link are permanently and immediately deleted; your booked lessons are freed up and published reviews remain, but no longer linked to your identity. Billing records are kept for as long as required by Polish tax law (typically 5 years).",
+    h2_derechos: '6. Your rights',
+    derechos_p1: 'Under GDPR, you have the right to:',
+    derecho_1: '<strong>Access:</strong> know what data we hold about you.',
+    derecho_2: '<strong>Rectification:</strong> correct inaccurate data.',
+    derecho_3: '<strong>Erasure:</strong> request deletion of your data (you can do this yourself from your account at any time).',
+    derecho_4: '<strong>Portability:</strong> receive your data in a reusable format.',
+    derecho_5: '<strong>Objection and restriction:</strong> object to certain uses of your data.',
+    derecho_6: '<strong>Withdraw consent</strong> at any time (e.g. unlinking Telegram).',
+    derechos_p2: 'To exercise any of these rights, email me at yankxwtic@mozmail.com. I will respond within 30 days at most.',
+    h2_cookies: '7. Cookies and local storage',
+    cookies_p1: "This site doesn't use tracking or advertising cookies. We use the browser's localStorage only to remember your preferred language — a technical, non-personal detail that never leaves your device toward advertisers.",
+    h2_terminos: '8. Terms of service',
+    termino_1: 'Lessons are booked using credits, which are added manually after your payment is confirmed.',
+    termino_2: 'You can cancel a booked lesson up to 12 hours before it starts and automatically recover the credit.',
+    termino_3: "Current prices and discounts are those published on the site's pricing section at any given time.",
+    termino_4: 'We reserve the right to cancel a lesson due to force majeure, always refunding the corresponding credit.',
+    h2_desistimiento: '9. Right of withdrawal (14 days)',
+    desistimiento_p1: 'As a consumer in the European Union, you have the right to withdraw from any online service contract within 14 calendar days, without needing to give a reason, under Directive 2011/83/EU and its transposition into Polish law (Ustawa o prawach konsumenta).',
+    desistimiento_p2: "This right has a legal exception, however: if you expressly request that the service begin before that 14-day period ends (for example, to have your first trial lesson right away instead of waiting two weeks), and you confirm that you understand this means giving up your withdrawal right for the service already delivered, that right is lost to the extent the service has already been performed.",
+    desistimiento_p3: "That's why, when creating your account, we ask you to check an explicit box confirming you understand this — so you can have your trial lesson right away if you prefer, instead of waiting. If you haven't received any lesson yet, you can always exercise your withdrawal right over future, not-yet-delivered lessons by contacting us directly.",
+    h2_contacto: '10. Contact and complaints',
+    contacto_p1: 'For any questions about your data or these terms, email me at yankxwtic@mozmail.com.',
+    contacto_p2: "If you feel we haven't resolved your concern adequately, you have the right to file a complaint with the Polish data protection authority:"
+  }
+};
+
+let currentLang = localStorage.getItem('site_lang') || 'es';
+if (!translations[currentLang]) currentLang = 'es';
+
+function applyTranslations() {
+  const dict = translations[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (dict[key]) el.innerHTML = dict[key];
+  });
+  ['es', 'pl', 'en'].forEach(l => {
+    document.getElementById('lang-btn-' + l).classList.toggle('active', currentLang === l);
+  });
+  document.documentElement.lang = currentLang;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('site_lang', lang);
+  applyTranslations();
+}
+
+applyTranslations();
+</script>
+</body>
+</html>
