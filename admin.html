@@ -175,6 +175,60 @@
     .chat-layout { grid-template-columns: 1fr; }
     .chat-threads { max-height: 220px; }
   }
+
+  /* ---- Unread indicator + toasts ---- */
+  .msg-fab {
+    position: fixed; right: 22px; bottom: 22px; z-index: 60;
+    width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--orange); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 22px -6px rgba(193, 68, 14, 0.65);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .msg-fab:hover { background: var(--orange-deep); transform: translateY(-2px); }
+
+  .msg-fab-badge {
+    position: absolute; top: -3px; right: -3px;
+    min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px;
+    background: #B23A1E; color: var(--white);
+    font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700;
+    line-height: 21px; text-align: center; border: 2px solid var(--bg);
+  }
+
+  .msg-toasts {
+    position: fixed; right: 22px; bottom: 92px; z-index: 61;
+    display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    pointer-events: none;
+  }
+
+  .msg-toast {
+    pointer-events: auto;
+    width: 290px; max-width: calc(100vw - 44px);
+    background: var(--white); border: 1px solid var(--peach-line);
+    border-left: 4px solid var(--orange);
+    border-radius: 12px; padding: 12px 14px;
+    box-shadow: 0 12px 30px -10px rgba(74, 44, 20, 0.32);
+    cursor: pointer;
+    animation: toast-in 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .msg-toast.leaving { animation: toast-out 0.28s ease forwards; }
+  .msg-toast-title { font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 6px; }
+  .msg-toast-sub { color: var(--ink-soft); font-size: 0.8rem; margin-top: 3px; }
+
+  @keyframes toast-in  { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+  @keyframes toast-out { to { opacity: 0; transform: translateX(24px); } }
+
+  /* The card flashes briefly when you jump to it, so it's obvious where
+     the notification landed you. */
+  @keyframes card-flash {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(242, 104, 34, 0); }
+    30%      { box-shadow: 0 0 0 4px rgba(242, 104, 34, 0.35); }
+  }
+  .card.flash { animation: card-flash 1.2s ease; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .msg-toast, .msg-toast.leaving, .card.flash { animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -319,7 +373,7 @@
     </div>
 
     <!-- STUDENT CHAT -->
-    <div class="card">
+    <div class="card" id="chat-card">
       <h3>Mensajes de alumnos <span id="chat-total-unread"></span></h3>
       <p class="hint">Los mensajes y archivos se borran solos a los 30 días. Máximo 25 MB por archivo.</p>
       <div class="chat-layout">
@@ -355,6 +409,18 @@
     </div>
   </div>
 </div>
+
+<!-- Floating unread indicator + live toast. Both sit on the right and are
+     hidden until there is actually something to report. -->
+<div id="msg-toasts" class="msg-toasts" aria-live="polite"></div>
+
+<button id="msg-fab" class="msg-fab" style="display:none;" onclick="jumpToChat()"
+        aria-label="Ir a los mensajes sin leer">
+  <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+    <path fill="currentColor" d="M12 3C6.98 3 3 6.58 3 11c0 2.35 1.14 4.44 2.95 5.86L5 21l4.4-2.06c.83.2 1.7.31 2.6.31 5.02 0 9-3.58 9-8s-3.98-8-9-8z"/>
+  </svg>
+  <span class="msg-fab-badge" id="msg-fab-badge">0</span>
+</button>
 
 <script>
   const SUPABASE_URL = 'https://xmpajzrbgnmlttmlwopf.supabase.co';
@@ -923,6 +989,11 @@
     document.getElementById('chat-total-unread').innerHTML =
       totalUnread > 0 ? `<span class="chat-badge">${totalUnread}</span>` : '';
 
+    // Floating indicator only exists while something is actually unread.
+    const fab = document.getElementById('msg-fab');
+    document.getElementById('msg-fab-badge').textContent = totalUnread > 99 ? '99+' : String(totalUnread);
+    fab.style.display = totalUnread > 0 ? 'flex' : 'none';
+
     if (!threads.length) {
       box.innerHTML = '<p class="empty-note">Todavía no hay conversaciones.</p>';
       return;
@@ -1036,12 +1107,52 @@
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); adminSendChat(); }
   });
 
+  function jumpToChat() {
+    const card = document.getElementById('chat-card');
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    card.classList.remove('flash');
+    void card.offsetWidth; // restart the animation if it's already run
+    card.classList.add('flash');
+  }
+
+  function studentNameById(id) {
+    const s = allStudents.find(s => s.id === id);
+    return s ? (s.full_name || s.email || 'Alumno/a') : 'Alumno/a';
+  }
+
+  function showMessageToast(studentId, hasAttachment) {
+    const box = document.getElementById('msg-toasts');
+    const el = document.createElement('div');
+    el.className = 'msg-toast';
+    el.onclick = () => { openThread(studentId); jumpToChat(); dismiss(); };
+    el.innerHTML =
+      `<div class="msg-toast-title">💬 ${escapeHtml(studentNameById(studentId))}</div>` +
+      `<div class="msg-toast-sub">${hasAttachment ? 'Te ha enviado un archivo.' : 'Te ha enviado un mensaje.'}</div>`;
+    box.appendChild(el);
+
+    function dismiss() {
+      if (!el.isConnected) return;
+      el.classList.add('leaving');
+      setTimeout(() => el.remove(), 280);
+    }
+    setTimeout(dismiss, 8000);
+    // Never let a long absence stack up an unbounded column of toasts.
+    while (box.children.length > 3) box.firstChild.remove();
+  }
+
   function subscribeAdminChat() {
     if (adminChatChannel) return;
     adminChatChannel = sb.channel('admin-chat')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
         loadChatThreads();
-        if (activeThread && payload.new && payload.new.student_id === activeThread) {
+        const m = payload.new;
+        if (!m) return;
+
+        // Only a student's message is news — don't toast Paulo's own replies.
+        if (!m.sender_is_admin && m.student_id !== activeThread) {
+          showMessageToast(m.student_id, !!m.attachment_path);
+        }
+        if (activeThread && m.student_id === activeThread) {
           openThread(activeThread);
         }
       })
