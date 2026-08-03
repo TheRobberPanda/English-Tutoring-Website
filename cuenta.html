@@ -156,6 +156,88 @@
   .chat-attach:hover { border-color: var(--orange); }
   .chat-file-name { font-size: 0.8rem; color: var(--ink-soft); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .chat-retention { color: var(--ink-soft); font-size: 0.76rem; margin: 10px 0 0; }
+  /* ---- Floating chat widget (WhatsApp-style) ---- */
+  .chat-widget { position: fixed; right: 22px; bottom: 22px; z-index: 60; }
+
+  .chat-launcher {
+    width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--orange); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 22px -6px rgba(193, 68, 14, 0.65);
+    transition: transform 0.2s ease, background 0.2s ease;
+    position: relative;
+  }
+  .chat-launcher:hover { background: var(--orange-deep); transform: translateY(-2px); }
+
+  .chat-launcher-badge {
+    position: absolute; top: -3px; right: -3px;
+    min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px;
+    background: #B23A1E; color: var(--white);
+    font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700;
+    line-height: 21px; text-align: center;
+    border: 2px solid var(--bg);
+  }
+
+  .chat-window {
+    position: absolute; right: 0; bottom: 72px;
+    width: 370px; max-width: calc(100vw - 44px);
+    background: var(--white);
+    border: 1px solid var(--peach-line);
+    border-radius: 16px;
+    box-shadow: 0 18px 44px -12px rgba(74, 44, 20, 0.28);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+  }
+  .chat-window.open { display: flex; }
+
+  .chat-window-head {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    padding: 14px 16px; background: var(--orange); color: var(--white);
+  }
+  .chat-window-title { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem; }
+  .chat-window-sub { font-size: 0.76rem; opacity: 0.9; margin-top: 2px; }
+  .chat-close {
+    background: none; border: none; color: var(--white);
+    font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0 2px;
+  }
+
+  .chat-widget .chat-log {
+    max-height: 320px; min-height: 180px; margin: 0;
+    border: none; border-radius: 0; border-bottom: 1px solid var(--peach-line);
+  }
+  .chat-widget .chat-compose { padding: 12px 14px 14px; }
+  .chat-widget .chat-compose textarea { font-size: 0.9rem; }
+  .chat-widget .chat-retention { font-size: 0.7rem; }
+
+  @media (max-width: 480px) {
+    .chat-widget { right: 14px; bottom: 14px; }
+    .chat-window { width: calc(100vw - 28px); bottom: 68px; }
+    .chat-widget .chat-log { max-height: 46vh; }
+  }
+
+  /* ---- Floating credits pill ---- */
+  .credits-pill {
+    position: fixed; right: 22px; top: 84px; z-index: 55;
+    background: var(--white); border: 1px solid var(--peach-line);
+    border-radius: 100px; padding: 9px 17px;
+    box-shadow: 0 6px 18px -6px rgba(74, 44, 20, 0.22);
+    display: flex; align-items: baseline; gap: 7px;
+    font-size: 0.8rem; color: var(--ink-soft);
+  }
+  .credits-pill-num {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.15rem; color: var(--orange-deep);
+  }
+  /* Below ~1180px the pill would collide with the content column, so it
+     tucks under the header as a compact chip instead. */
+  @media (max-width: 1180px) {
+    .credits-pill { top: auto; bottom: 22px; right: 92px; padding: 8px 14px; }
+    .credits-pill-label { display: none; }
+  }
+  @media (max-width: 480px) {
+    .credits-pill { bottom: 20px; right: 80px; }
+  }
+
   .chat-unread-dot {
     display: inline-block; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
     background: var(--orange); color: var(--white); font-size: 0.7rem; font-weight: 700;
@@ -297,29 +379,6 @@
     </div>
 
     <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="chat_title">Chat con Paulo</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="chat_hint">
-        Escríbeme si tienes dudas entre clases. Puedes enviar fotos, vídeos o PDF como apoyo.
-      </p>
-      <div id="chat-log" class="chat-log"></div>
-      <div class="chat-compose">
-        <textarea id="chat-input" rows="2" maxlength="4000"
-          data-i18n-placeholder="chat_placeholder" placeholder="Escribe tu mensaje..."></textarea>
-        <div class="chat-actions">
-          <label class="chat-attach" for="chat-file" title="Adjuntar">
-            <span data-i18n="chat_attach">Adjuntar</span>
-            <input type="file" id="chat-file" hidden
-              accept="image/jpeg,image/png,image/webp,image/gif,image/heic,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/ogg,audio/wav,audio/mp4,application/pdf">
-          </label>
-          <span id="chat-file-name" class="chat-file-name"></span>
-          <button class="btn" id="chat-send-btn" onclick="sendChatMessage()" data-i18n="chat_send">Enviar</button>
-        </div>
-      </div>
-      <p class="chat-retention" data-i18n="chat_retention">Los mensajes y archivos se borran automáticamente a los 30 días. Máximo 25 MB por archivo.</p>
-      <div id="chat-msg"></div>
-    </div>
-
-    <div class="card">
       <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="leave_review_title">Deja tu opinión</h3>
       <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 6px;" data-i18n="leave_review_hint">Tu opinión se revisará antes de publicarse en la web.</p>
       <textarea id="testimonial-text" rows="3" data-i18n-placeholder="review_placeholder" placeholder="Cuenta tu experiencia con las clases..."
@@ -337,6 +396,47 @@
       <div id="delete-account-msg"></div>
     </div>
   </div>
+</div>
+
+<!-- Floating credits pill + chat launcher. Both are hidden until the
+     dashboard loads, so they never appear on the login screen. -->
+<div id="credits-pill" class="credits-pill" style="display:none;">
+  <span class="credits-pill-num" id="credits-pill-num">0</span>
+  <span class="credits-pill-label" data-i18n="credits_available">clases disponibles</span>
+</div>
+
+<div id="chat-widget" class="chat-widget" style="display:none;">
+  <div class="chat-window" id="chat-window" role="dialog" aria-labelledby="chat-window-title">
+    <div class="chat-window-head">
+      <div>
+        <div class="chat-window-title" id="chat-window-title" data-i18n="chat_title">Chat con Paulo</div>
+        <div class="chat-window-sub" data-i18n="chat_sub">Normalmente respondo en unas horas</div>
+      </div>
+      <button class="chat-close" onclick="toggleChat(false)" aria-label="Cerrar">&times;</button>
+    </div>
+    <div id="chat-log" class="chat-log"></div>
+    <div class="chat-compose">
+      <textarea id="chat-input" rows="1" maxlength="4000"
+        data-i18n-placeholder="chat_placeholder" placeholder="Escribe tu mensaje..."></textarea>
+      <div class="chat-actions">
+        <label class="chat-attach" for="chat-file" title="Adjuntar">
+          <span data-i18n="chat_attach">Adjuntar</span>
+          <input type="file" id="chat-file" hidden
+            accept="image/jpeg,image/png,image/webp,image/gif,image/heic,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/ogg,audio/wav,audio/mp4,application/pdf">
+        </label>
+        <span id="chat-file-name" class="chat-file-name"></span>
+        <button class="btn" id="chat-send-btn" onclick="sendChatMessage()" data-i18n="chat_send">Enviar</button>
+      </div>
+      <p class="chat-retention" data-i18n="chat_retention">Los mensajes y archivos se borran automáticamente a los 30 días. Máximo 25 MB por archivo.</p>
+      <div id="chat-msg"></div>
+    </div>
+  </div>
+  <button class="chat-launcher" id="chat-launcher" onclick="toggleChat()" aria-label="Chat">
+    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+      <path fill="currentColor" d="M12 3C6.98 3 3 6.58 3 11c0 2.35 1.14 4.44 2.95 5.86L5 21l4.4-2.06c.83.2 1.7.31 2.6.31 5.02 0 9-3.58 9-8s-3.98-8-9-8z"/>
+    </svg>
+    <span class="chat-launcher-badge" id="chat-launcher-badge" style="display:none;">0</span>
+  </button>
 </div>
 
 <script>
@@ -381,7 +481,7 @@
       telegram_benefit_4: 'Cambia el idioma del bot cuando quieras con /idioma',
       generate_code_btn: 'Generar código', unlink_telegram_btn: 'Desvincular Telegram',
       telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
-      chat_title: 'Chat con Paulo',
+      chat_title: 'Chat con Paulo', chat_sub: 'Normalmente respondo en unas horas',
       chat_hint: 'Escríbeme si tienes dudas entre clases. Puedes enviar fotos, vídeos o PDF como apoyo.',
       chat_placeholder: 'Escribe tu mensaje...', chat_attach: 'Adjuntar', chat_send: 'Enviar',
       chat_empty: 'Todavía no hay mensajes. Escribe el primero.',
@@ -444,7 +544,7 @@
       telegram_benefit_4: 'Zmień język bota, kiedy chcesz, komendą /jezyk',
       generate_code_btn: 'Wygeneruj kod', unlink_telegram_btn: 'Odłącz Telegram',
       telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
-      chat_title: 'Czat z Paulo',
+      chat_title: 'Czat z Paulo', chat_sub: 'Zwykle odpowiadam w ciągu kilku godzin',
       chat_hint: 'Napisz do mnie, jeśli masz pytania między lekcjami. Możesz wysyłać zdjęcia, filmy lub PDF jako pomoc.',
       chat_placeholder: 'Napisz wiadomość...', chat_attach: 'Załącz', chat_send: 'Wyślij',
       chat_empty: 'Nie ma jeszcze wiadomości. Napisz pierwszą.',
@@ -507,7 +607,7 @@
       telegram_benefit_4: 'Change the bot\'s language any time with /language',
       generate_code_btn: 'Generate code', unlink_telegram_btn: 'Unlink Telegram',
       telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
-      chat_title: 'Chat with Paulo',
+      chat_title: 'Chat with Paulo', chat_sub: 'I usually reply within a few hours',
       chat_hint: 'Message me if you have questions between lessons. You can send photos, videos or PDFs as support material.',
       chat_placeholder: 'Write your message...', chat_attach: 'Attach', chat_send: 'Send',
       chat_empty: 'No messages yet. Write the first one.',
@@ -732,6 +832,11 @@
     await sb.auth.signOut();
     document.getElementById('dashboard-view').style.display = 'none';
     document.getElementById('auth-view').style.display = 'block';
+    // The widget and pill are logged-in-only furniture.
+    toggleChat(false);
+    document.getElementById('chat-widget').style.display = 'none';
+    document.getElementById('credits-pill').style.display = 'none';
+    if (chatChannel) { sb.removeChannel(chatChannel); chatChannel = null; }
   }
 
   async function loadDashboard() {
@@ -769,7 +874,15 @@
     } else {
       document.getElementById('student-name').innerText = profile?.full_name || user.email;
     }
-    document.getElementById('credit-count').innerText = profile?.credits ?? 0;
+    // Credits are numeric now (a 75-min class costs 1.5), so trim the
+    // trailing ".00" on whole balances rather than showing "3.00".
+    const rawCredits = Number(profile?.credits ?? 0);
+    const creditsText = Number.isInteger(rawCredits)
+      ? String(rawCredits)
+      : String(parseFloat(rawCredits.toFixed(2)));
+    document.getElementById('credit-count').innerText = creditsText;
+    document.getElementById('credits-pill-num').innerText = creditsText;
+    document.getElementById('credits-pill').style.display = 'flex';
 
     await loadOpenSlots(profile?.credits ?? 0);
     await loadMyBookings();
@@ -1171,10 +1284,36 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  let chatOpen = false;
+
+  function toggleChat(force) {
+    chatOpen = typeof force === 'boolean' ? force : !chatOpen;
+    document.getElementById('chat-window').classList.toggle('open', chatOpen);
+    if (chatOpen) {
+      const log = document.getElementById('chat-log');
+      log.scrollTop = log.scrollHeight;
+      document.getElementById('chat-input').focus();
+      // Opening the panel is what marks Paulo's messages as read.
+      if (chatUserId) {
+        sb.rpc('mark_chat_read', { _student_id: chatUserId }).then(() => refreshUnreadBadge());
+      }
+    }
+  }
+
+  async function refreshUnreadBadge() {
+    const { data, error } = await sb.rpc('my_unread_chat_count');
+    if (error) return;
+    const n = Number(data || 0);
+    const badge = document.getElementById('chat-launcher-badge');
+    badge.textContent = n > 99 ? '99+' : String(n);
+    badge.style.display = n > 0 ? 'block' : 'none';
+  }
+
   async function loadChat() {
     const { data: { user } } = await sb.auth.getUser();
     if (!user) return;
     chatUserId = user.id;
+    document.getElementById('chat-widget').style.display = 'block';
 
     const { data, error } = await sb
       .from('chat_messages')
@@ -1185,7 +1324,13 @@
 
     if (error) { chatMsg(error.message, 'error'); return; }
     await renderChat(data || []);
-    await sb.rpc('mark_chat_read', { _student_id: user.id });
+
+    // Only clear the badge if the panel is actually open — otherwise an
+    // incoming message would silently mark itself read in the background.
+    if (chatOpen) {
+      await sb.rpc('mark_chat_read', { _student_id: user.id });
+    }
+    await refreshUnreadBadge();
 
     if (!chatChannel) {
       chatChannel = sb.channel('chat-' + user.id)

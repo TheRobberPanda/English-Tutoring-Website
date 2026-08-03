@@ -798,16 +798,23 @@
       tr.innerHTML = `
         <td>${escapeHtml(s.full_name || '—')}</td>
         <td>${escapeHtml(s.email || '—')}</td>
-        <td><input type="number" min="0" value="${s.credits}" id="credit-input-${s.id}"></td>
+        <td><input type="number" min="0" step="0.5" value="${fmtCredits(s.credits)}" id="credit-input-${s.id}"></td>
         <td><button class="btn btn-small btn-outline" onclick="saveCredits('${s.id}')">Guardar</button></td>
       `;
       tbody.appendChild(tr);
     });
   }
 
+  // numeric(6,2) comes back as a string like "3.00"; show 3 and 1.5 nicely.
+  function fmtCredits(v) {
+    const n = Number(v ?? 0);
+    return Number.isInteger(n) ? String(n) : String(parseFloat(n.toFixed(2)));
+  }
+
   async function saveCredits(studentId) {
     const input = document.getElementById(`credit-input-${studentId}`);
-    const newCredits = parseInt(input.value, 10);
+    // Credits are fractional now (a 75-min class costs 1.5), so parseFloat.
+    const newCredits = parseFloat(input.value);
     if (isNaN(newCredits) || newCredits < 0) {
       alert('Introduce un número válido de créditos.');
       return;
