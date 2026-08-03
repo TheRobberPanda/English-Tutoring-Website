@@ -1373,14 +1373,31 @@
 
       const btn = document.createElement('button');
       btn.className = 'week-day-btn' + (selectedDateKey === key ? ' selected' : '');
+      btn.dataset.key = key;
       btn.disabled = isPast;
       btn.innerHTML = `<span class="dow">${dowNames[i]}</span><span class="num">${d.getDate()}</span>${daySlots.length > 0 ? '<span class="avail-dot"></span>' : ''}`;
-      btn.onclick = () => { selectedDateKey = key; loadOpenSlots(currentCredits); };
+      // Selecting a day is a pure client-side filter over weekSlots, which is
+      // already loaded — refetching the whole week here made every tap wait on
+      // a network round-trip for data we had in memory.
+      btn.onclick = () => selectDay(key);
       daysContainer.appendChild(btn);
     }
 
     if (!selectedDateKey) selectedDateKey = firstAvailableKey;
 
+    markSelectedDay();
+    renderDaySlots();
+  }
+
+  function markSelectedDay() {
+    document.querySelectorAll('#week-days .week-day-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.key === selectedDateKey);
+    });
+  }
+
+  function selectDay(key) {
+    selectedDateKey = key;
+    markSelectedDay();
     renderDaySlots();
   }
 

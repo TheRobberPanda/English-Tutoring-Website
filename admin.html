@@ -270,6 +270,52 @@
   .focus-when { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--ink-soft); white-space: nowrap; }
   .focus-del { background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 1rem; line-height: 1; padding: 0 2px; }
   .focus-del:hover { color: #B23A1E; }
+  /* ---- Subpage tabs ---- */
+  .tabs {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 24px; border-bottom: 1px solid var(--peach-line);
+  }
+  .tab {
+    border: none; background: none; cursor: pointer;
+    font-family: 'Work Sans', sans-serif; font-size: 0.92rem; font-weight: 600;
+    color: var(--ink-soft); padding: 10px 16px; border-radius: 9px 9px 0 0;
+    position: relative; transition: color 0.18s ease, background 0.18s ease;
+  }
+  .tab:hover { color: var(--orange-deep); background: var(--bg-soft); }
+  .tab.active { color: var(--orange-deep); background: var(--white); }
+  .tab.active::after {
+    content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
+    height: 2.5px; background: var(--orange); border-radius: 2px;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  @media (max-width: 560px) { .tab { padding: 9px 11px; font-size: 0.85rem; } }
+
+  /* ---- Student picker (replaces the dropdown) ---- */
+  .student-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .student-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1.5px solid var(--peach-line); background: var(--bg);
+    border-radius: 100px; padding: 7px 15px 7px 7px; cursor: pointer;
+    font-family: 'Work Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+    color: var(--ink); transition: all 0.16s ease;
+  }
+  .student-chip:hover { border-color: var(--orange); background: var(--white); }
+  .student-chip.active {
+    border-color: var(--orange); background: var(--orange); color: var(--white);
+    box-shadow: 0 4px 12px -3px rgba(242,104,34,0.5);
+  }
+  .student-avatar {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: var(--peach); color: var(--orange-deep);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 0.8rem;
+  }
+  .student-chip.active .student-avatar { background: var(--white); }
+  .student-chip .chip-count {
+    font-family: 'Space Mono', monospace; font-size: 0.68rem;
+    opacity: 0.75; font-weight: 700;
+  }
 </style>
 </head>
 <body>
@@ -289,196 +335,212 @@
       <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
     </div>
 
-    <!-- NEXT LESSONS -->
-    <div class="card">
-      <h3>Próximas clases</h3>
-      <p class="hint">Tus clases reservadas más próximas, con acceso directo a Google Meet.</p>
-      <div id="next-lessons-list"></div>
-      <p class="empty-note" id="next-lessons-empty" style="display:none;">No tienes clases reservadas próximamente.</p>
-    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-tab="clases" role="tab" onclick="showAdminTab('clases')">Clases</button>
+      <button class="tab" data-tab="alumnos" role="tab" onclick="showAdminTab('alumnos')">Alumnos</button>
+      <button class="tab" data-tab="notas" role="tab" onclick="showAdminTab('notas')">Notas</button>
+      <button class="tab" data-tab="mensajes" role="tab" onclick="showAdminTab('mensajes')">Mensajes <span id="tab-msg-badge"></span></button>
+      <button class="tab" data-tab="opiniones" role="tab" onclick="showAdminTab('opiniones')">Opiniones</button>
+    </nav>
 
-    <!-- CREATE SLOT -->
-    <div class="card">
-      <h3>Crear clase disponible</h3>
-      <p class="hint">Se publicará para que cualquier alumno con créditos pueda reservarla.</p>
-      <div class="form-row">
-        <div>
-          <label for="slot-date">Fecha</label>
-          <input type="date" id="slot-date">
-        </div>
-        <div>
-          <label for="slot-start">Hora inicio</label>
-          <input type="time" id="slot-start">
-        </div>
-        <div>
-          <label for="slot-end">Hora fin</label>
-          <input type="time" id="slot-end">
-        </div>
-        <div style="flex: 0 0 auto;">
-          <button class="btn" onclick="createSlot()">Crear clase</button>
-        </div>
+    <section class="tab-panel" id="apanel-clases" role="tabpanel">
+      <!-- NEXT LESSONS -->
+      <div class="card">
+        <h3>Próximas clases</h3>
+        <p class="hint">Tus clases reservadas más próximas, con acceso directo a Google Meet.</p>
+        <div id="next-lessons-list"></div>
+        <p class="empty-note" id="next-lessons-empty" style="display:none;">No tienes clases reservadas próximamente.</p>
       </div>
-      <div id="create-slot-msg"></div>
-    </div>
 
-    <!-- BULK CREATE -->
-    <div class="card">
-      <h3>Crear clases en bloque</h3>
-      <p class="hint">Genera automáticamente clases de 50 minutos en punto (ej. 9:00–9:50, 10:00–10:50...), dejando siempre 10 minutos de margen entre una y la siguiente.</p>
-      <div class="form-row">
-        <div>
-          <label for="bulk-start-date">Desde</label>
-          <input type="date" id="bulk-start-date">
+      <!-- CALENDAR -->
+      <div class="card">
+        <h3>Calendario de clases</h3>
+        <p class="hint">
+          <span class="cal-dot open" style="display:inline-block; vertical-align:middle;"></span> disponible &nbsp;
+          <span class="cal-dot booked" style="display:inline-block; vertical-align:middle;"></span> reservada &nbsp;
+          <span class="cal-dot blocked" style="display:inline-block; vertical-align:middle;"></span> bloqueada (evento personal)
+        </p>
+        <div class="cal-header">
+          <button onclick="changeMonth(-1)">&larr; Anterior</button>
+          <h3 id="cal-month-label" style="font-size: 1rem;"></h3>
+          <button onclick="changeMonth(1)">Siguiente &rarr;</button>
         </div>
-        <div>
-          <label for="bulk-end-date">Hasta</label>
-          <input type="date" id="bulk-end-date">
-        </div>
-      </div>
-      <div style="margin: 14px 0;">
-        <label>Días de la semana</label>
-        <div style="display:flex; gap: 14px; flex-wrap: wrap; margin-top: 6px;">
-          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="1" checked> Lun</label>
-          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="2" checked> Mar</label>
-          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="3" checked> Mié</label>
-          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="4" checked> Jue</label>
-          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="5" checked> Vie</label>
-          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="6"> Sáb</label>
-          <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="0"> Dom</label>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="day-panel" id="day-panel" style="display:none;">
+          <h3 id="day-panel-title" style="font-size: 0.95rem; margin-bottom: 10px;"></h3>
+          <div id="day-panel-slots"></div>
         </div>
       </div>
-      <div class="form-row">
-        <div>
-          <label for="bulk-start-hour">Desde qué hora</label>
-          <input type="time" id="bulk-start-hour" step="900" value="09:00">
-        </div>
-        <div>
-          <label for="bulk-end-hour">Hasta qué hora (última clase empieza antes de esta hora)</label>
-          <input type="time" id="bulk-end-hour" step="900" value="14:00">
-        </div>
-        <div style="flex: 0 0 auto;">
-          <button class="btn" onclick="createBulkSlots()">Generar clases</button>
-        </div>
-      </div>
-      <div id="bulk-slot-msg"></div>
-    </div>
 
-    <!-- CALENDAR -->
-    <div class="card">
-      <h3>Calendario de clases</h3>
-      <p class="hint">
-        <span class="cal-dot open" style="display:inline-block; vertical-align:middle;"></span> disponible &nbsp;
-        <span class="cal-dot booked" style="display:inline-block; vertical-align:middle;"></span> reservada &nbsp;
-        <span class="cal-dot blocked" style="display:inline-block; vertical-align:middle;"></span> bloqueada (evento personal)
-      </p>
-      <div class="cal-header">
-        <button onclick="changeMonth(-1)">&larr; Anterior</button>
-        <h3 id="cal-month-label" style="font-size: 1rem;"></h3>
-        <button onclick="changeMonth(1)">Siguiente &rarr;</button>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
-      <div class="day-panel" id="day-panel" style="display:none;">
-        <h3 id="day-panel-title" style="font-size: 0.95rem; margin-bottom: 10px;"></h3>
-        <div id="day-panel-slots"></div>
-      </div>
-    </div>
-
-    <!-- ESTIMATED EARNINGS -->
-    <div class="card">
-      <h3>Ingresos estimados</h3>
-      <p class="hint">Calculado sobre el mes mostrado en el calendario de arriba, suponiendo que todas las clases se pagan con Monero (12€/clase).</p>
-      <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px;">
-        <div>
-          <div class="price-label" style="color: var(--ink-soft); font-family: 'Space Mono', monospace; font-size: 0.78rem; text-transform: uppercase;">Clases reservadas</div>
-          <div style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.8rem;" id="earnings-count">0</div>
-        </div>
-        <div>
-          <div class="price-label" style="color: var(--ink-soft); font-family: 'Space Mono', monospace; font-size: 0.78rem; text-transform: uppercase;">Ingreso estimado</div>
-          <div style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.8rem; color: var(--orange-deep);" id="earnings-total">0€</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STUDENT CREDITS -->
-    <div class="card">
-      <h3>Créditos de alumnos</h3>
-      <p class="hint">Cambia el número y pulsa Guardar para actualizar el saldo de un alumno.</p>
-      <input type="text" id="student-search" placeholder="Buscar por nombre o email..." oninput="renderStudents()">
-      <table>
-        <thead>
-          <tr><th>Nombre</th><th>Email</th><th>Créditos</th><th></th></tr>
-        </thead>
-        <tbody id="students-tbody"></tbody>
-      </table>
-      <p class="empty-note" id="students-empty" style="display:none;">No se encontraron alumnos.</p>
-    </div>
-
-    <!-- STUDENT CHAT -->
-    <div class="card" id="chat-card">
-      <h3>Mensajes de alumnos <span id="chat-total-unread"></span></h3>
-      <p class="hint">Los mensajes y archivos se borran solos a los 30 días. Máximo 25 MB por archivo.</p>
-      <div class="chat-layout">
-        <div class="chat-threads" id="chat-threads">
-          <p class="empty-note">Todavía no hay conversaciones.</p>
-        </div>
-        <div class="chat-panel">
-          <div class="chat-panel-head" id="chat-with">Selecciona un alumno</div>
-          <div id="admin-chat-log" class="chat-log">
-            <p class="empty-note">Elige una conversación a la izquierda.</p>
+      <!-- CREATE SLOT -->
+      <div class="card">
+        <h3>Crear clase disponible</h3>
+        <p class="hint">Se publicará para que cualquier alumno con créditos pueda reservarla.</p>
+        <div class="form-row">
+          <div>
+            <label for="slot-date">Fecha</label>
+            <input type="date" id="slot-date">
           </div>
-          <div class="chat-compose" id="admin-chat-compose" style="display:none;">
-            <textarea id="admin-chat-input" rows="2" maxlength="4000" placeholder="Escribe tu respuesta..."></textarea>
-            <div class="chat-actions">
-              <label class="chat-attach" for="admin-chat-file">Adjuntar
-                <input type="file" id="admin-chat-file" hidden
-                  accept="image/jpeg,image/png,image/webp,image/gif,image/heic,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/ogg,audio/wav,audio/mp4,application/pdf">
-              </label>
-              <span id="admin-chat-file-name" class="chat-file-name"></span>
-              <button class="btn btn-small" id="admin-chat-send" onclick="adminSendChat()">Enviar</button>
+          <div>
+            <label for="slot-start">Hora inicio</label>
+            <input type="time" id="slot-start">
+          </div>
+          <div>
+            <label for="slot-end">Hora fin</label>
+            <input type="time" id="slot-end">
+          </div>
+          <div style="flex: 0 0 auto;">
+            <button class="btn" onclick="createSlot()">Crear clase</button>
+          </div>
+        </div>
+        <div id="create-slot-msg"></div>
+      </div>
+
+      <!-- BULK CREATE -->
+      <div class="card">
+        <h3>Crear clases en bloque</h3>
+        <p class="hint">Genera automáticamente clases de 50 minutos en punto (ej. 9:00–9:50, 10:00–10:50...), dejando siempre 10 minutos de margen entre una y la siguiente.</p>
+        <div class="form-row">
+          <div>
+            <label for="bulk-start-date">Desde</label>
+            <input type="date" id="bulk-start-date">
+          </div>
+          <div>
+            <label for="bulk-end-date">Hasta</label>
+            <input type="date" id="bulk-end-date">
+          </div>
+        </div>
+        <div style="margin: 14px 0;">
+          <label>Días de la semana</label>
+          <div style="display:flex; gap: 14px; flex-wrap: wrap; margin-top: 6px;">
+            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="1" checked> Lun</label>
+            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="2" checked> Mar</label>
+            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="3" checked> Mié</label>
+            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="4" checked> Jue</label>
+            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="5" checked> Vie</label>
+            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="6"> Sáb</label>
+            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="0"> Dom</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label for="bulk-start-hour">Desde qué hora</label>
+            <input type="time" id="bulk-start-hour" step="900" value="09:00">
+          </div>
+          <div>
+            <label for="bulk-end-hour">Hasta qué hora (última clase empieza antes de esta hora)</label>
+            <input type="time" id="bulk-end-hour" step="900" value="14:00">
+          </div>
+          <div style="flex: 0 0 auto;">
+            <button class="btn" onclick="createBulkSlots()">Generar clases</button>
+          </div>
+        </div>
+        <div id="bulk-slot-msg"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="apanel-alumnos" role="tabpanel">
+      <!-- STUDENT CREDITS -->
+      <div class="card">
+        <h3>Créditos de alumnos</h3>
+        <p class="hint">Cambia el número y pulsa Guardar para actualizar el saldo de un alumno.</p>
+        <input type="text" id="student-search" placeholder="Buscar por nombre o email..." oninput="renderStudents()">
+        <table>
+          <thead>
+            <tr><th>Nombre</th><th>Email</th><th>Créditos</th><th></th></tr>
+          </thead>
+          <tbody id="students-tbody"></tbody>
+        </table>
+        <p class="empty-note" id="students-empty" style="display:none;">No se encontraron alumnos.</p>
+      </div>
+
+      <!-- ESTIMATED EARNINGS -->
+      <div class="card">
+        <h3>Ingresos estimados</h3>
+        <p class="hint">Calculado sobre el mes mostrado en el calendario de arriba, suponiendo que todas las clases se pagan con Monero (12€/clase).</p>
+        <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px;">
+          <div>
+            <div class="price-label" style="color: var(--ink-soft); font-family: 'Space Mono', monospace; font-size: 0.78rem; text-transform: uppercase;">Clases reservadas</div>
+            <div style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.8rem;" id="earnings-count">0</div>
+          </div>
+          <div>
+            <div class="price-label" style="color: var(--ink-soft); font-family: 'Space Mono', monospace; font-size: 0.78rem; text-transform: uppercase;">Ingreso estimado</div>
+            <div style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.8rem; color: var(--orange-deep);" id="earnings-total">0€</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="apanel-notas" role="tabpanel">
+      <!-- FOCUS AREAS -->
+      <div class="card" id="focus-card">
+        <h3>Puntos a trabajar</h3>
+        <p class="hint">Lo que el alumno siente que le cuesta, junto a tus observaciones. El alumno ve ambas listas.</p>
+        <div class="student-picker" id="focus-picker"></div>
+        <div class="focus-grid" id="focus-panels" style="display:none;">
+          <div class="focus-col focus-mine">
+            <div class="focus-head">
+              <span class="focus-tag focus-tag-mine">Alumno</span>
+              <strong>Lo que dice que le cuesta</strong>
             </div>
+            <ul class="focus-list" id="admin-focus-student"></ul>
+            <p class="empty-note" id="admin-focus-student-empty" style="display:none;">El alumno no ha apuntado nada.</p>
           </div>
-          <div id="admin-chat-msg"></div>
+          <div class="focus-col focus-tutor">
+            <div class="focus-head">
+              <span class="focus-tag focus-tag-tutor">Tú</span>
+              <strong>Tus observaciones</strong>
+            </div>
+            <form class="focus-form" onsubmit="addAdminFocus(event)">
+              <input type="text" id="admin-focus-input" maxlength="500" placeholder="Ej: confunde past simple y present perfect">
+              <button type="submit">Añadir</button>
+            </form>
+            <ul class="focus-list" id="admin-focus-tutor"></ul>
+            <p class="empty-note" id="admin-focus-tutor-empty" style="display:none;">Todavía no has añadido notas.</p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- FOCUS AREAS -->
-    <div class="card" id="focus-card">
-      <h3>Puntos a trabajar</h3>
-      <p class="hint">Lo que el alumno siente que le cuesta, junto a tus observaciones. El alumno ve ambas listas.</p>
-      <select id="focus-student" onchange="loadAdminFocus()" style="width:100%; margin-bottom:16px;">
-        <option value="">Elige un alumno...</option>
-      </select>
-      <div class="focus-grid" id="focus-panels" style="display:none;">
-        <div class="focus-col focus-mine">
-          <div class="focus-head">
-            <span class="focus-tag focus-tag-mine">Alumno</span>
-            <strong>Lo que dice que le cuesta</strong>
+    <section class="tab-panel" id="apanel-mensajes" role="tabpanel">
+      <!-- STUDENT CHAT -->
+      <div class="card" id="chat-card">
+        <h3>Mensajes de alumnos <span id="chat-total-unread"></span></h3>
+        <p class="hint">Los mensajes y archivos se borran solos a los 30 días. Máximo 25 MB por archivo.</p>
+        <div class="chat-layout">
+          <div class="chat-threads" id="chat-threads">
+            <p class="empty-note">Todavía no hay conversaciones.</p>
           </div>
-          <ul class="focus-list" id="admin-focus-student"></ul>
-          <p class="empty-note" id="admin-focus-student-empty" style="display:none;">El alumno no ha apuntado nada.</p>
-        </div>
-        <div class="focus-col focus-tutor">
-          <div class="focus-head">
-            <span class="focus-tag focus-tag-tutor">Tú</span>
-            <strong>Tus observaciones</strong>
+          <div class="chat-panel">
+            <div class="chat-panel-head" id="chat-with">Selecciona un alumno</div>
+            <div id="admin-chat-log" class="chat-log">
+              <p class="empty-note">Elige una conversación a la izquierda.</p>
+            </div>
+            <div class="chat-compose" id="admin-chat-compose" style="display:none;">
+              <textarea id="admin-chat-input" rows="2" maxlength="4000" placeholder="Escribe tu respuesta..."></textarea>
+              <div class="chat-actions">
+                <label class="chat-attach" for="admin-chat-file">Adjuntar
+                  <input type="file" id="admin-chat-file" hidden
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/heic,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/ogg,audio/wav,audio/mp4,application/pdf">
+                </label>
+                <span id="admin-chat-file-name" class="chat-file-name"></span>
+                <button class="btn btn-small" id="admin-chat-send" onclick="adminSendChat()">Enviar</button>
+              </div>
+            </div>
+            <div id="admin-chat-msg"></div>
           </div>
-          <form class="focus-form" onsubmit="addAdminFocus(event)">
-            <input type="text" id="admin-focus-input" maxlength="500" placeholder="Ej: confunde past simple y present perfect">
-            <button type="submit">Añadir</button>
-          </form>
-          <ul class="focus-list" id="admin-focus-tutor"></ul>
-          <p class="empty-note" id="admin-focus-tutor-empty" style="display:none;">Todavía no has añadido notas.</p>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- TESTIMONIAL MODERATION -->
-    <div class="card">
-      <h3>Opiniones pendientes de aprobación</h3>
-      <div id="pending-testimonials"></div>
-      <p class="empty-note" id="pending-empty" style="display:none;">No hay opiniones pendientes.</p>
-    </div>
+    <section class="tab-panel" id="apanel-opiniones" role="tabpanel">
+      <!-- TESTIMONIAL MODERATION -->
+      <div class="card">
+        <h3>Opiniones pendientes de aprobación</h3>
+        <div id="pending-testimonials"></div>
+        <p class="empty-note" id="pending-empty" style="display:none;">No hay opiniones pendientes.</p>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -549,6 +611,7 @@
     await loadPendingTestimonials();
     await loadChatThreads();
     subscribeAdminChat();
+    showAdminTab((window.location.hash || '#clases').slice(1));
   }
 
   // ---- NEXT LESSONS ----
@@ -1066,6 +1129,8 @@
     const fab = document.getElementById('msg-fab');
     document.getElementById('msg-fab-badge').textContent = totalUnread > 99 ? '99+' : String(totalUnread);
     fab.style.display = totalUnread > 0 ? 'flex' : 'none';
+    const tabBadge = document.getElementById('tab-msg-badge');
+    if (tabBadge) tabBadge.innerHTML = totalUnread > 0 ? `<span class="chat-badge">${totalUnread}</span>` : '';
 
     if (!threads.length) {
       box.innerHTML = '<p class="empty-note">Todavía no hay conversaciones.</p>';
@@ -1180,14 +1245,6 @@
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); adminSendChat(); }
   });
 
-  function jumpToChat() {
-    const card = document.getElementById('chat-card');
-    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    card.classList.remove('flash');
-    void card.offsetWidth; // restart the animation if it's already run
-    card.classList.add('flash');
-  }
-
   function studentNameById(id) {
     const s = allStudents.find(s => s.id === id);
     return s ? (s.full_name || s.email || 'Alumno/a') : 'Alumno/a';
@@ -1241,16 +1298,41 @@
     return rtf.format(Math.round(secs), 'second');
   }
 
+  // One tap per student instead of a dropdown — with 4-5 students this is
+  // both faster and shows everyone at once.
+  let focusStudentId = null;
+
+  function initials(name) {
+    return (name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
+  }
+
   function fillFocusStudents() {
-    const sel = document.getElementById('focus-student');
-    const current = sel.value;
-    sel.innerHTML = '<option value="">Elige un alumno...</option>' +
-      allStudents.map(s => `<option value="${s.id}">${escapeHtml(s.full_name || s.email || 'Alumno/a')}</option>`).join('');
-    if (current) sel.value = current;
+    const box = document.getElementById('focus-picker');
+    if (!box) return;
+    if (!allStudents.length) {
+      box.innerHTML = '<p class="empty-note">No hay alumnos todavía.</p>';
+      return;
+    }
+    box.innerHTML = allStudents.map(st => {
+      const name = st.full_name || st.email || 'Alumno/a';
+      return `<button class="student-chip${focusStudentId === st.id ? ' active' : ''}"
+                data-id="${st.id}" onclick="pickFocusStudent('${st.id}')">
+        <span class="student-avatar">${escapeHtml(initials(name))}</span>
+        <span>${escapeHtml(name)}</span>
+      </button>`;
+    }).join('');
+  }
+
+  function pickFocusStudent(id) {
+    focusStudentId = id;
+    document.querySelectorAll('#focus-picker .student-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.id === id);
+    });
+    loadAdminFocus();
   }
 
   async function loadAdminFocus() {
-    const studentId = document.getElementById('focus-student').value;
+    const studentId = focusStudentId;
     const panels = document.getElementById('focus-panels');
     if (!studentId) { panels.style.display = 'none'; return; }
     panels.style.display = 'grid';
@@ -1285,7 +1367,7 @@
 
   async function addAdminFocus(ev) {
     ev.preventDefault();
-    const studentId = document.getElementById('focus-student').value;
+    const studentId = focusStudentId;
     const input = document.getElementById('admin-focus-input');
     const body = input.value.trim();
     if (!studentId || !body) return;
@@ -1310,6 +1392,37 @@
     const { error } = await sb.from('student_focus').delete().eq('id', id);
     if (error) { alert(error.message); return; }
     await loadAdminFocus();
+  }
+
+  // ---- SUBPAGE TABS ----
+  const ADMIN_TABS = ['clases', 'alumnos', 'notas', 'mensajes', 'opiniones'];
+
+  function showAdminTab(name) {
+    if (!ADMIN_TABS.includes(name)) name = 'clases';
+    ADMIN_TABS.forEach(tab => {
+      const panel = document.getElementById('apanel-' + tab);
+      const btn = document.querySelector(`.tab[data-tab="${tab}"]`);
+      if (panel) panel.classList.toggle('active', tab === name);
+      if (btn) {
+        btn.classList.toggle('active', tab === name);
+        btn.setAttribute('aria-selected', String(tab === name));
+      }
+    });
+    if (window.location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  }
+
+  window.addEventListener('hashchange', () => {
+    showAdminTab((window.location.hash || '#clases').slice(1));
+  });
+
+  // The unread indicator should take you to the Mensajes tab, not just scroll.
+  function jumpToChat() {
+    showAdminTab('mensajes');
+    const card = document.getElementById('chat-card');
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    card.classList.remove('flash');
+    void card.offsetWidth;
+    card.classList.add('flash');
   }
 
   checkAccess();
