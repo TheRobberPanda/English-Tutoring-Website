@@ -238,6 +238,108 @@
     .credits-pill { bottom: 20px; right: 80px; }
   }
 
+  /* ---- Subpage tabs ---- */
+  .tabs {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 24px; padding-bottom: 2px;
+    border-bottom: 1px solid var(--peach-line);
+  }
+  .tab {
+    border: none; background: none; cursor: pointer;
+    font-family: 'Work Sans', sans-serif; font-size: 0.92rem; font-weight: 600;
+    color: var(--ink-soft); padding: 10px 16px; border-radius: 9px 9px 0 0;
+    position: relative; transition: color 0.18s ease, background 0.18s ease;
+  }
+  .tab:hover { color: var(--orange-deep); background: var(--bg-soft); }
+  .tab.active { color: var(--orange-deep); background: var(--white); }
+  .tab.active::after {
+    content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
+    height: 2.5px; background: var(--orange); border-radius: 2px;
+  }
+  .tab-badge {
+    display: inline-block; min-width: 17px; height: 17px; padding: 0 5px;
+    border-radius: 9px; background: var(--orange); color: var(--white);
+    font-family: 'Space Mono', monospace; font-size: 0.64rem; font-weight: 700;
+    line-height: 17px; text-align: center; margin-left: 6px;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: panel-in 0.28s ease; }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 480px) {
+    .tabs { gap: 2px; }
+    .tab { padding: 9px 11px; font-size: 0.85rem; }
+  }
+
+  .how-list { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.75; }
+  .how-list li + li { margin-top: 4px; }
+
+  /* ---- Stars ---- */
+  .star-picker { display: flex; align-items: center; gap: 2px; margin-bottom: 12px; }
+  .star {
+    background: none; border: none; cursor: pointer; padding: 0 2px;
+    font-size: 1.6rem; line-height: 1; color: var(--peach-line);
+    transition: color 0.12s ease, transform 0.12s ease;
+  }
+  .star:hover { transform: scale(1.12); }
+  .star.on { color: #F2A722; }
+  .star-hint { margin-left: 10px; font-size: 0.82rem; color: var(--ink-soft); }
+
+  .stars-static { color: #F2A722; font-size: 0.95rem; letter-spacing: 1px; }
+  .stars-static .off { color: var(--peach-line); }
+
+  /* ---- Reviews feed ---- */
+  .review {
+    border: 1px solid var(--peach-line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 12px; background: var(--bg);
+  }
+  .review.mine { border-color: var(--orange); background: var(--white); }
+  .review-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .review-who { font-weight: 600; font-size: 0.92rem; }
+  .review-when { font-size: 0.76rem; color: var(--ink-soft); font-family: 'Space Mono', monospace; }
+  .review-body { margin: 8px 0 0; font-size: 0.93rem; font-style: italic; }
+  .review-pending {
+    display: inline-block; margin-left: 8px; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    background: var(--peach); color: var(--orange-deep);
+    padding: 2px 8px; border-radius: 100px;
+  }
+
+  .review-actions { margin-top: 10px; }
+  .review-toggle {
+    background: none; border: none; padding: 0; cursor: pointer;
+    color: var(--orange-deep); font-size: 0.82rem; font-weight: 600;
+    font-family: 'Work Sans', sans-serif; text-decoration: underline;
+  }
+
+  .comments { margin-top: 12px; border-top: 1px dashed var(--peach-line); padding-top: 12px; }
+  .comment { display: flex; gap: 8px; align-items: baseline; padding: 6px 0; font-size: 0.87rem; }
+  .comment + .comment { border-top: 1px solid var(--peach-line); }
+  .comment-who { font-weight: 600; white-space: nowrap; }
+  .comment-body { flex: 1; overflow-wrap: anywhere; }
+  .comment-when { font-size: 0.72rem; color: var(--ink-soft); font-family: 'Space Mono', monospace; white-space: nowrap; }
+  .comment-del {
+    background: none; border: none; cursor: pointer; color: var(--ink-soft);
+    font-size: 0.95rem; line-height: 1; padding: 0 2px;
+  }
+  .comment-del:hover { color: #B23A1E; }
+
+  .comment-form { display: flex; gap: 8px; margin-top: 10px; }
+  .comment-form input {
+    flex: 1; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--peach-line);
+    background: var(--white); font-family: 'Work Sans', sans-serif; font-size: 0.88rem;
+  }
+  .comment-form button {
+    background: var(--orange); color: var(--white); border: none; border-radius: 8px;
+    padding: 9px 15px; font-weight: 600; font-size: 0.84rem; cursor: pointer;
+  }
+  .comment-form button:hover { background: var(--orange-deep); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tab-panel.active { animation: none; }
+  }
+
   /* ---- Referral hero ---- */
   .referral-hero {
     position: relative;
@@ -409,88 +511,141 @@
       </div>
     </div>
 
-    <!-- Referral hero: the first thing a student sees after the greeting. -->
-    <div class="referral-hero">
-      <div class="referral-glow" aria-hidden="true"></div>
-      <div class="referral-hero-inner">
-        <span class="referral-pill" data-i18n="referral_badge">3 clases gratis</span>
-        <h3 class="referral-h" data-i18n="referral_title">Invita a un amigo</h3>
-        <p class="referral-sub" data-i18n="referral_hint">Comparte tu código. Cuando un amigo se registre con él y compre sus primeras clases, tú ganas 3 clases gratis.</p>
-        <div class="referral-code-row">
-          <span class="mono referral-code" id="referral-code-display">—</span>
-          <button class="referral-copy" onclick="copyReferralLink()" id="copy-referral-btn" data-i18n="copy_link_btn">Copiar enlace</button>
-        </div>
-        <p class="referral-stats" id="referral-stats">—</p>
-      </div>
-    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-tab="clases" role="tab" onclick="showTab('clases')">
+        <span data-i18n="tab_classes">Clases</span>
+      </button>
+      <button class="tab" data-tab="opiniones" role="tab" onclick="showTab('opiniones')">
+        <span data-i18n="tab_reviews">Opiniones</span>
+      </button>
+      <button class="tab" data-tab="referidos" role="tab" onclick="showTab('referidos')">
+        <span data-i18n="tab_referrals">Referidos</span>
+      </button>
+      <button class="tab" data-tab="cuenta" role="tab" onclick="showTab('cuenta')">
+        <span data-i18n="tab_account">Cuenta</span>
+      </button>
+    </nav>
 
-    <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 12px;" data-i18n="your_credits">Tus créditos</h3>
-      <div class="credit-badge"><b id="credit-count">0</b> <span data-i18n="credits_available">clases disponibles</span></div>
-      <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 12px 0 8px;" data-i18n="need_more_credits">¿Necesitas más créditos? Contáctame:</p>
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <a class="btn-cancel" href="mailto:yankxwtic@mozmail.com" style="text-decoration: none; display: inline-block;" data-i18n="contact_email_link">Email</a>
-        <a class="btn-cancel" href="https://t.me/frelseisme" target="_blank" rel="noopener" style="text-decoration: none; display: inline-block;" data-i18n="contact_telegram_link">Telegram</a>
-      </div>
-    </div>
-
-
-    <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="available_classes">Clases disponibles</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;" data-i18n="available_classes_hint">Elige un día y reserva una franja horaria. Se descontará un crédito.</p>
-      <div class="week-nav">
-        <button onclick="changeWeek(-1)" data-i18n="prev_week">&larr; Semana anterior</button>
-        <span id="week-label"></span>
-        <button onclick="changeWeek(1)" data-i18n="next_week">Semana siguiente &rarr;</button>
-      </div>
-      <div class="week-days" id="week-days"></div>
-      <div id="week-day-slots" style="margin-top: 16px;"></div>
-      <p class="empty-note" id="open-slots-empty" style="display:none;" data-i18n="no_classes_this_week">No hay clases disponibles esta semana.</p>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="upcoming_classes">Tus próximas clases</h3>
-      <ul class="slot-list" id="my-slots"></ul>
-      <p class="empty-note" id="my-slots-empty" style="display:none;" data-i18n="no_bookings_yet">Aún no tienes clases reservadas.</p>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="link_telegram_title">Vincular Telegram</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 10px;" data-i18n="link_telegram_hint">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
-      <ul style="color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 14px; padding-left: 20px; line-height: 1.7;">
-        <li data-i18n="telegram_benefit_1">Reserva y cancela clases directamente desde el chat, sin abrir la web</li>
-        <li data-i18n="telegram_benefit_2">Recibe el enlace de Google Meet de cada clase al instante</li>
-        <li data-i18n="telegram_benefit_3">Avisos automáticos si una clase se cancela o hay que reprogramarla</li>
-        <li data-i18n="telegram_benefit_4">Cambia el idioma del bot cuando quieras con /idioma</li>
-      </ul>
-      <button class="btn" onclick="generateTelegramCode()" data-i18n="generate_code_btn">Generar código</button>
-      <button class="btn-cancel" onclick="unlinkTelegram()" data-i18n="unlink_telegram_btn">Desvincular Telegram</button>
-      <div id="telegram-code-box" style="display:none; margin-top: 14px;">
-        <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:</p>
-        <div class="xmr-address-row" style="background: var(--bg-soft); border: 1px solid var(--peach-line);">
-          <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
+    <!-- ============ CLASES Y CRÉDITOS ============ -->
+    <section class="tab-panel" id="panel-clases" role="tabpanel">
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px;" data-i18n="your_credits">Tus créditos</h3>
+        <div class="credit-badge"><b id="credit-count">0</b> <span data-i18n="credits_available">clases disponibles</span></div>
+        <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 12px 0 8px;" data-i18n="need_more_credits">¿Necesitas más créditos? Contáctame:</p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a class="btn-cancel" href="mailto:yankxwtic@mozmail.com" style="text-decoration: none; display: inline-block;" data-i18n="contact_email_link">Email</a>
+          <a class="btn-cancel" href="https://t.me/frelseisme" target="_blank" rel="noopener" style="text-decoration: none; display: inline-block;" data-i18n="contact_telegram_link">Telegram</a>
         </div>
       </div>
-      <div id="telegram-msg"></div>
-    </div>
 
-    <div class="card">
-      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="leave_review_title">Deja tu opinión</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 6px;" data-i18n="leave_review_hint">Tu opinión se revisará antes de publicarse en la web.</p>
-      <textarea id="testimonial-text" rows="3" data-i18n-placeholder="review_placeholder" placeholder="Cuenta tu experiencia con las clases..."
-        style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--peach-line); background: var(--bg); font-family: 'Work Sans', sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
-      <button class="btn" onclick="submitTestimonial()" data-i18n="send_review_btn">Enviar opinión</button>
-      <div id="testimonial-msg"></div>
-    </div>
-    <div class="card" style="border-color: #E9C0AE;">
-      <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--orange-deep);" data-i18n="delete_account_title">Eliminar mi cuenta</h3>
-      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="delete_account_hint">
-        Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer.
-        Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.
-      </p>
-      <button class="btn" style="background: #B23A1E;" onmouseover="this.style.background='#8F2E17'" onmouseout="this.style.background='#B23A1E'" onclick="deleteAccount()" data-i18n="delete_account_btn">Eliminar mi cuenta</button>
-      <div id="delete-account-msg"></div>
-    </div>
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="available_classes">Clases disponibles</h3>
+        <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;" data-i18n="available_classes_hint">Elige un día y reserva una franja horaria. Se descontará un crédito.</p>
+        <div class="week-nav">
+          <button onclick="changeWeek(-1)" data-i18n="prev_week">&larr; Semana anterior</button>
+          <span id="week-label"></span>
+          <button onclick="changeWeek(1)" data-i18n="next_week">Semana siguiente &rarr;</button>
+        </div>
+        <div class="week-days" id="week-days"></div>
+        <div id="week-day-slots" style="margin-top: 16px;"></div>
+        <p class="empty-note" id="open-slots-empty" style="display:none;" data-i18n="no_classes_this_week">No hay clases disponibles esta semana.</p>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="upcoming_classes">Tus próximas clases</h3>
+        <ul class="slot-list" id="my-slots"></ul>
+        <p class="empty-note" id="my-slots-empty" style="display:none;" data-i18n="no_bookings_yet">Aún no tienes clases reservadas.</p>
+      </div>
+    </section>
+
+    <!-- ============ OPINIONES ============ -->
+    <section class="tab-panel" id="panel-opiniones" role="tabpanel">
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="leave_review_title">Deja tu opinión</h3>
+        <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="leave_review_hint">Tu opinión se revisará antes de publicarse en la web.</p>
+
+        <div class="star-picker" id="star-picker" role="radiogroup" aria-label="Puntuación">
+          <button type="button" class="star" data-value="1" onclick="setRating(1)" aria-label="1">&#9733;</button>
+          <button type="button" class="star" data-value="2" onclick="setRating(2)" aria-label="2">&#9733;</button>
+          <button type="button" class="star" data-value="3" onclick="setRating(3)" aria-label="3">&#9733;</button>
+          <button type="button" class="star" data-value="4" onclick="setRating(4)" aria-label="4">&#9733;</button>
+          <button type="button" class="star" data-value="5" onclick="setRating(5)" aria-label="5">&#9733;</button>
+          <span class="star-hint" id="star-hint" data-i18n="rating_hint">Puntúa tu experiencia</span>
+        </div>
+
+        <textarea id="testimonial-text" rows="3" data-i18n-placeholder="review_placeholder" placeholder="Cuenta tu experiencia con las clases..."
+          style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--peach-line); background: var(--bg); font-family: 'Work Sans', sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
+        <button class="btn" onclick="submitTestimonial()" data-i18n="send_review_btn">Enviar opinión</button>
+        <div id="testimonial-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="reviews_feed_title">Lo que dicen otros alumnos</h3>
+        <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;" data-i18n="reviews_feed_hint">Puedes responder a las opiniones de otros alumnos.</p>
+        <div id="reviews-list"></div>
+        <p class="empty-note" id="reviews-empty" style="display:none;" data-i18n="reviews_empty">Todavía no hay opiniones publicadas.</p>
+      </div>
+    </section>
+
+    <!-- ============ REFERIDOS ============ -->
+    <section class="tab-panel" id="panel-referidos" role="tabpanel">
+      <div class="referral-hero">
+        <div class="referral-glow" aria-hidden="true"></div>
+        <div class="referral-hero-inner">
+          <span class="referral-pill" data-i18n="referral_badge">3 clases gratis</span>
+          <h3 class="referral-h" data-i18n="referral_title">Invita a un amigo</h3>
+          <p class="referral-sub" data-i18n="referral_hint">Comparte tu código. Cuando un amigo se registre con él y compre sus primeras clases, tú ganas 3 clases gratis.</p>
+          <div class="referral-code-row">
+            <span class="mono referral-code" id="referral-code-display">—</span>
+            <button class="referral-copy" onclick="copyReferralLink()" id="copy-referral-btn" data-i18n="copy_link_btn">Copiar enlace</button>
+          </div>
+          <p class="referral-stats" id="referral-stats">—</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 10px;" data-i18n="referral_how_title">Cómo funciona</h3>
+        <ol class="how-list">
+          <li data-i18n="referral_step_1">Copia tu enlace y compártelo con quien quieras.</li>
+          <li data-i18n="referral_step_2">Tu amigo se registra: el código se rellena solo.</li>
+          <li data-i18n="referral_step_3">Cuando compra sus primeras clases, recibes 3 clases gratis automáticamente.</li>
+        </ol>
+        <p style="color: var(--ink-soft); font-size: 0.82rem; margin: 12px 0 0;" data-i18n="referral_note">La recompensa se entrega una sola vez por cada amigo invitado.</p>
+      </div>
+    </section>
+
+    <!-- ============ CUENTA ============ -->
+    <section class="tab-panel" id="panel-cuenta" role="tabpanel">
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="link_telegram_title">Vincular Telegram</h3>
+        <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 10px;" data-i18n="link_telegram_hint">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
+        <ul style="color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 14px; padding-left: 20px; line-height: 1.7;">
+          <li data-i18n="telegram_benefit_1">Reserva y cancela clases directamente desde el chat, sin abrir la web</li>
+          <li data-i18n="telegram_benefit_2">Recibe el enlace de Google Meet de cada clase al instante</li>
+          <li data-i18n="telegram_benefit_3">Avisos automáticos si una clase se cancela o hay que reprogramarla</li>
+          <li data-i18n="telegram_benefit_4">Cambia el idioma del bot cuando quieras con /idioma</li>
+        </ul>
+        <button class="btn" onclick="generateTelegramCode()" data-i18n="generate_code_btn">Generar código</button>
+        <button class="btn-cancel" onclick="unlinkTelegram()" data-i18n="unlink_telegram_btn">Desvincular Telegram</button>
+        <div id="telegram-code-box" style="display:none; margin-top: 14px;">
+          <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:</p>
+          <div class="xmr-address-row" style="background: var(--bg-soft); border: 1px solid var(--peach-line);">
+            <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
+          </div>
+        </div>
+        <div id="telegram-msg"></div>
+      </div>
+
+      <div class="card" style="border-color: #E9C0AE;">
+        <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--orange-deep);" data-i18n="delete_account_title">Eliminar mi cuenta</h3>
+        <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="delete_account_hint">
+          Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer.
+          Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.
+        </p>
+        <button class="btn" style="background: #B23A1E;" onmouseover="this.style.background='#8F2E17'" onmouseout="this.style.background='#B23A1E'" onclick="deleteAccount()" data-i18n="delete_account_btn">Eliminar mi cuenta</button>
+        <div id="delete-account-msg"></div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -584,6 +739,18 @@
       chat_empty_send: 'Escribe un mensaje o adjunta un archivo.',
       chat_too_big: 'El archivo supera el límite de 25 MB.',
       chat_retention: 'Los mensajes y archivos se borran automáticamente a los 30 días. Máximo 25 MB por archivo.',
+      tab_classes: 'Clases', tab_reviews: 'Opiniones', tab_referrals: 'Referidos', tab_account: 'Cuenta',
+      rating_hint: 'Puntúa tu experiencia',
+      reviews_feed_title: 'Lo que dicen otros alumnos', reviews_feed_hint: 'Puedes responder a las opiniones de otros alumnos.',
+      reviews_empty: 'Todavía no hay opiniones publicadas.',
+      review_pending: 'Pendiente', review_you: 'Tú',
+      comments_toggle: 'Comentarios', comments_empty: 'Sé el primero en comentar.',
+      comment_placeholder: 'Escribe un comentario...', comment_send: 'Enviar', comment_delete: 'Eliminar comentario',
+      referral_how_title: 'Cómo funciona',
+      referral_step_1: 'Copia tu enlace y compártelo con quien quieras.',
+      referral_step_2: 'Tu amigo se registra: el código se rellena solo.',
+      referral_step_3: 'Cuando compra sus primeras clases, recibes 3 clases gratis automáticamente.',
+      referral_note: 'La recompensa se entrega una sola vez por cada amigo invitado.',
       leave_review_title: 'Deja tu opinión', leave_review_hint: 'Tu opinión se revisará antes de publicarse en la web.',
       review_placeholder: 'Cuenta tu experiencia con las clases...', send_review_btn: 'Enviar opinión',
       delete_account_title: 'Eliminar mi cuenta',
@@ -647,6 +814,18 @@
       chat_empty_send: 'Napisz wiadomość lub załącz plik.',
       chat_too_big: 'Plik przekracza limit 25 MB.',
       chat_retention: 'Wiadomości i pliki są automatycznie usuwane po 30 dniach. Maksymalnie 25 MB na plik.',
+      tab_classes: 'Lekcje', tab_reviews: 'Opinie', tab_referrals: 'Polecenia', tab_account: 'Konto',
+      rating_hint: 'Oceń swoje doświadczenie',
+      reviews_feed_title: 'Co mówią inni uczniowie', reviews_feed_hint: 'Możesz odpowiadać na opinie innych uczniów.',
+      reviews_empty: 'Nie ma jeszcze opublikowanych opinii.',
+      review_pending: 'Oczekuje', review_you: 'Ty',
+      comments_toggle: 'Komentarze', comments_empty: 'Bądź pierwszą osobą, która skomentuje.',
+      comment_placeholder: 'Napisz komentarz...', comment_send: 'Wyślij', comment_delete: 'Usuń komentarz',
+      referral_how_title: 'Jak to działa',
+      referral_step_1: 'Skopiuj swój link i udostępnij go komu chcesz.',
+      referral_step_2: 'Twój znajomy się rejestruje — kod uzupełnia się sam.',
+      referral_step_3: 'Gdy kupi swoje pierwsze lekcje, automatycznie otrzymujesz 3 darmowe lekcje.',
+      referral_note: 'Nagroda przyznawana jest tylko raz za każdą zaproszoną osobę.',
       leave_review_title: 'Zostaw opinię', leave_review_hint: 'Twoja opinia zostanie sprawdzona przed publikacją na stronie.',
       review_placeholder: 'Opisz swoje doświadczenie z lekcjami...', send_review_btn: 'Wyślij opinię',
       delete_account_title: 'Usuń moje konto',
@@ -710,6 +889,18 @@
       chat_empty_send: 'Write a message or attach a file.',
       chat_too_big: 'That file is over the 25 MB limit.',
       chat_retention: 'Messages and files are deleted automatically after 30 days. Maximum 25 MB per file.',
+      tab_classes: 'Classes', tab_reviews: 'Reviews', tab_referrals: 'Referrals', tab_account: 'Account',
+      rating_hint: 'Rate your experience',
+      reviews_feed_title: 'What other students say', reviews_feed_hint: 'You can reply to other students\' reviews.',
+      reviews_empty: 'No reviews published yet.',
+      review_pending: 'Pending', review_you: 'You',
+      comments_toggle: 'Comments', comments_empty: 'Be the first to comment.',
+      comment_placeholder: 'Write a comment...', comment_send: 'Send', comment_delete: 'Delete comment',
+      referral_how_title: 'How it works',
+      referral_step_1: 'Copy your link and share it with anyone.',
+      referral_step_2: 'Your friend signs up — the code fills in automatically.',
+      referral_step_3: 'When they buy their first lessons, you get 3 free lessons automatically.',
+      referral_note: 'The reward is given once per invited friend.',
       leave_review_title: 'Leave a review', leave_review_hint: 'Your review will be checked before being published on the site.',
       review_placeholder: 'Tell us about your experience with the lessons...', send_review_btn: 'Send review',
       delete_account_title: 'Delete my account',
@@ -984,6 +1175,8 @@
     await loadMyBookings();
     await loadReferralInfo();
     await loadChat();
+    // Honour a #hash so a reload keeps you on the same subpage.
+    showTab((window.location.hash || '#clases').slice(1));
   }
 
   function formatSlot(start, end) {
@@ -1255,7 +1448,8 @@
     const { error } = await sb.from('testimonials').insert({
       student_id: user.id,
       student_name: profile?.full_name || 'Alumno/a',
-      content: text
+      content: text,
+      rating: pendingRating || null
     });
 
     if (error) {
@@ -1264,7 +1458,174 @@
     }
 
     document.getElementById('testimonial-text').value = '';
+    setRating(0);
     msgBox.innerHTML = `<div class="msg ok">${t('review_thanks')}</div>`;
+    await loadReviews();
+  }
+
+  // ---- SUBPAGE TABS ----
+  const TABS = ['clases', 'opiniones', 'referidos', 'cuenta'];
+
+  function showTab(name) {
+    if (!TABS.includes(name)) name = 'clases';
+    TABS.forEach(tabName => {
+      const panel = document.getElementById('panel-' + tabName);
+      const btn = document.querySelector(`.tab[data-tab="${tabName}"]`);
+      if (panel) panel.classList.toggle('active', tabName === name);
+      if (btn) {
+        btn.classList.toggle('active', tabName === name);
+        btn.setAttribute('aria-selected', String(tabName === name));
+      }
+    });
+    // Reflected in the URL so a reload (or a shared link) lands on the same
+    // subpage instead of bouncing back to Clases.
+    if (window.location.hash !== '#' + name) {
+      history.replaceState(null, '', '#' + name);
+    }
+    if (name === 'opiniones') loadReviews();
+  }
+
+  window.addEventListener('hashchange', () => {
+    showTab((window.location.hash || '#clases').slice(1));
+  });
+
+  // ---- RELATIVE TIME ----
+  // Intl handles the pluralisation rules per language, which matters a lot
+  // for Polish ("2 dni" vs "5 dni temu").
+  function timeAgo(iso) {
+    const locale = currentLang === 'pl' ? 'pl' : (currentLang === 'en' ? 'en' : 'es');
+    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+    const secs = Math.round((new Date(iso) - Date.now()) / 1000);
+    const units = [
+      ['year', 31536000], ['month', 2592000], ['week', 604800],
+      ['day', 86400], ['hour', 3600], ['minute', 60]
+    ];
+    for (const [unit, size] of units) {
+      if (Math.abs(secs) >= size) return rtf.format(Math.round(secs / size), unit);
+    }
+    return rtf.format(Math.round(secs), 'second');
+  }
+
+  // ---- STAR RATING ----
+  let pendingRating = 0;
+
+  function setRating(n) {
+    pendingRating = n;
+    document.querySelectorAll('#star-picker .star').forEach(el => {
+      el.classList.toggle('on', Number(el.dataset.value) <= n);
+    });
+    const hint = document.getElementById('star-hint');
+    if (hint) hint.textContent = n ? `${n}/5` : t('rating_hint');
+  }
+
+  function starsHtml(rating) {
+    if (!rating) return '';
+    let out = '';
+    for (let i = 1; i <= 5; i++) {
+      out += i <= rating ? '★' : '<span class="off">★</span>';
+    }
+    return `<span class="stars-static" aria-label="${rating}/5">${out}</span>`;
+  }
+
+  // ---- REVIEWS FEED ----
+  let myUserId = null;
+  const openComments = new Set();
+
+  async function loadReviews() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    myUserId = user.id;
+
+    const { data, error } = await sb.rpc('list_reviews');
+    const list = document.getElementById('reviews-list');
+    const empty = document.getElementById('reviews-empty');
+    if (error) { list.innerHTML = `<div class="msg error">${escapeChat(error.message)}</div>`; return; }
+
+    const reviews = data || [];
+    empty.style.display = reviews.length ? 'none' : 'block';
+
+    list.innerHTML = reviews.map(r => {
+      const mine = r.student_id === myUserId;
+      const pending = !r.approved
+        ? `<span class="review-pending">${escapeChat(t('review_pending'))}</span>` : '';
+      const commentsOpen = openComments.has(r.id);
+      return `
+        <div class="review${mine ? ' mine' : ''}" id="review-${r.id}">
+          <div class="review-head">
+            <span class="review-who">${escapeChat(mine ? t('review_you') : r.student_name)}${pending}</span>
+            <span class="review-when" title="${new Date(r.created_at).toLocaleString()}">${escapeChat(timeAgo(r.created_at))}</span>
+          </div>
+          ${starsHtml(r.rating)}
+          <p class="review-body">"${escapeChat(r.content)}"</p>
+          <div class="review-actions">
+            <button class="review-toggle" onclick="toggleComments('${r.id}')">
+              ${escapeChat(t('comments_toggle'))} (${r.comment_count})
+            </button>
+          </div>
+          <div class="comments" id="comments-${r.id}" style="display:${commentsOpen ? 'block' : 'none'}"></div>
+        </div>`;
+    }).join('');
+
+    // Re-render any threads the student had expanded before the refresh.
+    for (const id of openComments) {
+      if (reviews.some(r => r.id === id)) await renderComments(id);
+    }
+  }
+
+  async function toggleComments(reviewId) {
+    const box = document.getElementById('comments-' + reviewId);
+    if (!box) return;
+    if (openComments.has(reviewId)) {
+      openComments.delete(reviewId);
+      box.style.display = 'none';
+      return;
+    }
+    openComments.add(reviewId);
+    box.style.display = 'block';
+    await renderComments(reviewId);
+  }
+
+  async function renderComments(reviewId) {
+    const box = document.getElementById('comments-' + reviewId);
+    if (!box) return;
+    const { data, error } = await sb.rpc('list_review_comments', { _testimonial_id: reviewId });
+    if (error) { box.innerHTML = `<div class="msg error">${escapeChat(error.message)}</div>`; return; }
+
+    const rows = (data || []).map(c => `
+      <div class="comment">
+        <span class="comment-who">${escapeChat(c.author_id === myUserId ? t('review_you') : c.author_name)}</span>
+        <span class="comment-body">${escapeChat(c.body)}</span>
+        <span class="comment-when">${escapeChat(timeAgo(c.created_at))}</span>
+        ${c.author_id === myUserId
+          ? `<button class="comment-del" title="${escapeChat(t('comment_delete'))}" onclick="deleteComment('${c.id}','${reviewId}')">&times;</button>`
+          : ''}
+      </div>`).join('');
+
+    box.innerHTML = (rows || `<p class="empty-note" style="margin:0 0 8px;">${escapeChat(t('comments_empty'))}</p>`) + `
+      <form class="comment-form" onsubmit="postComment(event, '${reviewId}')">
+        <input type="text" maxlength="1000" id="comment-input-${reviewId}"
+               placeholder="${escapeChat(t('comment_placeholder'))}">
+        <button type="submit">${escapeChat(t('comment_send'))}</button>
+      </form>`;
+  }
+
+  async function postComment(ev, reviewId) {
+    ev.preventDefault();
+    const input = document.getElementById('comment-input-' + reviewId);
+    const body = input.value.trim();
+    if (!body) return;
+    const { error } = await sb.from('testimonial_comments').insert({
+      testimonial_id: reviewId, author_id: myUserId, body
+    });
+    if (error) { alert(error.message); return; }
+    input.value = '';
+    await loadReviews();
+  }
+
+  async function deleteComment(commentId, reviewId) {
+    const { error } = await sb.from('testimonial_comments').delete().eq('id', commentId);
+    if (error) { alert(error.message); return; }
+    await loadReviews();
   }
 
   async function deleteAccount() {

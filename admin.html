@@ -901,7 +901,7 @@
   async function loadPendingTestimonials() {
     const { data, error } = await sb
       .from('testimonials')
-      .select('id, student_name, content, created_at')
+      .select('id, student_name, content, rating, created_at')
       .eq('approved', false)
       .order('created_at', { ascending: false });
 
@@ -925,7 +925,7 @@
       div.className = 'testimonial-row';
       div.innerHTML = `
         <div class="content">"${escapeHtml(t.content)}"</div>
-        <div class="who">— ${escapeHtml(t.student_name || 'Alumno/a')}</div>
+        <div class="who">— ${escapeHtml(t.student_name || 'Alumno/a')}${t.rating ? ' · ' + '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating) : ''} · ${new Date(t.created_at).toLocaleDateString('es-ES')}</div>
         <div class="actions">
           <button class="btn btn-small" onclick="approveTestimonial('${t.id}')">Aprobar</button>
           <button class="btn btn-small btn-danger" onclick="rejectTestimonial('${t.id}')">Eliminar</button>
