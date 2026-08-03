@@ -110,6 +110,57 @@
     font-family: 'Space Mono', monospace; margin-left: 4px;
   }
   .lang-btn.active { background: var(--orange); color: var(--white); border-color: var(--orange); }
+  /* ---- Chat ---- */
+  .chat-log {
+    max-height: 380px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background: var(--bg);
+    border: 1px solid var(--peach-line);
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .chat-empty { color: var(--ink-soft); font-size: 0.88rem; text-align: center; padding: 18px 0; margin: 0; }
+  .chat-bubble {
+    max-width: 78%;
+    padding: 9px 13px;
+    border-radius: 13px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+  }
+  .chat-bubble.them { align-self: flex-start; background: var(--white); border: 1px solid var(--peach-line); border-bottom-left-radius: 4px; }
+  .chat-bubble.me   { align-self: flex-end;   background: var(--orange); color: var(--white); border-bottom-right-radius: 4px; }
+  .chat-time { display: block; margin-top: 4px; font-family: 'Space Mono', monospace; font-size: 0.66rem; opacity: 0.65; }
+  .chat-bubble img, .chat-bubble video {
+    max-width: 100%; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer;
+  }
+  .chat-bubble audio { width: 100%; margin-top: 6px; }
+  .chat-file-link {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+    font-size: 0.85rem; font-weight: 600; text-decoration: underline;
+  }
+  .chat-compose textarea {
+    width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--peach-line);
+    background: var(--bg); font-family: 'Work Sans', sans-serif; font-size: 0.95rem; resize: vertical;
+  }
+  .chat-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+  .chat-attach {
+    cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--orange-deep);
+    border: 1.5px solid var(--peach-line); border-radius: 8px; padding: 8px 14px; background: var(--bg);
+  }
+  .chat-attach:hover { border-color: var(--orange); }
+  .chat-file-name { font-size: 0.8rem; color: var(--ink-soft); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-retention { color: var(--ink-soft); font-size: 0.76rem; margin: 10px 0 0; }
+  .chat-unread-dot {
+    display: inline-block; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+    background: var(--orange); color: var(--white); font-size: 0.7rem; font-weight: 700;
+    text-align: center; line-height: 18px; margin-left: 6px;
+  }
 </style>
 </head>
 <body>
@@ -246,6 +297,29 @@
     </div>
 
     <div class="card">
+      <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="chat_title">Chat con Paulo</h3>
+      <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="chat_hint">
+        Escríbeme si tienes dudas entre clases. Puedes enviar fotos, vídeos o PDF como apoyo.
+      </p>
+      <div id="chat-log" class="chat-log"></div>
+      <div class="chat-compose">
+        <textarea id="chat-input" rows="2" maxlength="4000"
+          data-i18n-placeholder="chat_placeholder" placeholder="Escribe tu mensaje..."></textarea>
+        <div class="chat-actions">
+          <label class="chat-attach" for="chat-file" title="Adjuntar">
+            <span data-i18n="chat_attach">Adjuntar</span>
+            <input type="file" id="chat-file" hidden
+              accept="image/jpeg,image/png,image/webp,image/gif,image/heic,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/ogg,audio/wav,audio/mp4,application/pdf">
+          </label>
+          <span id="chat-file-name" class="chat-file-name"></span>
+          <button class="btn" id="chat-send-btn" onclick="sendChatMessage()" data-i18n="chat_send">Enviar</button>
+        </div>
+      </div>
+      <p class="chat-retention" data-i18n="chat_retention">Los mensajes y archivos se borran automáticamente a los 30 días. Máximo 25 MB por archivo.</p>
+      <div id="chat-msg"></div>
+    </div>
+
+    <div class="card">
       <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="leave_review_title">Deja tu opinión</h3>
       <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 6px;" data-i18n="leave_review_hint">Tu opinión se revisará antes de publicarse en la web.</p>
       <textarea id="testimonial-text" rows="3" data-i18n-placeholder="review_placeholder" placeholder="Cuenta tu experiencia con las clases..."
@@ -307,6 +381,13 @@
       telegram_benefit_4: 'Cambia el idioma del bot cuando quieras con /idioma',
       generate_code_btn: 'Generar código', unlink_telegram_btn: 'Desvincular Telegram',
       telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
+      chat_title: 'Chat con Paulo',
+      chat_hint: 'Escríbeme si tienes dudas entre clases. Puedes enviar fotos, vídeos o PDF como apoyo.',
+      chat_placeholder: 'Escribe tu mensaje...', chat_attach: 'Adjuntar', chat_send: 'Enviar',
+      chat_empty: 'Todavía no hay mensajes. Escribe el primero.',
+      chat_empty_send: 'Escribe un mensaje o adjunta un archivo.',
+      chat_too_big: 'El archivo supera el límite de 25 MB.',
+      chat_retention: 'Los mensajes y archivos se borran automáticamente a los 30 días. Máximo 25 MB por archivo.',
       leave_review_title: 'Deja tu opinión', leave_review_hint: 'Tu opinión se revisará antes de publicarse en la web.',
       review_placeholder: 'Cuenta tu experiencia con las clases...', send_review_btn: 'Enviar opinión',
       delete_account_title: 'Eliminar mi cuenta',
@@ -363,6 +444,13 @@
       telegram_benefit_4: 'Zmień język bota, kiedy chcesz, komendą /jezyk',
       generate_code_btn: 'Wygeneruj kod', unlink_telegram_btn: 'Odłącz Telegram',
       telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
+      chat_title: 'Czat z Paulo',
+      chat_hint: 'Napisz do mnie, jeśli masz pytania między lekcjami. Możesz wysyłać zdjęcia, filmy lub PDF jako pomoc.',
+      chat_placeholder: 'Napisz wiadomość...', chat_attach: 'Załącz', chat_send: 'Wyślij',
+      chat_empty: 'Nie ma jeszcze wiadomości. Napisz pierwszą.',
+      chat_empty_send: 'Napisz wiadomość lub załącz plik.',
+      chat_too_big: 'Plik przekracza limit 25 MB.',
+      chat_retention: 'Wiadomości i pliki są automatycznie usuwane po 30 dniach. Maksymalnie 25 MB na plik.',
       leave_review_title: 'Zostaw opinię', leave_review_hint: 'Twoja opinia zostanie sprawdzona przed publikacją na stronie.',
       review_placeholder: 'Opisz swoje doświadczenie z lekcjami...', send_review_btn: 'Wyślij opinię',
       delete_account_title: 'Usuń moje konto',
@@ -419,6 +507,13 @@
       telegram_benefit_4: 'Change the bot\'s language any time with /language',
       generate_code_btn: 'Generate code', unlink_telegram_btn: 'Unlink Telegram',
       telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--orange-deep);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
+      chat_title: 'Chat with Paulo',
+      chat_hint: 'Message me if you have questions between lessons. You can send photos, videos or PDFs as support material.',
+      chat_placeholder: 'Write your message...', chat_attach: 'Attach', chat_send: 'Send',
+      chat_empty: 'No messages yet. Write the first one.',
+      chat_empty_send: 'Write a message or attach a file.',
+      chat_too_big: 'That file is over the 25 MB limit.',
+      chat_retention: 'Messages and files are deleted automatically after 30 days. Maximum 25 MB per file.',
       leave_review_title: 'Leave a review', leave_review_hint: 'Your review will be checked before being published on the site.',
       review_placeholder: 'Tell us about your experience with the lessons...', send_review_btn: 'Send review',
       delete_account_title: 'Delete my account',
@@ -679,6 +774,7 @@
     await loadOpenSlots(profile?.credits ?? 0);
     await loadMyBookings();
     await loadReferralInfo();
+    await loadChat();
   }
 
   function formatSlot(start, end) {
@@ -1008,6 +1104,160 @@
     document.getElementById('dashboard-view').style.display = 'none';
     document.getElementById('reset-password-view').style.display = 'block';
   }
+
+  // ---- CHAT ----
+  const CHAT_BUCKET = 'chat-uploads';
+  const CHAT_MAX_BYTES = 25 * 1024 * 1024;
+  let chatUserId = null;
+  let chatChannel = null;
+  // Signed URLs expire, so cache per render pass only.
+  const signedUrlCache = new Map();
+
+  function chatMsg(text, kind) {
+    document.getElementById('chat-msg').innerHTML =
+      `<div class="msg ${kind}">${escapeChat(text)}</div>`;
+    if (kind === 'ok') setTimeout(() => { document.getElementById('chat-msg').innerHTML = ''; }, 2500);
+  }
+
+  function escapeChat(str) {
+    const d = document.createElement('div');
+    d.innerText = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  function chatTime(iso) {
+    const d = new Date(iso);
+    const locale = currentLang === 'pl' ? 'pl-PL' : (currentLang === 'en' ? 'en-GB' : 'es-ES');
+    return d.toLocaleString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  async function signedUrl(path) {
+    if (signedUrlCache.has(path)) return signedUrlCache.get(path);
+    const { data } = await sb.storage.from(CHAT_BUCKET).createSignedUrl(path, 3600);
+    const url = data?.signedUrl || null;
+    if (url) signedUrlCache.set(path, url);
+    return url;
+  }
+
+  async function attachmentHtml(m) {
+    const url = await signedUrl(m.attachment_path);
+    if (!url) return `<div class="chat-file-link">${escapeChat(m.attachment_name || 'archivo')}</div>`;
+    const type = m.attachment_type || '';
+    if (type.startsWith('image/')) {
+      return `<img src="${url}" alt="${escapeChat(m.attachment_name || '')}" loading="lazy" onclick="window.open('${url}','_blank','noopener')">`;
+    }
+    if (type.startsWith('video/')) {
+      return `<video src="${url}" controls preload="metadata"></video>`;
+    }
+    if (type.startsWith('audio/')) {
+      return `<audio src="${url}" controls preload="metadata"></audio>`;
+    }
+    return `<a class="chat-file-link" href="${url}" target="_blank" rel="noopener">📎 ${escapeChat(m.attachment_name || 'archivo')}</a>`;
+  }
+
+  async function renderChat(messages) {
+    const log = document.getElementById('chat-log');
+    if (!messages.length) {
+      log.innerHTML = `<p class="chat-empty">${escapeChat(t('chat_empty'))}</p>`;
+      return;
+    }
+    const parts = await Promise.all(messages.map(async m => {
+      const mine = !m.sender_is_admin;
+      const body = m.body ? escapeChat(m.body).replace(/\n/g, '<br>') : '';
+      const att = m.attachment_path ? await attachmentHtml(m) : '';
+      return `<div class="chat-bubble ${mine ? 'me' : 'them'}">${body}${att}<span class="chat-time">${chatTime(m.created_at)}</span></div>`;
+    }));
+    log.innerHTML = parts.join('');
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function loadChat() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    chatUserId = user.id;
+
+    const { data, error } = await sb
+      .from('chat_messages')
+      .select('id, sender_is_admin, body, attachment_path, attachment_name, attachment_type, created_at')
+      .eq('student_id', user.id)
+      .order('created_at', { ascending: true })
+      .limit(200);
+
+    if (error) { chatMsg(error.message, 'error'); return; }
+    await renderChat(data || []);
+    await sb.rpc('mark_chat_read', { _student_id: user.id });
+
+    if (!chatChannel) {
+      chatChannel = sb.channel('chat-' + user.id)
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `student_id=eq.${user.id}` },
+          () => loadChat())
+        .subscribe();
+    }
+  }
+
+  document.getElementById('chat-file').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    const label = document.getElementById('chat-file-name');
+    if (!f) { label.textContent = ''; return; }
+    if (f.size > CHAT_MAX_BYTES) {
+      chatMsg(t('chat_too_big'), 'error');
+      e.target.value = '';
+      label.textContent = '';
+      return;
+    }
+    label.textContent = f.name;
+  });
+
+  async function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const fileInput = document.getElementById('chat-file');
+    const btn = document.getElementById('chat-send-btn');
+    const body = input.value.trim();
+    const file = fileInput.files[0];
+
+    if (!body && !file) { chatMsg(t('chat_empty_send'), 'error'); return; }
+    btn.disabled = true;
+
+    try {
+      let path = null, name = null, type = null, size = null;
+
+      if (file) {
+        if (file.size > CHAT_MAX_BYTES) { chatMsg(t('chat_too_big'), 'error'); btn.disabled = false; return; }
+        // First path segment must be the uid — that's what the storage
+        // policy authorises against.
+        const ext = (file.name.split('.').pop() || 'bin').toLowerCase().slice(0, 8);
+        path = `${chatUserId}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await sb.storage.from(CHAT_BUCKET)
+          .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+        if (upErr) { chatMsg(upErr.message, 'error'); btn.disabled = false; return; }
+        name = file.name; type = file.type; size = file.size;
+      }
+
+      const { error } = await sb.from('chat_messages').insert({
+        student_id: chatUserId,
+        sender_is_admin: false,
+        body: body || null,
+        attachment_path: path,
+        attachment_name: name,
+        attachment_type: type,
+        attachment_size: size
+      });
+      if (error) { chatMsg(error.message, 'error'); btn.disabled = false; return; }
+
+      input.value = '';
+      fileInput.value = '';
+      document.getElementById('chat-file-name').textContent = '';
+      await loadChat();
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // Send on Enter, newline on Shift+Enter.
+  document.getElementById('chat-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+  });
 
   // On page load, check if already logged in.
   (async () => {

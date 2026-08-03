@@ -124,6 +124,57 @@
   .testimonial-row .actions { display: flex; gap: 8px; }
 
   .empty-note { color: var(--ink-soft); font-size: 0.88rem; }
+  /* ---- Chat ---- */
+  .chat-layout { display: grid; grid-template-columns: 240px 1fr; gap: 16px; align-items: start; }
+  .chat-threads {
+    border: 1px solid var(--peach-line); border-radius: 10px; background: var(--bg);
+    max-height: 460px; overflow-y: auto;
+  }
+  .chat-thread {
+    padding: 11px 13px; border-bottom: 1px solid var(--peach-line); cursor: pointer;
+    display: block; width: 100%; text-align: left; background: none; border-left: 3px solid transparent;
+    font-family: inherit;
+  }
+  .chat-thread:hover { background: var(--bg-soft); }
+  .chat-thread.active { background: var(--peach); border-left-color: var(--orange); }
+  .chat-thread-name { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
+  .chat-thread-preview { color: var(--ink-soft); font-size: 0.78rem; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-panel { border: 1px solid var(--peach-line); border-radius: 10px; padding: 14px; background: var(--bg); }
+  .chat-panel-head { font-weight: 600; font-size: 0.92rem; margin-bottom: 10px; }
+  .chat-log {
+    max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+    padding: 12px; background: var(--white); border: 1px solid var(--peach-line); border-radius: 8px; margin-bottom: 10px;
+  }
+  .chat-bubble {
+    max-width: 78%; padding: 9px 13px; border-radius: 13px; font-size: 0.9rem; line-height: 1.45;
+    word-wrap: break-word; overflow-wrap: anywhere;
+  }
+  .chat-bubble.them { align-self: flex-start; background: var(--bg-soft); border: 1px solid var(--peach-line); border-bottom-left-radius: 4px; }
+  .chat-bubble.me   { align-self: flex-end; background: var(--orange); color: var(--white); border-bottom-right-radius: 4px; }
+  .chat-time { display: block; margin-top: 4px; font-family: 'Space Mono', monospace; font-size: 0.66rem; opacity: 0.65; }
+  .chat-bubble img, .chat-bubble video { max-width: 100%; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer; }
+  .chat-bubble audio { width: 100%; margin-top: 6px; }
+  .chat-file-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: underline; }
+  .chat-compose textarea {
+    width: 100%; padding: 10px 13px; border-radius: 8px; border: 1.5px solid var(--peach-line);
+    background: var(--white); font-family: 'Work Sans', sans-serif; font-size: 0.92rem; resize: vertical;
+  }
+  .chat-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+  .chat-attach {
+    cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--orange-deep);
+    border: 1.5px solid var(--peach-line); border-radius: 8px; padding: 7px 13px; background: var(--white);
+  }
+  .chat-attach:hover { border-color: var(--orange); }
+  .chat-file-name { font-size: 0.78rem; color: var(--ink-soft); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-badge {
+    display: inline-block; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+    background: var(--orange); color: var(--white); font-size: 0.68rem; font-weight: 700;
+    text-align: center; line-height: 18px;
+  }
+  @media (max-width: 720px) {
+    .chat-layout { grid-template-columns: 1fr; }
+    .chat-threads { max-height: 220px; }
+  }
 </style>
 </head>
 <body>
@@ -267,6 +318,35 @@
       <p class="empty-note" id="students-empty" style="display:none;">No se encontraron alumnos.</p>
     </div>
 
+    <!-- STUDENT CHAT -->
+    <div class="card">
+      <h3>Mensajes de alumnos <span id="chat-total-unread"></span></h3>
+      <p class="hint">Los mensajes y archivos se borran solos a los 30 días. Máximo 25 MB por archivo.</p>
+      <div class="chat-layout">
+        <div class="chat-threads" id="chat-threads">
+          <p class="empty-note">Todavía no hay conversaciones.</p>
+        </div>
+        <div class="chat-panel">
+          <div class="chat-panel-head" id="chat-with">Selecciona un alumno</div>
+          <div id="admin-chat-log" class="chat-log">
+            <p class="empty-note">Elige una conversación a la izquierda.</p>
+          </div>
+          <div class="chat-compose" id="admin-chat-compose" style="display:none;">
+            <textarea id="admin-chat-input" rows="2" maxlength="4000" placeholder="Escribe tu respuesta..."></textarea>
+            <div class="chat-actions">
+              <label class="chat-attach" for="admin-chat-file">Adjuntar
+                <input type="file" id="admin-chat-file" hidden
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/heic,video/mp4,video/webm,video/quicktime,audio/mpeg,audio/ogg,audio/wav,audio/mp4,application/pdf">
+              </label>
+              <span id="admin-chat-file-name" class="chat-file-name"></span>
+              <button class="btn btn-small" id="admin-chat-send" onclick="adminSendChat()">Enviar</button>
+            </div>
+          </div>
+          <div id="admin-chat-msg"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- TESTIMONIAL MODERATION -->
     <div class="card">
       <h3>Opiniones pendientes de aprobación</h3>
@@ -329,6 +409,8 @@
     await loadStudents();
     await loadCalendar();
     await loadPendingTestimonials();
+    await loadChatThreads();
+    subscribeAdminChat();
   }
 
   // ---- NEXT LESSONS ----
@@ -790,6 +872,172 @@
     const { error } = await sb.from('testimonials').delete().eq('id', id);
     if (error) { alert(error.message); return; }
     await loadPendingTestimonials();
+  }
+
+  // ---- STUDENT CHAT ----
+  const CHAT_BUCKET = 'chat-uploads';
+  const CHAT_MAX_BYTES = 25 * 1024 * 1024;
+  let activeThread = null;
+  let adminChatChannel = null;
+  const adminSignedUrls = new Map();
+
+  async function adminSignedUrl(path) {
+    if (adminSignedUrls.has(path)) return adminSignedUrls.get(path);
+    const { data } = await sb.storage.from(CHAT_BUCKET).createSignedUrl(path, 3600);
+    const url = data?.signedUrl || null;
+    if (url) adminSignedUrls.set(path, url);
+    return url;
+  }
+
+  function chatTimeAdmin(iso) {
+    return new Date(iso).toLocaleString('es-ES', {
+      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false
+    });
+  }
+
+  async function adminAttachmentHtml(m) {
+    const url = await adminSignedUrl(m.attachment_path);
+    if (!url) return `<div class="chat-file-link">${escapeHtml(m.attachment_name || 'archivo')}</div>`;
+    const type = m.attachment_type || '';
+    if (type.startsWith('image/')) return `<img src="${url}" alt="" loading="lazy" onclick="window.open('${url}','_blank','noopener')">`;
+    if (type.startsWith('video/')) return `<video src="${url}" controls preload="metadata"></video>`;
+    if (type.startsWith('audio/')) return `<audio src="${url}" controls preload="metadata"></audio>`;
+    return `<a class="chat-file-link" href="${url}" target="_blank" rel="noopener">📎 ${escapeHtml(m.attachment_name || 'archivo')}</a>`;
+  }
+
+  async function loadChatThreads() {
+    const { data, error } = await sb.rpc('admin_chat_threads');
+    const box = document.getElementById('chat-threads');
+    if (error) { box.innerHTML = `<p class="empty-note">${escapeHtml(error.message)}</p>`; return; }
+
+    const threads = data || [];
+    const totalUnread = threads.reduce((n, t) => n + Number(t.unread_count || 0), 0);
+    document.getElementById('chat-total-unread').innerHTML =
+      totalUnread > 0 ? `<span class="chat-badge">${totalUnread}</span>` : '';
+
+    if (!threads.length) {
+      box.innerHTML = '<p class="empty-note">Todavía no hay conversaciones.</p>';
+      return;
+    }
+
+    box.innerHTML = threads.map(t => {
+      const preview = t.last_body ? t.last_body.slice(0, 40)
+        : (t.last_has_attachment ? '📎 Archivo adjunto' : '');
+      const badge = Number(t.unread_count) > 0 ? `<span class="chat-badge">${t.unread_count}</span>` : '';
+      return `<button class="chat-thread${activeThread === t.student_id ? ' active' : ''}" onclick="openThread('${t.student_id}')">
+        <span class="chat-thread-name">${escapeHtml(t.full_name || t.email || 'Alumno/a')}${badge}</span>
+        <span class="chat-thread-preview">${escapeHtml(preview)}</span>
+      </button>`;
+    }).join('');
+  }
+
+  async function openThread(studentId) {
+    activeThread = studentId;
+    const student = allStudents.find(s => s.id === studentId);
+    document.getElementById('chat-with').textContent =
+      student ? (student.full_name || student.email) : 'Conversación';
+    document.getElementById('admin-chat-compose').style.display = 'block';
+
+    const { data, error } = await sb
+      .from('chat_messages')
+      .select('id, sender_is_admin, body, attachment_path, attachment_name, attachment_type, created_at')
+      .eq('student_id', studentId)
+      .order('created_at', { ascending: true })
+      .limit(200);
+
+    const log = document.getElementById('admin-chat-log');
+    if (error) { log.innerHTML = `<p class="empty-note">${escapeHtml(error.message)}</p>`; return; }
+    if (!data || !data.length) { log.innerHTML = '<p class="empty-note">Sin mensajes.</p>'; return; }
+
+    const parts = await Promise.all(data.map(async m => {
+      const mine = m.sender_is_admin;
+      const body = m.body ? escapeHtml(m.body).replace(/\n/g, '<br>') : '';
+      const att = m.attachment_path ? await adminAttachmentHtml(m) : '';
+      return `<div class="chat-bubble ${mine ? 'me' : 'them'}">${body}${att}<span class="chat-time">${chatTimeAdmin(m.created_at)}</span></div>`;
+    }));
+    log.innerHTML = parts.join('');
+    log.scrollTop = log.scrollHeight;
+
+    await sb.rpc('mark_chat_read', { _student_id: studentId });
+    await loadChatThreads();
+  }
+
+  document.getElementById('admin-chat-file').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    const label = document.getElementById('admin-chat-file-name');
+    if (!f) { label.textContent = ''; return; }
+    if (f.size > CHAT_MAX_BYTES) {
+      document.getElementById('admin-chat-msg').innerHTML =
+        '<div class="msg error">El archivo supera el límite de 25 MB.</div>';
+      e.target.value = ''; label.textContent = '';
+      return;
+    }
+    label.textContent = f.name;
+  });
+
+  async function adminSendChat() {
+    if (!activeThread) return;
+    const input = document.getElementById('admin-chat-input');
+    const fileInput = document.getElementById('admin-chat-file');
+    const btn = document.getElementById('admin-chat-send');
+    const msgBox = document.getElementById('admin-chat-msg');
+    const body = input.value.trim();
+    const file = fileInput.files[0];
+
+    if (!body && !file) {
+      msgBox.innerHTML = '<div class="msg error">Escribe un mensaje o adjunta un archivo.</div>';
+      return;
+    }
+    btn.disabled = true;
+
+    try {
+      let path = null, name = null, type = null, size = null;
+      if (file) {
+        // Admin uploads live under the student's folder so the student can
+        // read them under the same storage policy.
+        const ext = (file.name.split('.').pop() || 'bin').toLowerCase().slice(0, 8);
+        path = `${activeThread}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await sb.storage.from(CHAT_BUCKET)
+          .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+        if (upErr) { msgBox.innerHTML = `<div class="msg error">${escapeHtml(upErr.message)}</div>`; return; }
+        name = file.name; type = file.type; size = file.size;
+      }
+
+      const { error } = await sb.from('chat_messages').insert({
+        student_id: activeThread,
+        sender_is_admin: true,
+        body: body || null,
+        attachment_path: path,
+        attachment_name: name,
+        attachment_type: type,
+        attachment_size: size
+      });
+      if (error) { msgBox.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+
+      input.value = '';
+      fileInput.value = '';
+      document.getElementById('admin-chat-file-name').textContent = '';
+      msgBox.innerHTML = '';
+      await openThread(activeThread);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('admin-chat-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); adminSendChat(); }
+  });
+
+  function subscribeAdminChat() {
+    if (adminChatChannel) return;
+    adminChatChannel = sb.channel('admin-chat')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
+        loadChatThreads();
+        if (activeThread && payload.new && payload.new.student_id === activeThread) {
+          openThread(activeThread);
+        }
+      })
+      .subscribe();
   }
 
   checkAccess();
