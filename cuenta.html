@@ -288,7 +288,7 @@
       email_not_confirmed: 'Tu email todavía no está confirmado. Revisa tu bandeja de entrada.',
       resend_confirmation_link: 'Reenviar email de confirmación', confirmation_resent: 'Email de confirmación reenviado. Revisa tu bandeja de entrada Y la carpeta de spam.',
       enter_email_first: 'Escribe tu email arriba primero.', reset_email_sent: 'Te hemos enviado un email para restablecer tu contraseña. Si no lo ves en tu bandeja de entrada en unos minutos, revisa también la carpeta de spam.',
-      password_too_short: 'La contraseña debe tener al menos 6 caracteres.',
+      password_too_short: 'La contraseña debe tener al menos 8 caracteres.',
       btn_login: 'Entrar', btn_signup: 'Registrarme',
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
       hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
@@ -344,7 +344,7 @@
       email_not_confirmed: 'Twój email nie został jeszcze potwierdzony. Sprawdź swoją skrzynkę odbiorczą.',
       resend_confirmation_link: 'Wyślij ponownie email potwierdzający', confirmation_resent: 'Email potwierdzający wysłany ponownie. Sprawdź skrzynkę odbiorczą ORAZ folder spam.',
       enter_email_first: 'Najpierw wpisz swój email powyżej.', reset_email_sent: 'Wysłaliśmy ci email do zresetowania hasła. Jeśli nie widzisz go w skrzynce odbiorczej w ciągu kilku minut, sprawdź też folder ze spamem.',
-      password_too_short: 'Hasło musi mieć co najmniej 6 znaków.',
+      password_too_short: 'Hasło musi mieć co najmniej 8 znaków.',
       btn_login: 'Zaloguj', btn_signup: 'Zarejestruj się',
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
       hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
@@ -400,7 +400,7 @@
       email_not_confirmed: 'Your email hasn\'t been confirmed yet. Check your inbox.',
       resend_confirmation_link: 'Resend confirmation email', confirmation_resent: 'Confirmation email resent. Check your inbox AND your spam folder.',
       enter_email_first: 'Enter your email above first.', reset_email_sent: 'We\'ve sent you an email to reset your password. If you don\'t see it in your inbox within a few minutes, check your spam folder too.',
-      password_too_short: 'Password must be at least 6 characters.',
+      password_too_short: 'Password must be at least 8 characters.',
       btn_login: 'Log in', btn_signup: 'Sign up',
       link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
       hello_prefix: 'Hi,', admin_panel_link: 'Admin panel', logout_link: 'Log out',
@@ -541,6 +541,13 @@
     if (mode === 'signup') {
       const full_name = document.getElementById('full_name').value.trim();
       const referral_code = document.getElementById('referral_code_input').value.trim();
+      // Mirrors the minimum length enforced by Supabase Auth, so the user gets
+      // this in their own language instead of a raw English server error.
+      if (password.length < 8) {
+        showMsg(t('password_too_short'), 'error');
+        btn.disabled = false;
+        return;
+      }
       if (!document.getElementById('terms-checkbox').checked) {
         showMsg(t('must_accept_terms'), 'error');
         btn.disabled = false;
@@ -611,7 +618,7 @@
   async function handleResetPassword() {
     const newPassword = document.getElementById('new-password').value;
     const msgBox = document.getElementById('reset-password-msg');
-    if (!newPassword || newPassword.length < 6) {
+    if (!newPassword || newPassword.length < 8) {
       msgBox.innerHTML = `<div class="msg error">${t('password_too_short')}</div>`;
       return;
     }
