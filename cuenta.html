@@ -275,6 +275,66 @@
   .how-list { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.75; }
   .how-list li + li { margin-top: 4px; }
 
+  /* ---- Focus areas (two-voice list) ---- */
+  .focus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  @media (max-width: 760px) { .focus-grid { grid-template-columns: 1fr; } }
+
+  /* The left edge colour is the fastest way to tell the two boxes apart
+     at a glance, before reading either heading. */
+  .focus-card { border-left: 4px solid var(--peach-line); }
+  .focus-card.focus-mine  { border-left-color: var(--orange); }
+  .focus-card.focus-tutor { border-left-color: var(--ink); background: var(--bg-soft); }
+
+  .focus-head { display: flex; align-items: center; gap: 9px; margin-bottom: 4px; }
+  .focus-head h3 { font-size: 1rem; margin: 0; }
+  .focus-tag {
+    font-family: 'Space Mono', monospace; font-size: 0.66rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 3px 9px; border-radius: 100px; white-space: nowrap;
+  }
+  .focus-tag-mine  { background: var(--peach); color: var(--orange-deep); }
+  .focus-tag-tutor { background: var(--ink); color: var(--bg); }
+
+  .focus-hint { color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 14px; }
+
+  .focus-form { display: flex; gap: 8px; margin-bottom: 14px; }
+  .focus-form input {
+    flex: 1; padding: 10px 13px; border-radius: 8px; border: 1.5px solid var(--peach-line);
+    background: var(--white); font-family: 'Work Sans', sans-serif; font-size: 0.9rem;
+  }
+  .focus-form button {
+    background: var(--orange); color: var(--white); border: none; border-radius: 8px;
+    padding: 10px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+  }
+  .focus-form button:hover { background: var(--orange-deep); }
+
+  .focus-list { list-style: none; margin: 0; padding: 0; }
+  .focus-item {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 10px 0; border-bottom: 1px solid var(--peach-line); font-size: 0.9rem;
+  }
+  .focus-item:last-child { border-bottom: none; }
+  .focus-item.done .focus-body { text-decoration: line-through; color: var(--ink-soft); }
+
+  .focus-check {
+    flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px;
+    border: 1.5px solid var(--peach-line); border-radius: 5px; background: var(--white);
+    cursor: pointer; padding: 0; line-height: 1; font-size: 0.8rem;
+    color: var(--orange-deep);
+  }
+  .focus-check:hover { border-color: var(--orange); }
+  .focus-check.on { background: var(--orange); border-color: var(--orange); color: var(--white); }
+
+  .focus-body { flex: 1; overflow-wrap: anywhere; }
+  .focus-when {
+    font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--ink-soft); white-space: nowrap;
+  }
+  .focus-del {
+    background: none; border: none; cursor: pointer; color: var(--ink-soft);
+    font-size: 1rem; line-height: 1; padding: 0 2px;
+  }
+  .focus-del:hover { color: #B23A1E; }
+
   /* ---- Stars ---- */
   .star-picker { display: flex; align-items: center; gap: 2px; margin-bottom: 12px; }
   .star {
@@ -518,6 +578,9 @@
       <button class="tab" data-tab="opiniones" role="tab" onclick="showTab('opiniones')">
         <span data-i18n="tab_reviews">Opiniones</span>
       </button>
+      <button class="tab" data-tab="progreso" role="tab" onclick="showTab('progreso')">
+        <span data-i18n="tab_focus">Progreso</span>
+      </button>
       <button class="tab" data-tab="referidos" role="tab" onclick="showTab('referidos')">
         <span data-i18n="tab_referrals">Referidos</span>
       </button>
@@ -584,6 +647,36 @@
         <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;" data-i18n="reviews_feed_hint">Puedes responder a las opiniones de otros alumnos.</p>
         <div id="reviews-list"></div>
         <p class="empty-note" id="reviews-empty" style="display:none;" data-i18n="reviews_empty">Todavía no hay opiniones publicadas.</p>
+      </div>
+    </section>
+
+    <!-- ============ PROGRESO / PUNTOS A TRABAJAR ============ -->
+    <section class="tab-panel" id="panel-progreso" role="tabpanel">
+      <div class="focus-grid">
+        <div class="card focus-card focus-mine">
+          <div class="focus-head">
+            <span class="focus-tag focus-tag-mine" data-i18n="focus_tag_mine">Tú</span>
+            <h3 data-i18n="focus_mine_title">Lo que siento que me cuesta</h3>
+          </div>
+          <p class="focus-hint" data-i18n="focus_mine_hint">Apunta lo que te bloquea. Paulo lo verá y lo tendrá en cuenta en las clases.</p>
+          <form class="focus-form" onsubmit="addFocus(event)">
+            <input type="text" id="focus-input" maxlength="500"
+                   data-i18n-placeholder="focus_placeholder" placeholder="Ej: me bloqueo al hablar por teléfono">
+            <button type="submit" data-i18n="focus_add">Añadir</button>
+          </form>
+          <ul class="focus-list" id="focus-list-mine"></ul>
+          <p class="empty-note" id="focus-empty-mine" style="display:none;" data-i18n="focus_empty_mine">Todavía no has apuntado nada.</p>
+        </div>
+
+        <div class="card focus-card focus-tutor">
+          <div class="focus-head">
+            <span class="focus-tag focus-tag-tutor" data-i18n="focus_tag_tutor">Paulo</span>
+            <h3 data-i18n="focus_tutor_title">Lo que Paulo ha observado</h3>
+          </div>
+          <p class="focus-hint" data-i18n="focus_tutor_hint">Notas de Paulo tras las clases. Solo él puede editarlas.</p>
+          <ul class="focus-list" id="focus-list-tutor"></ul>
+          <p class="empty-note" id="focus-empty-tutor" style="display:none;" data-i18n="focus_empty_tutor">Paulo todavía no ha añadido notas.</p>
+        </div>
       </div>
     </section>
 
@@ -739,6 +832,16 @@
       chat_empty_send: 'Escribe un mensaje o adjunta un archivo.',
       chat_too_big: 'El archivo supera el límite de 25 MB.',
       chat_retention: 'Los mensajes y archivos se borran automáticamente a los 30 días. Máximo 25 MB por archivo.',
+      tab_focus: 'Progreso',
+      focus_tag_mine: 'Tú', focus_tag_tutor: 'Paulo',
+      focus_mine_title: 'Lo que siento que me cuesta',
+      focus_mine_hint: 'Apunta lo que te bloquea. Paulo lo verá y lo tendrá en cuenta en las clases.',
+      focus_tutor_title: 'Lo que Paulo ha observado',
+      focus_tutor_hint: 'Notas de Paulo tras las clases. Solo él puede editarlas.',
+      focus_placeholder: 'Ej: me bloqueo al hablar por teléfono', focus_add: 'Añadir',
+      focus_empty_mine: 'Todavía no has apuntado nada.',
+      focus_empty_tutor: 'Paulo todavía no ha añadido notas.',
+      focus_done: 'Marcar como trabajado', focus_undo: 'Marcar como pendiente', focus_delete: 'Eliminar',
       tab_classes: 'Clases', tab_reviews: 'Opiniones', tab_referrals: 'Referidos', tab_account: 'Cuenta',
       rating_hint: 'Puntúa tu experiencia',
       reviews_feed_title: 'Lo que dicen otros alumnos', reviews_feed_hint: 'Puedes responder a las opiniones de otros alumnos.',
@@ -814,6 +917,16 @@
       chat_empty_send: 'Napisz wiadomość lub załącz plik.',
       chat_too_big: 'Plik przekracza limit 25 MB.',
       chat_retention: 'Wiadomości i pliki są automatycznie usuwane po 30 dniach. Maksymalnie 25 MB na plik.',
+      tab_focus: 'Postępy',
+      focus_tag_mine: 'Ty', focus_tag_tutor: 'Paulo',
+      focus_mine_title: 'Co sprawia mi trudność',
+      focus_mine_hint: 'Zapisz to, co cię blokuje. Paulo to zobaczy i uwzględni na lekcjach.',
+      focus_tutor_title: 'Co zauważył Paulo',
+      focus_tutor_hint: 'Notatki Paulo po lekcjach. Tylko on może je edytować.',
+      focus_placeholder: 'Np. blokuję się przy rozmowie telefonicznej', focus_add: 'Dodaj',
+      focus_empty_mine: 'Nie zapisałeś jeszcze nic.',
+      focus_empty_tutor: 'Paulo nie dodał jeszcze notatek.',
+      focus_done: 'Oznacz jako przepracowane', focus_undo: 'Oznacz jako otwarte', focus_delete: 'Usuń',
       tab_classes: 'Lekcje', tab_reviews: 'Opinie', tab_referrals: 'Polecenia', tab_account: 'Konto',
       rating_hint: 'Oceń swoje doświadczenie',
       reviews_feed_title: 'Co mówią inni uczniowie', reviews_feed_hint: 'Możesz odpowiadać na opinie innych uczniów.',
@@ -889,6 +1002,16 @@
       chat_empty_send: 'Write a message or attach a file.',
       chat_too_big: 'That file is over the 25 MB limit.',
       chat_retention: 'Messages and files are deleted automatically after 30 days. Maximum 25 MB per file.',
+      tab_focus: 'Progress',
+      focus_tag_mine: 'You', focus_tag_tutor: 'Paulo',
+      focus_mine_title: 'What I struggle with most',
+      focus_mine_hint: 'Note down what blocks you. Paulo will see it and factor it into lessons.',
+      focus_tutor_title: "What Paulo has noticed",
+      focus_tutor_hint: 'Paulo\'s notes after lessons. Only he can edit these.',
+      focus_placeholder: 'e.g. I freeze up on phone calls', focus_add: 'Add',
+      focus_empty_mine: "You haven't noted anything yet.",
+      focus_empty_tutor: 'Paulo has not added any notes yet.',
+      focus_done: 'Mark as worked on', focus_undo: 'Mark as open', focus_delete: 'Delete',
       tab_classes: 'Classes', tab_reviews: 'Reviews', tab_referrals: 'Referrals', tab_account: 'Account',
       rating_hint: 'Rate your experience',
       reviews_feed_title: 'What other students say', reviews_feed_hint: 'You can reply to other students\' reviews.',
@@ -1463,8 +1586,70 @@
     await loadReviews();
   }
 
+  // ---- FOCUS AREAS ----
+  async function loadFocus() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    myUserId = user.id;
+
+    const { data, error } = await sb
+      .from('student_focus')
+      .select('id, author_is_admin, body, resolved_at, created_at')
+      .eq('student_id', user.id)
+      .order('created_at', { ascending: false });
+    if (error) return;
+
+    const rows = data || [];
+    renderFocusList('mine',  rows.filter(r => !r.author_is_admin), true);
+    renderFocusList('tutor', rows.filter(r =>  r.author_is_admin), false);
+  }
+
+  function renderFocusList(which, rows, canDelete) {
+    const list = document.getElementById('focus-list-' + which);
+    const empty = document.getElementById('focus-empty-' + which);
+    empty.style.display = rows.length ? 'none' : 'block';
+    list.innerHTML = rows.map(r => {
+      const done = !!r.resolved_at;
+      return `<li class="focus-item${done ? ' done' : ''}">
+        <button class="focus-check${done ? ' on' : ''}" onclick="toggleFocus('${r.id}', ${done})"
+                title="${escapeChat(t(done ? 'focus_undo' : 'focus_done'))}">${done ? '&#10003;' : ''}</button>
+        <span class="focus-body">${escapeChat(r.body)}</span>
+        <span class="focus-when">${escapeChat(timeAgo(r.created_at))}</span>
+        ${canDelete ? `<button class="focus-del" title="${escapeChat(t('focus_delete'))}" onclick="deleteFocus('${r.id}')">&times;</button>` : ''}
+      </li>`;
+    }).join('');
+  }
+
+  async function addFocus(ev) {
+    ev.preventDefault();
+    const input = document.getElementById('focus-input');
+    const body = input.value.trim();
+    if (!body) return;
+    const { error } = await sb.from('student_focus').insert({
+      student_id: myUserId, author_is_admin: false, body
+    });
+    if (error) { alert(error.message); return; }
+    input.value = '';
+    await loadFocus();
+  }
+
+  // Either side can tick an item off; only resolved_at is writable.
+  async function toggleFocus(id, done) {
+    const { error } = await sb.from('student_focus')
+      .update({ resolved_at: done ? null : new Date().toISOString() })
+      .eq('id', id);
+    if (error) { alert(error.message); return; }
+    await loadFocus();
+  }
+
+  async function deleteFocus(id) {
+    const { error } = await sb.from('student_focus').delete().eq('id', id);
+    if (error) { alert(error.message); return; }
+    await loadFocus();
+  }
+
   // ---- SUBPAGE TABS ----
-  const TABS = ['clases', 'opiniones', 'referidos', 'cuenta'];
+  const TABS = ['clases', 'opiniones', 'progreso', 'referidos', 'cuenta'];
 
   function showTab(name) {
     if (!TABS.includes(name)) name = 'clases';
@@ -1483,6 +1668,7 @@
       history.replaceState(null, '', '#' + name);
     }
     if (name === 'opiniones') loadReviews();
+    if (name === 'progreso') loadFocus();
   }
 
   window.addEventListener('hashchange', () => {

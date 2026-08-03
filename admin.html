@@ -229,6 +229,47 @@
   @media (prefers-reduced-motion: reduce) {
     .msg-toast, .msg-toast.leaving, .card.flash { animation: none; }
   }
+  /* ---- Focus areas ---- */
+  .focus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 760px) { .focus-grid { grid-template-columns: 1fr; } }
+  .focus-col {
+    border: 1px solid var(--peach-line); border-left: 4px solid var(--peach-line);
+    border-radius: 10px; padding: 14px 16px; background: var(--bg);
+  }
+  .focus-col.focus-mine  { border-left-color: var(--orange); }
+  .focus-col.focus-tutor { border-left-color: var(--ink); background: var(--bg-soft); }
+  .focus-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+  .focus-tag {
+    font-family: 'Space Mono', monospace; font-size: 0.64rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 9px;
+    border-radius: 100px; white-space: nowrap;
+  }
+  .focus-tag-mine  { background: var(--peach); color: var(--orange-deep); }
+  .focus-tag-tutor { background: var(--ink); color: var(--bg); }
+  .focus-form { display: flex; gap: 8px; margin-bottom: 12px; }
+  .focus-form input { flex: 1; }
+  .focus-form button {
+    background: var(--orange); color: var(--white); border: none; border-radius: 8px;
+    padding: 9px 15px; font-weight: 600; font-size: 0.84rem; cursor: pointer;
+  }
+  .focus-form button:hover { background: var(--orange-deep); }
+  .focus-list { list-style: none; margin: 0; padding: 0; }
+  .focus-item {
+    display: flex; align-items: flex-start; gap: 9px; padding: 9px 0;
+    border-bottom: 1px solid var(--peach-line); font-size: 0.88rem;
+  }
+  .focus-item:last-child { border-bottom: none; }
+  .focus-item.done .focus-body { text-decoration: line-through; color: var(--ink-soft); }
+  .focus-check {
+    flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px; border-radius: 5px;
+    border: 1.5px solid var(--peach-line); background: var(--white); cursor: pointer;
+    padding: 0; line-height: 1; font-size: 0.78rem; color: var(--white);
+  }
+  .focus-check.on { background: var(--orange); border-color: var(--orange); }
+  .focus-body { flex: 1; overflow-wrap: anywhere; }
+  .focus-when { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--ink-soft); white-space: nowrap; }
+  .focus-del { background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 1rem; line-height: 1; padding: 0 2px; }
+  .focus-del:hover { color: #B23A1E; }
 </style>
 </head>
 <body>
@@ -397,6 +438,37 @@
             </div>
           </div>
           <div id="admin-chat-msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOCUS AREAS -->
+    <div class="card" id="focus-card">
+      <h3>Puntos a trabajar</h3>
+      <p class="hint">Lo que el alumno siente que le cuesta, junto a tus observaciones. El alumno ve ambas listas.</p>
+      <select id="focus-student" onchange="loadAdminFocus()" style="width:100%; margin-bottom:16px;">
+        <option value="">Elige un alumno...</option>
+      </select>
+      <div class="focus-grid" id="focus-panels" style="display:none;">
+        <div class="focus-col focus-mine">
+          <div class="focus-head">
+            <span class="focus-tag focus-tag-mine">Alumno</span>
+            <strong>Lo que dice que le cuesta</strong>
+          </div>
+          <ul class="focus-list" id="admin-focus-student"></ul>
+          <p class="empty-note" id="admin-focus-student-empty" style="display:none;">El alumno no ha apuntado nada.</p>
+        </div>
+        <div class="focus-col focus-tutor">
+          <div class="focus-head">
+            <span class="focus-tag focus-tag-tutor">Tú</span>
+            <strong>Tus observaciones</strong>
+          </div>
+          <form class="focus-form" onsubmit="addAdminFocus(event)">
+            <input type="text" id="admin-focus-input" maxlength="500" placeholder="Ej: confunde past simple y present perfect">
+            <button type="submit">Añadir</button>
+          </form>
+          <ul class="focus-list" id="admin-focus-tutor"></ul>
+          <p class="empty-note" id="admin-focus-tutor-empty" style="display:none;">Todavía no has añadido notas.</p>
         </div>
       </div>
     </div>
@@ -841,6 +913,7 @@
       allStudents = (data || []).filter(s => !s.is_admin);
     }
     renderStudents();
+    fillFocusStudents();
   }
 
   function renderStudents() {
@@ -1157,6 +1230,86 @@
         }
       })
       .subscribe();
+  }
+
+  // ---- FOCUS AREAS ----
+  function focusTimeAgo(iso) {
+    const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
+    const secs = Math.round((new Date(iso) - Date.now()) / 1000);
+    const units = [['year',31536000],['month',2592000],['week',604800],['day',86400],['hour',3600],['minute',60]];
+    for (const [u, size] of units) if (Math.abs(secs) >= size) return rtf.format(Math.round(secs/size), u);
+    return rtf.format(Math.round(secs), 'second');
+  }
+
+  function fillFocusStudents() {
+    const sel = document.getElementById('focus-student');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Elige un alumno...</option>' +
+      allStudents.map(s => `<option value="${s.id}">${escapeHtml(s.full_name || s.email || 'Alumno/a')}</option>`).join('');
+    if (current) sel.value = current;
+  }
+
+  async function loadAdminFocus() {
+    const studentId = document.getElementById('focus-student').value;
+    const panels = document.getElementById('focus-panels');
+    if (!studentId) { panels.style.display = 'none'; return; }
+    panels.style.display = 'grid';
+
+    const { data, error } = await sb
+      .from('student_focus')
+      .select('id, author_is_admin, body, resolved_at, created_at')
+      .eq('student_id', studentId)
+      .order('created_at', { ascending: false });
+    if (error) { alert(error.message); return; }
+
+    const rows = data || [];
+    renderAdminFocus('student', rows.filter(r => !r.author_is_admin));
+    renderAdminFocus('tutor',   rows.filter(r =>  r.author_is_admin));
+  }
+
+  function renderAdminFocus(which, rows) {
+    const list = document.getElementById('admin-focus-' + which);
+    const empty = document.getElementById('admin-focus-' + which + '-empty');
+    empty.style.display = rows.length ? 'none' : 'block';
+    list.innerHTML = rows.map(r => {
+      const done = !!r.resolved_at;
+      return `<li class="focus-item${done ? ' done' : ''}">
+        <button class="focus-check${done ? ' on' : ''}" onclick="toggleAdminFocus('${r.id}', ${done})"
+                title="${done ? 'Marcar como pendiente' : 'Marcar como trabajado'}">${done ? '&#10003;' : ''}</button>
+        <span class="focus-body">${escapeHtml(r.body)}</span>
+        <span class="focus-when">${focusTimeAgo(r.created_at)}</span>
+        <button class="focus-del" title="Eliminar" onclick="deleteAdminFocus('${r.id}')">&times;</button>
+      </li>`;
+    }).join('');
+  }
+
+  async function addAdminFocus(ev) {
+    ev.preventDefault();
+    const studentId = document.getElementById('focus-student').value;
+    const input = document.getElementById('admin-focus-input');
+    const body = input.value.trim();
+    if (!studentId || !body) return;
+    const { error } = await sb.from('student_focus').insert({
+      student_id: studentId, author_is_admin: true, body
+    });
+    if (error) { alert(error.message); return; }
+    input.value = '';
+    await loadAdminFocus();
+  }
+
+  async function toggleAdminFocus(id, done) {
+    const { error } = await sb.from('student_focus')
+      .update({ resolved_at: done ? null : new Date().toISOString() })
+      .eq('id', id);
+    if (error) { alert(error.message); return; }
+    await loadAdminFocus();
+  }
+
+  async function deleteAdminFocus(id) {
+    if (!confirm('¿Eliminar esta nota?')) return;
+    const { error } = await sb.from('student_focus').delete().eq('id', id);
+    if (error) { alert(error.message); return; }
+    await loadAdminFocus();
   }
 
   checkAccess();
