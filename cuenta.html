@@ -495,6 +495,31 @@
     background: var(--orange); color: var(--white); font-size: 0.7rem; font-weight: 700;
     text-align: center; line-height: 18px; margin-left: 6px;
   }
+  /* Quiet thank-you shown only once a referral has actually paid out.
+     Deliberately never advertised anywhere in the copy. */
+  .medal {
+    display: inline-flex; align-items: center; gap: 5px;
+    vertical-align: middle; margin-left: 10px;
+    background: #E7F4EC; color: #2F6B45; border: 1px solid #BFE0CC;
+    border-radius: 100px; padding: 4px 12px 4px 9px;
+    font-family: 'Work Sans', sans-serif; font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.01em; white-space: nowrap;
+  }
+  .btn-refer {
+    background: var(--peach); color: var(--orange-deep);
+    border: 1.5px solid var(--peach-line); border-radius: 8px;
+    padding: 9px 16px; font-family: 'Work Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .btn-refer:hover { border-color: var(--orange); background: #FBE9D7; }
+
+  .honesty-card { border-left: 4px solid var(--orange); }
+  .honesty-body { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.65; margin: 0; }
+  .honesty-sign {
+    margin: 10px 0 0; font-family: 'Fraunces', serif; font-size: 0.9rem;
+    font-weight: 600; color: var(--ink);
+  }
 </style>
 </head>
 <body>
@@ -565,7 +590,15 @@
   <!-- DASHBOARD VIEW (shown after login) -->
   <div id="dashboard-view" style="display:none;">
     <div class="top-bar">
-      <h1 style="font-size: 1.8rem;"><span data-i18n="hello_prefix">Hola,</span> <span id="student-name">—</span></h1>
+      <h1 style="font-size: 1.8rem;">
+        <span data-i18n="hello_prefix">Hola,</span> <span id="student-name">—</span>
+        <span id="supporter-medal" class="medal" style="display:none;" title="">
+          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+            <path fill="currentColor" d="M12 2 9.2 7.1 3.5 8l4.1 4-1 5.7 5.4-2.9 5.4 2.9-1-5.7 4.1-4-5.7-.9z"/>
+          </svg>
+          <span class="medal-text"></span>
+        </span>
+      </h1>
       <div>
         <button class="logout-link" onclick="handleLogout()" data-i18n="logout_link">Cerrar sesión</button>
       </div>
@@ -594,11 +627,18 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px;" data-i18n="your_credits">Tus créditos</h3>
         <div class="credit-badge"><b id="credit-count">0</b> <span data-i18n="credits_available">clases disponibles</span></div>
-        <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 12px 0 8px;" data-i18n="need_more_credits">¿Necesitas más créditos? Contáctame:</p>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 12px 0 8px;" data-i18n="need_more_credits">¿Necesitas más créditos? Contáctame o invita a un amigo:</p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
           <a class="btn-cancel" href="mailto:yankxwtic@mozmail.com" style="text-decoration: none; display: inline-block;" data-i18n="contact_email_link">Email</a>
           <a class="btn-cancel" href="https://t.me/frelseisme" target="_blank" rel="noopener" style="text-decoration: none; display: inline-block;" data-i18n="contact_telegram_link">Telegram</a>
+          <button class="btn-refer" onclick="showTab('referidos')" data-i18n="refer_a_friend_btn">Invitar a un amigo</button>
         </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="upcoming_classes">Tus próximas clases</h3>
+        <ul class="slot-list" id="my-slots"></ul>
+        <p class="empty-note" id="my-slots-empty" style="display:none;" data-i18n="no_bookings_yet">Aún no tienes clases reservadas.</p>
       </div>
 
       <div class="card">
@@ -612,12 +652,6 @@
         <div class="week-days" id="week-days"></div>
         <div id="week-day-slots" style="margin-top: 16px;"></div>
         <p class="empty-note" id="open-slots-empty" style="display:none;" data-i18n="no_classes_this_week">No hay clases disponibles esta semana.</p>
-      </div>
-
-      <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="upcoming_classes">Tus próximas clases</h3>
-        <ul class="slot-list" id="my-slots"></ul>
-        <p class="empty-note" id="my-slots-empty" style="display:none;" data-i18n="no_bookings_yet">Aún no tienes clases reservadas.</p>
       </div>
     </section>
 
@@ -704,6 +738,12 @@
           <li data-i18n="referral_step_3">Cuando compra sus primeras clases, recibes 3 clases gratis automáticamente.</li>
         </ol>
         <p style="color: var(--ink-soft); font-size: 0.82rem; margin: 12px 0 0;" data-i18n="referral_note">La recompensa se entrega una sola vez por cada amigo invitado.</p>
+      </div>
+
+      <div class="card honesty-card">
+        <h3 style="font-size: 1rem; margin-bottom: 8px;" data-i18n="honesty_title">Con total honestidad</h3>
+        <p class="honesty-body" data-i18n="honesty_body">Soy autónomo y me he construido esto yo mismo, trabajando para sacar adelante a mi familia junto a mi mujer. No hay una empresa detrás: solo yo, mis clases y la gente que confía en mí. Compartir tu código no es solo una forma de conseguir clases gratis — es una manera real de ayudarme a seguir adelante y de demostrar tu apoyo. Lo agradezco de todo corazón.</p>
+        <p class="honesty-sign" data-i18n="honesty_sign">— Paulo</p>
       </div>
     </section>
 
@@ -811,7 +851,7 @@
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
       hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
       your_credits: 'Tus créditos', credits_available: 'clases disponibles',
-      need_more_credits: '¿Necesitas más créditos? Contáctame:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
+      need_more_credits: '¿Necesitas más créditos? Contáctame o invita a un amigo:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Invita a un amigo', referral_badge: '3 clases gratis', referral_hint: 'Comparte tu código. Cuando un amigo se registre con él y compre sus primeras clases, tú ganas 3 clases gratis.',
       copy_link_btn: 'Copiar enlace', copy_link_copied: '¡Enlace copiado!',
       referral_stats_template: (n, r) => `Has invitado a ${n} ${n === 1 ? 'persona' : 'personas'} · ${r} ${r === 1 ? 'clase gratis ganada' : 'clases gratis ganadas'}`,
@@ -832,6 +872,11 @@
       chat_empty_send: 'Escribe un mensaje o adjunta un archivo.',
       chat_too_big: 'El archivo supera el límite de 25 MB.',
       chat_retention: 'Los mensajes y archivos se borran automáticamente a los 30 días. Máximo 25 MB por archivo.',
+      refer_a_friend_btn: 'Invitar a un amigo',
+      medal_label: 'Gracias por tu apoyo', medal_tooltip: 'Gracias por confiar en mí y recomendarme.',
+      honesty_title: 'Con total honestidad',
+      honesty_body: 'Soy autónomo y me he construido esto yo mismo, trabajando para sacar adelante a mi familia junto a mi mujer. No hay una empresa detrás: solo yo, mis clases y la gente que confía en mí. Compartir tu código no es solo una forma de conseguir clases gratis — es una manera real de ayudarme a seguir adelante y de demostrar tu apoyo. Lo agradezco de todo corazón.',
+      honesty_sign: '— Paulo',
       tab_focus: 'Progreso',
       focus_tag_mine: 'Tú', focus_tag_tutor: 'Paulo',
       focus_mine_title: 'Lo que siento que me cuesta',
@@ -896,7 +941,7 @@
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
       hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
       your_credits: 'Twoje kredyty', credits_available: 'dostępnych lekcji',
-      need_more_credits: 'Potrzebujesz więcej kredytów? Napisz do mnie:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
+      need_more_credits: 'Potrzebujesz więcej kredytów? Napisz do mnie lub zaproś znajomego:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Zaproś znajomego', referral_badge: '3 darmowe lekcje', referral_hint: 'Udostępnij swój kod. Gdy znajomy zarejestruje się z jego pomocą i kupi swoje pierwsze lekcje, ty otrzymasz 3 darmowe lekcje.',
       copy_link_btn: 'Kopiuj link', copy_link_copied: 'Link skopiowany!',
       referral_stats_template: (n, r) => `Zaprosiłeś ${n} ${n === 1 ? 'osobę' : 'osób'} · ${r} ${r === 1 ? 'darmowa lekcja zdobyta' : 'darmowych lekcji zdobytych'}`,
@@ -917,6 +962,11 @@
       chat_empty_send: 'Napisz wiadomość lub załącz plik.',
       chat_too_big: 'Plik przekracza limit 25 MB.',
       chat_retention: 'Wiadomości i pliki są automatycznie usuwane po 30 dniach. Maksymalnie 25 MB na plik.',
+      refer_a_friend_btn: 'Zaproś znajomego',
+      medal_label: 'Dziękuję za wsparcie', medal_tooltip: 'Dziękuję za zaufanie i polecenie mnie dalej.',
+      honesty_title: 'Zupełnie szczerze',
+      honesty_body: 'Pracuję na własny rachunek i zbudowałem to wszystko sam, utrzymując rodzinę razem z moją żoną. Za tym nie stoi żadna firma — tylko ja, moje lekcje i ludzie, którzy mi zaufali. Udostępnienie kodu to nie tylko sposób na darmowe lekcje: to realna pomoc, bym mógł robić to dalej, i dowód twojego wsparcia. Jestem za to szczerze wdzięczny.',
+      honesty_sign: '— Paulo',
       tab_focus: 'Postępy',
       focus_tag_mine: 'Ty', focus_tag_tutor: 'Paulo',
       focus_mine_title: 'Co sprawia mi trudność',
@@ -981,7 +1031,7 @@
       link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
       hello_prefix: 'Hi,', admin_panel_link: 'Admin panel', logout_link: 'Log out',
       your_credits: 'Your credits', credits_available: 'lessons available',
-      need_more_credits: 'Need more credits? Contact me:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
+      need_more_credits: 'Need more credits? Contact me or refer a friend:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Refer a friend', referral_badge: '3 free lessons', referral_hint: 'Share your code. When a friend signs up with it and buys their first lessons, you get 3 free lessons.',
       copy_link_btn: 'Copy link', copy_link_copied: 'Link copied!',
       referral_stats_template: (n, r) => `You've referred ${n} ${n === 1 ? 'person' : 'people'} · ${r} free ${r === 1 ? 'lesson' : 'lessons'} earned`,
@@ -1002,6 +1052,11 @@
       chat_empty_send: 'Write a message or attach a file.',
       chat_too_big: 'That file is over the 25 MB limit.',
       chat_retention: 'Messages and files are deleted automatically after 30 days. Maximum 25 MB per file.',
+      refer_a_friend_btn: 'Refer a friend',
+      medal_label: 'Thank you for your support', medal_tooltip: 'Thank you for trusting me and passing my name on.',
+      honesty_title: 'In all honesty',
+      honesty_body: "I'm self-employed and built this myself, working to support my family alongside my wife. There's no company behind it — just me, my lessons, and the people who trust me. Sharing your code isn't only a way to get free lessons: it genuinely helps me keep going, and it shows your support. I appreciate it wholeheartedly.",
+      honesty_sign: '— Paulo',
       tab_focus: 'Progress',
       focus_tag_mine: 'You', focus_tag_tutor: 'Paulo',
       focus_mine_title: 'What I struggle with most',
@@ -1495,6 +1550,18 @@
         Number(stats.referred_count ?? 0),
         parseFloat(Number(stats.rewards_earned ?? 0).toFixed(2))
       );
+
+    // Appears once a referral has actually paid out, and then stays. Never
+    // announced in advance anywhere on the site — it's meant to be found,
+    // not earned toward.
+    const medal = document.getElementById('supporter-medal');
+    if (Number(stats.rewards_earned ?? 0) > 0) {
+      medal.querySelector('.medal-text').textContent = t('medal_label');
+      medal.title = t('medal_tooltip');
+      medal.style.display = 'inline-flex';
+    } else {
+      medal.style.display = 'none';
+    }
   }
 
   function copyReferralLink() {
