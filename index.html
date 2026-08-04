@@ -6,27 +6,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Paulo Crespo — Inglés para comunicar con confianza</title>
 <meta name="description" content="Clases de inglés centradas en comunicación real, pensadas para personas tímidas o inseguras que quieren hablar con confianza. Clases por videollamada, primera clase de prueba con descuento.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23F26822'/%3E%3Ctext x='50' y='68' font-size='55' font-family='Georgia,serif' font-weight='700' fill='%23FBF4EC' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
 <link rel="canonical" href="https://inglesconpaulo.org/index.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #FBF4EC;
-    --bg-soft: #F5EBDD;
-    --ink: #2A1F16;
-    --ink-soft: #6B5A48;
-    --orange: #F26822;
-    --orange-deep: #C1440E;
-    --peach: #FBDDC5;
-    --peach-line: #E9C8A6;
-    --white: #FFFCF8;
+    /* Palette derived from Paulo's own photograph: cobalt ground, mustard
+       panels, warm grey blocks. Chosen so the portrait belongs on the page
+       instead of fighting it. */
+    --paper: #FAFAF8;
+    --paper-alt: #EFEEE9;
+    --ink: #12141A;
+    --ink-soft: #5A6070;
+    --accent: #2A4BA0;
+    --accent-deep: #1B3271;
+    --accent-soft: #DCE3F5;
+    --ochre: #E0A92E;
+    --line: #D9DAD2;
+    --surface: #FFFFFF;
 
     /* Warm-tinted elevation — never neutral grey, it muddies the cream. */
-    --shadow-sm: 0 1px 2px rgba(74, 44, 20, 0.05);
-    --shadow-md: 0 4px 16px -4px rgba(74, 44, 20, 0.10), 0 2px 4px rgba(74, 44, 20, 0.04);
-    --shadow-lg: 0 18px 40px -12px rgba(74, 44, 20, 0.18), 0 4px 10px rgba(74, 44, 20, 0.05);
+    --shadow-sm: 0 1px 2px rgba(18, 20, 26, 0.05);
+    --shadow-md: 0 4px 16px -4px rgba(18, 20, 26, 0.09), 0 2px 4px rgba(18, 20, 26, 0.04);
+    --shadow-lg: 0 18px 40px -12px rgba(18, 20, 26, 0.14), 0 4px 10px rgba(18, 20, 26, 0.05);
     --radius: 14px;
     --radius-lg: 20px;
     --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -38,23 +41,23 @@
 
   body {
     margin: 0;
-    background: var(--bg);
+    background: var(--paper);
     color: var(--ink);
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Archivo', system-ui, sans-serif;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
 
   h1, h2, h3 {
-    font-family: 'Fraunces', serif;
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
     font-weight: 600;
     line-height: 1.1;
     margin: 0;
     letter-spacing: -0.015em;
   }
 
-  .mono { font-family: 'Space Mono', monospace; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
 
   a { color: inherit; }
 
@@ -64,20 +67,12 @@
     padding: 0 32px;
   }
 
-  /* ---- Scroll reveal ---- */
-  .reveal {
-    opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
-  }
-  .reveal.is-visible { opacity: 1; transform: none; }
-
   /* ---- Header ---- */
   header {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: rgba(251, 244, 236, 0.82);
+    background: rgba(250, 250, 248, 0.86);
     backdrop-filter: saturate(180%) blur(12px);
     -webkit-backdrop-filter: saturate(180%) blur(12px);
     border-bottom: 1px solid transparent;
@@ -85,7 +80,7 @@
   }
 
   header.scrolled {
-    border-bottom-color: var(--peach-line);
+    border-bottom-color: var(--line);
     box-shadow: var(--shadow-sm);
   }
 
@@ -103,13 +98,13 @@
   .lang-switcher { display: inline-flex; gap: 4px; }
 
   .logo {
-    font-family: 'Fraunces', serif;
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
     font-weight: 600;
     font-size: 1.15rem;
     letter-spacing: -0.02em;
   }
 
-  .logo span { color: var(--orange); }
+  .logo span { color: var(--accent); }
 
   nav { display: flex; gap: 28px; align-items: center; }
 
@@ -130,17 +125,17 @@
     bottom: -4px;
     width: 100%;
     height: 1.5px;
-    background: var(--orange);
+    background: var(--accent);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s var(--ease);
   }
 
-  nav a:hover { color: var(--orange-deep); }
+  nav a:hover { color: var(--accent-deep); }
   nav a:hover::after { transform: scaleX(1); }
 
   .lang-btn {
-    border: 1px solid var(--peach-line);
+    border: 1px solid var(--line);
     background: transparent;
     color: var(--ink-soft);
     font-size: 0.78rem;
@@ -148,15 +143,15 @@
     padding: 4px 8px;
     border-radius: 6px;
     cursor: pointer;
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     transition: all 0.2s var(--ease);
   }
-  .lang-btn:hover { border-color: var(--orange); color: var(--orange-deep); }
+  .lang-btn:hover { border-color: var(--accent); color: var(--accent-deep); }
   .lang-btn.active {
-    background: var(--orange);
-    color: var(--white);
-    border-color: var(--orange);
-    box-shadow: 0 2px 8px -2px rgba(242, 104, 34, 0.5);
+    background: var(--accent);
+    color: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px -2px rgba(42, 75, 160, 0.35);
   }
 
   /* ---- Hero ---- */
@@ -167,44 +162,28 @@
     isolation: isolate;
   }
 
-  /* Two soft warm glows so the hero doesn't read as a flat beige slab. */
-  .hero::before,
-  .hero::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    z-index: -1;
-    pointer-events: none;
-  }
-
-  .hero::before {
-    width: 640px; height: 640px;
-    top: -300px; left: 50%;
-    transform: translateX(-58%);
-    background: radial-gradient(circle, rgba(242,104,34,0.13) 0%, transparent 68%);
-  }
-
-  .hero::after {
-    width: 520px; height: 520px;
-    top: 40px; right: -180px;
-    background: radial-gradient(circle, rgba(251,221,197,0.75) 0%, transparent 70%);
-  }
-
   .eyebrow {
-    display: inline-block;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.76rem;
-    letter-spacing: 0.07em;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
-    color: var(--orange-deep);
-    background: var(--peach);
-    border: 1px solid rgba(233, 200, 166, 0.8);
-    padding: 6px 15px;
-    border-radius: 100px;
-    margin-bottom: 26px;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 26px;
+    height: 3px;
+    background: var(--ochre);
+    flex-shrink: 0;
   }
 
   .hero h1 {
+    position: relative;
+    isolation: isolate;
     font-size: clamp(2.5rem, 6vw, 4.4rem);
     max-width: 860px;
     margin: 0 auto;
@@ -212,10 +191,23 @@
   }
 
   .hero h1 em {
-    font-style: italic;
-    color: var(--orange);
+    font-style: normal;
+    color: var(--accent);
     position: relative;
+    white-space: nowrap;
   }
+  .hero h1 em::after {
+    content: "";
+    position: absolute;
+    left: -0.04em; right: -0.04em; bottom: 0.02em;
+    height: 0.14em;
+    background: var(--ochre);
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: underline-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) forwards 1.7s;
+  }
+  @keyframes underline-in { to { transform: scaleX(1); } }
 
   .hero p {
     max-width: 580px;
@@ -224,25 +216,26 @@
     font-size: 1.1rem;
   }
 
-  /* Waveform signature */
-  .wave-holder {
-    margin: 48px auto 8px;
-    max-width: 620px;
+  /* ---- Signature: a voice finding itself ----
+     Bars start short, uneven and broken on the left (including three near-
+     silent pauses) and resolve into full, even speech on the right. It draws
+     itself once on load, left to right, so the mark performs the promise in
+     the headline rather than decorating it. */
+  .wave-holder { margin: 46px auto 4px; max-width: 620px; }
+  .wave { width: 100%; height: auto; display: block; overflow: visible; }
+
+  .wb {
+    fill: var(--accent);
+    transform: scaleY(0);
+    transform-origin: 50% 48px;
+    transform-box: fill-box;
+    animation: wb-rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    animation-delay: calc(0.5s + var(--i) * 26ms);
   }
+  /* The last third is where the voice is steady — mark it in ochre. */
+  .wb:nth-child(n+32) { fill: var(--ochre); }
 
-  .wave-holder svg { width: 100%; height: auto; display: block; }
-
-  .wave-path {
-    fill: none;
-    stroke: var(--orange);
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-dasharray: 900;
-    stroke-dashoffset: 900;
-    animation: draw 2.2s ease-out forwards 0.3s;
-  }
-
-  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes wb-rise { to { transform: scaleY(1); } }
 
   .cta-row {
     display: flex;
@@ -265,26 +258,26 @@
   }
 
   .btn-solid {
-    background: var(--orange);
-    color: var(--white);
-    box-shadow: 0 4px 14px -3px rgba(242, 104, 34, 0.55);
+    background: var(--accent);
+    color: var(--surface);
+    box-shadow: 0 4px 14px -3px rgba(42, 75, 160, 0.32);
   }
 
   .btn-solid:hover {
-    background: var(--orange-deep);
+    background: var(--accent-deep);
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px -6px rgba(193, 68, 14, 0.55);
+    box-shadow: 0 10px 24px -6px rgba(27, 50, 113, 0.38);
   }
 
   .btn-outline {
-    background: var(--white);
+    background: var(--surface);
     color: var(--ink);
-    border: 1.5px solid var(--peach-line);
+    border: 1.5px solid var(--line);
     box-shadow: var(--shadow-sm);
   }
 
   .btn-outline:hover {
-    border-color: var(--orange);
+    border-color: var(--accent);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
   }
@@ -303,7 +296,7 @@
   .section-head p { color: var(--ink-soft); margin-top: 14px; font-size: 1.04rem; }
 
   /* ---- About ---- */
-  #sobre-mi { border-top: 1px solid var(--peach-line); }
+  #sobre-mi { border-top: 1px solid var(--line); }
 
   .about-grid {
     display: grid;
@@ -316,20 +309,20 @@
     width: 180px;
     height: 180px;
     border-radius: 50%;
-    background: var(--peach);
+    background: var(--accent-soft);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Fraunces', serif;
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
     font-size: 2.8rem;
     font-weight: 600;
-    color: var(--orange-deep);
+    color: var(--accent-deep);
     flex-shrink: 0;
     overflow: hidden;
     position: relative;
     box-shadow: var(--shadow-lg);
     /* Warm ring separating the photo from the cream background. */
-    outline: 1px solid var(--peach-line);
+    outline: 1px solid var(--line);
     outline-offset: 6px;
   }
 
@@ -349,9 +342,9 @@
 
   /* ---- Enfoque ---- */
   #enfoque {
-    background: var(--bg-soft);
-    border-top: 1px solid var(--peach-line);
-    border-bottom: 1px solid var(--peach-line);
+    background: var(--paper-alt);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
   }
 
   .card-grid {
@@ -361,8 +354,8 @@
   }
 
   .card {
-    background: var(--white);
-    border: 1px solid var(--peach-line);
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 30px 26px;
     box-shadow: var(--shadow-sm);
@@ -377,7 +370,7 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--orange), var(--peach));
+    background: var(--ochre);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.35s var(--ease);
@@ -386,7 +379,7 @@
   .card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
-    border-color: rgba(242, 104, 34, 0.35);
+    border-color: rgba(42, 75, 160, 0.35);
   }
 
   .card:hover::before { transform: scaleX(1); }
@@ -402,10 +395,10 @@
     position: absolute;
     top: 6px;
     right: 18px;
-    font-family: 'Fraunces', serif;
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
     font-size: 4.5rem;
     line-height: 1;
-    color: var(--peach);
+    color: var(--accent-soft);
     pointer-events: none;
   }
 
@@ -428,16 +421,16 @@
   .price-card:hover { transform: translateY(-4px); }
 
   .price-card.std {
-    background: var(--white);
-    border: 1px solid var(--peach-line);
+    background: var(--surface);
+    border: 1px solid var(--line);
     box-shadow: var(--shadow-md);
   }
 
   .price-card.std:hover { box-shadow: var(--shadow-lg); }
 
   .price-card.xmr {
-    background: linear-gradient(155deg, #35271B 0%, var(--ink) 55%);
-    color: var(--bg);
+    background: var(--ink);
+    color: var(--paper);
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-lg);
@@ -446,18 +439,17 @@
   .price-card.xmr::before {
     content: "";
     position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 240px;
-    height: 240px;
-    background: radial-gradient(circle, var(--orange) 0%, transparent 70%);
-    opacity: 0.38;
+    top: 0;
+    right: 0;
+    width: 96px;
+    height: 96px;
+    background: var(--ochre);
   }
 
   .price-card.xmr > * { position: relative; }
 
   .price-label {
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -465,10 +457,10 @@
     margin-bottom: 14px;
   }
 
-  .price-card.xmr .price-label { color: var(--peach); opacity: 1; }
+  .price-card.xmr .price-label { color: var(--accent-soft); opacity: 1; }
 
   .price-amount {
-    font-family: 'Fraunces', serif;
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
     font-weight: 600;
     font-size: 3.2rem;
     line-height: 1;
@@ -476,7 +468,7 @@
   }
 
   .price-amount span {
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Archivo', system-ui, sans-serif;
     font-size: 1rem;
     font-weight: 500;
     opacity: 0.65;
@@ -485,14 +477,14 @@
   .badge-discount {
     display: inline-block;
     margin-top: 14px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.8rem;
-    background: var(--orange);
-    color: var(--white);
+    background: var(--accent);
+    color: var(--surface);
     padding: 5px 13px;
     border-radius: 100px;
     width: fit-content;
-    box-shadow: 0 3px 10px -2px rgba(242, 104, 34, 0.6);
+    box-shadow: 0 3px 10px -2px rgba(42, 75, 160, 0.35);
   }
 
   .price-card p.desc {
@@ -501,7 +493,7 @@
     color: var(--ink-soft);
   }
 
-  .price-card.xmr p.desc { color: #E7DCCF; }
+  .price-card.xmr p.desc { color: #C9D2E8; }
 
   .xmr-address-box {
     margin-top: auto;
@@ -511,9 +503,9 @@
 
   .xmr-address-label {
     font-size: 0.78rem;
-    color: var(--peach);
+    color: var(--accent-soft);
     margin-bottom: 8px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     letter-spacing: 0.03em;
   }
 
@@ -528,45 +520,45 @@
   }
 
   .xmr-address {
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.7rem;
     word-break: break-all;
     line-height: 1.4;
-    color: #F5EBDD;
+    color: #EFEEE9;
     flex: 1;
   }
 
   .copy-btn {
     flex-shrink: 0;
-    background: var(--orange);
-    color: var(--white);
+    background: var(--accent);
+    color: var(--surface);
     border: none;
     border-radius: 7px;
     padding: 8px 13px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.7rem;
     cursor: pointer;
     transition: background 0.2s var(--ease), transform 0.15s var(--ease);
   }
 
-  .copy-btn:hover { background: var(--orange-deep); transform: translateY(-1px); }
+  .copy-btn:hover { background: var(--accent-deep); transform: translateY(-1px); }
 
   .payment-note {
     margin-top: 24px;
     font-size: 0.92rem;
     color: var(--ink-soft);
-    background: var(--peach);
-    border: 1px solid rgba(233, 200, 166, 0.7);
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
     border-radius: 12px;
     padding: 17px 21px;
   }
 
-  .payment-note strong { color: var(--orange-deep); }
+  .payment-note strong { color: var(--accent-deep); }
 
   /* ---- Contact / footer ---- */
   footer {
-    border-top: 1px solid var(--peach-line);
-    background: var(--bg-soft);
+    border-top: 1px solid var(--line);
+    background: var(--paper-alt);
     padding: 68px 0 44px;
     text-align: center;
   }
@@ -586,8 +578,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: var(--white);
-    border: 1px solid var(--peach-line);
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 100px;
     padding: 11px 22px;
     text-decoration: none;
@@ -598,18 +590,18 @@
   }
 
   .contact-pill:hover {
-    border-color: var(--orange);
+    border-color: var(--accent);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
   }
 
   .contact-pill .dot {
-    width: 8px; height: 8px; border-radius: 50%; background: var(--orange);
-    box-shadow: 0 0 0 3px rgba(242, 104, 34, 0.18);
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(42, 75, 160, 0.18);
   }
 
   .copyright {
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.78rem;
     color: var(--ink-soft);
   }
@@ -632,14 +624,14 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--orange-deep);
+    outline: 2px solid var(--accent-deep);
     outline-offset: 2px;
     border-radius: 4px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .wave-path { animation: none; stroke-dashoffset: 0; }
-    .reveal { opacity: 1; transform: none; transition: none; }
+    .wb { animation: none; transform: none; }
+    .hero h1 em::after { animation: none; transform: scaleX(1); }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
@@ -665,7 +657,7 @@
       <a href="#opiniones" data-i18n="nav_reviews">Opiniones</a>
       <a href="#precios" data-i18n="nav_pricing">Precios</a>
       <a href="#contacto" data-i18n="nav_contact">Contacto</a>
-      <a href="cuenta.html" style="color: var(--orange-deep);" data-i18n="nav_account">Mi cuenta</a>
+      <a href="cuenta.html" style="color: var(--accent-deep);" data-i18n="nav_account">Mi cuenta</a>
     </nav>
   </div>
 </header>
@@ -677,8 +669,53 @@
     <p data-i18n="hero_p">Clases pensadas para personas tímidas o inseguras que quieren dejar de traducir en su cabeza y empezar a comunicarse de verdad. No es una academia más: es acompañamiento cercano, centrado en que te expreses con naturalidad.</p>
 
     <div class="wave-holder">
-      <svg viewBox="0 0 620 90" xmlns="http://www.w3.org/2000/svg">
-        <path class="wave-path" d="M0,45 Q15,10 30,45 T60,45 Q75,70 90,45 T120,45 Q135,20 150,45 T180,45 Q195,60 210,45 T240,45 Q255,15 270,45 T300,45 Q315,45 330,45 T360,45 Q375,25 390,45 T420,45 Q435,55 450,45 T480,45 Q495,45 510,45 T540,45 Q555,30 570,45 T600,45 L620,45"/>
+      <svg class="wave" viewBox="0 0 620 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Una voz que pasa de entrecortada a segura">
+        <rect class="wb" x="2.4" y="46.9" width="6.7" height="2.2" rx="2.0" style="--i:0"/>
+        <rect class="wb" x="15.9" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:1"/>
+        <rect class="wb" x="29.4" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:2"/>
+        <rect class="wb" x="42.9" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:3"/>
+        <rect class="wb" x="56.3" y="46.8" width="6.7" height="2.3" rx="2.0" style="--i:4"/>
+        <rect class="wb" x="69.8" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:5"/>
+        <rect class="wb" x="83.3" y="46.2" width="6.7" height="3.6" rx="2.0" style="--i:6"/>
+        <rect class="wb" x="96.8" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:7"/>
+        <rect class="wb" x="110.3" y="46.3" width="6.7" height="3.4" rx="2.0" style="--i:8"/>
+        <rect class="wb" x="123.7" y="46.6" width="6.7" height="2.8" rx="2.0" style="--i:9"/>
+        <rect class="wb" x="137.2" y="45.3" width="6.7" height="5.3" rx="2.0" style="--i:10"/>
+        <rect class="wb" x="150.7" y="46.6" width="6.7" height="2.8" rx="2.0" style="--i:11"/>
+        <rect class="wb" x="164.2" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:12"/>
+        <rect class="wb" x="177.6" y="44.1" width="6.7" height="7.9" rx="2.0" style="--i:13"/>
+        <rect class="wb" x="191.1" y="45.6" width="6.7" height="4.8" rx="2.0" style="--i:14"/>
+        <rect class="wb" x="204.6" y="43.8" width="6.7" height="8.4" rx="2.0" style="--i:15"/>
+        <rect class="wb" x="218.1" y="44.2" width="6.7" height="7.5" rx="2.0" style="--i:16"/>
+        <rect class="wb" x="231.6" y="41.8" width="6.7" height="12.5" rx="2.0" style="--i:17"/>
+        <rect class="wb" x="245.0" y="44.5" width="6.7" height="7.0" rx="2.0" style="--i:18"/>
+        <rect class="wb" x="258.5" y="41.7" width="6.7" height="12.7" rx="2.0" style="--i:19"/>
+        <rect class="wb" x="272.0" y="42.8" width="6.7" height="10.4" rx="2.0" style="--i:20"/>
+        <rect class="wb" x="285.5" y="41.1" width="6.7" height="13.9" rx="2.0" style="--i:21"/>
+        <rect class="wb" x="298.9" y="41.0" width="6.7" height="14.0" rx="2.0" style="--i:22"/>
+        <rect class="wb" x="312.4" y="38.9" width="6.7" height="18.1" rx="2.0" style="--i:23"/>
+        <rect class="wb" x="325.9" y="40.3" width="6.7" height="15.5" rx="2.0" style="--i:24"/>
+        <rect class="wb" x="339.4" y="38.9" width="6.7" height="18.1" rx="2.0" style="--i:25"/>
+        <rect class="wb" x="352.9" y="37.6" width="6.7" height="20.7" rx="2.0" style="--i:26"/>
+        <rect class="wb" x="366.3" y="38.1" width="6.7" height="19.8" rx="2.0" style="--i:27"/>
+        <rect class="wb" x="379.8" y="36.8" width="6.7" height="22.3" rx="2.0" style="--i:28"/>
+        <rect class="wb" x="393.3" y="36.6" width="6.7" height="22.8" rx="2.0" style="--i:29"/>
+        <rect class="wb" x="406.8" y="35.4" width="6.7" height="25.2" rx="2.0" style="--i:30"/>
+        <rect class="wb" x="420.3" y="35.1" width="6.7" height="25.7" rx="2.0" style="--i:31"/>
+        <rect class="wb" x="433.7" y="34.4" width="6.7" height="27.2" rx="2.0" style="--i:32"/>
+        <rect class="wb" x="447.2" y="34.1" width="6.7" height="27.9" rx="2.0" style="--i:33"/>
+        <rect class="wb" x="460.7" y="33.3" width="6.7" height="29.4" rx="2.0" style="--i:34"/>
+        <rect class="wb" x="474.2" y="32.9" width="6.7" height="30.3" rx="2.0" style="--i:35"/>
+        <rect class="wb" x="487.6" y="32.2" width="6.7" height="31.6" rx="2.0" style="--i:36"/>
+        <rect class="wb" x="501.1" y="31.8" width="6.7" height="32.4" rx="2.0" style="--i:37"/>
+        <rect class="wb" x="514.6" y="31.3" width="6.7" height="33.3" rx="2.0" style="--i:38"/>
+        <rect class="wb" x="528.1" y="31.0" width="6.7" height="34.1" rx="2.0" style="--i:39"/>
+        <rect class="wb" x="541.6" y="30.6" width="6.7" height="34.8" rx="2.0" style="--i:40"/>
+        <rect class="wb" x="555.0" y="30.3" width="6.7" height="35.4" rx="2.0" style="--i:41"/>
+        <rect class="wb" x="568.5" y="30.1" width="6.7" height="35.9" rx="2.0" style="--i:42"/>
+        <rect class="wb" x="582.0" y="29.9" width="6.7" height="36.2" rx="2.0" style="--i:43"/>
+        <rect class="wb" x="595.5" y="29.8" width="6.7" height="36.4" rx="2.0" style="--i:44"/>
+        <rect class="wb" x="608.9" y="29.8" width="6.7" height="36.5" rx="2.0" style="--i:45"/>
       </svg>
     </div>
 
@@ -700,7 +737,7 @@
           <span class="eyebrow" data-i18n="about_eyebrow">Sobre mí</span>
           <h2 data-i18n="about_h2">Soy Paulo, y te ayudo a hablar sin miedo</h2>
         </div>
-        <p data-i18n="about_p1">Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público, combinando algo parecido a la logopedia con la enseñanza del idioma.</p>
+        <p data-i18n="about_p1">Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público. Primero soltamos la voz — hablar en voz alta, equivocarse sin que pase nada, acostumbrarse a sonar distinto — y la corrección viene después.</p>
         <p data-i18n-html="about_p2">El objetivo no es solo que "sepas" inglés, sino que lo <strong>uses</strong> con confianza: en una entrevista, una llamada, un viaje o una conversación cualquiera.</p>
         <p data-i18n="about_p3">Las clases son por videollamada (Zoom o Google Meet), así que puedes conectarte desde donde estés, sin desplazamientos.</p>
       </div>
@@ -755,7 +792,7 @@
   </div>
 </section>
 
-<section id="opiniones" style="background: var(--bg-soft); border-top: 1px solid var(--peach-line); border-bottom: 1px solid var(--peach-line);">
+<section id="opiniones" style="background: var(--paper-alt); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow" data-i18n="opiniones_eyebrow">Opiniones</span>
@@ -810,7 +847,7 @@
             <button class="copy-btn" onclick="copyAddress()" id="copy-btn" data-i18n="precios_copy_btn">Copiar</button>
           </div>
         </div>
-        <a href="monero.html" style="display:inline-block; margin-top: 12px; font-size: 0.78rem; color: #E7DCCF; text-decoration: underline;" data-i18n="precios_monero_link">¿Qué es Monero y cómo se usa?</a>
+        <a href="monero.html" style="display:inline-block; margin-top: 12px; font-size: 0.78rem; color: #C9D2E8; text-decoration: underline;" data-i18n="precios_monero_link">¿Qué es Monero y cómo se usa?</a>
       </div>
     </div>
 
@@ -843,7 +880,7 @@
   </div>
 </section>
 
-<section id="recursos" style="background: var(--bg-soft); border-top: 1px solid var(--peach-line); border-bottom: 1px solid var(--peach-line);">
+<section id="recursos" style="background: var(--paper-alt); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow" data-i18n="recursos_eyebrow">Recursos gratuitos</span>
@@ -853,17 +890,17 @@
       <div class="card">
         <h3 data-i18n="recursos_a1_h">Cómo perder la vergüenza a hablar inglés</h3>
         <p data-i18n="recursos_a1_p">Guía práctica con ejercicios concretos, no solo teoría.</p>
-        <a href="perder-verguenza-hablar-ingles.html" style="color: var(--orange-deep); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
+        <a href="perder-verguenza-hablar-ingles.html" style="color: var(--accent-deep); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
       </div>
       <div class="card">
         <h3 data-i18n="recursos_a2_h">Angielski dla nieśmiałych online</h3>
         <p data-i18n="recursos_a2_p">Poradnik po polsku o tym, jak przestać się blokować.</p>
-        <a href="angielski-dla-niesmialych.html" style="color: var(--orange-deep); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
+        <a href="angielski-dla-niesmialych.html" style="color: var(--accent-deep); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
       </div>
       <div class="card">
         <h3 data-i18n="recursos_a3_h">Inglés para entrevistas de trabajo</h3>
         <p data-i18n="recursos_a3_p">Cómo prepararte de verdad sin quedarte en blanco.</p>
-        <a href="ingles-para-entrevistas-trabajo.html" style="color: var(--orange-deep); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
+        <a href="ingles-para-entrevistas-trabajo.html" style="color: var(--accent-deep); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
       </div>
     </div>
   </div>
@@ -893,7 +930,7 @@ const translations = {
     hero_cta_telegram: 'Escríbeme por Telegram',
     about_eyebrow: 'Sobre mí',
     about_h2: 'Soy Paulo, y te ayudo a hablar sin miedo',
-    about_p1: 'Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público, combinando algo parecido a la logopedia con la enseñanza del idioma.',
+    about_p1: 'Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público. Primero soltamos la voz — hablar en voz alta, equivocarse sin que pase nada, acostumbrarse a sonar distinto — y la corrección viene después.',
     about_p2: 'El objetivo no es solo que "sepas" inglés, sino que lo <strong>uses</strong> con confianza: en una entrevista, una llamada, un viaje o una conversación cualquiera.',
     about_p3: 'Las clases son por videollamada (Zoom o Google Meet), así que puedes conectarte desde donde estés, sin desplazamientos.',
     enfoque_eyebrow: 'Cómo trabajo',
@@ -939,7 +976,7 @@ const translations = {
     hero_cta_telegram: 'Napisz do mnie na Telegramie',
     about_eyebrow: 'O mnie',
     about_h2: 'Jestem Paulo i pomagam mówić bez strachu — po angielsku i po hiszpańsku',
-    about_p1: 'Uczę angielskiego i hiszpańskiego od wielu lat, ale to, co naprawdę robi różnicę, to nie gramatyka — to pokonanie wstydu przed mówieniem. Pracuję szczególnie z osobami nieśmiałymi lub takimi, które blokują się mówiąc publicznie, łącząc coś na kształt logopedii z nauką języka — niezależnie od tego, który z tych dwóch języków wybierzesz.',
+    about_p1: 'Uczę angielskiego i hiszpańskiego od wielu lat, ale to, co naprawdę robi różnicę, to nie gramatyka — to pokonanie wstydu przed mówieniem. Pracuję szczególnie z osobami nieśmiałymi lub takimi, które blokują się mówiąc publicznie. Najpierw uwalniamy głos — mówienie na głos, pomyłki bez konsekwencji, przyzwyczajenie się do własnego brzmienia — a poprawianie przychodzi później.',
     about_p2: 'Celem nie jest tylko „znajomość" języka, ale <strong>używanie</strong> go pewnie: na rozmowie kwalifikacyjnej, w rozmowie telefonicznej, w podróży czy w zwykłej rozmowie.',
     about_p3: 'Lekcje odbywają się przez wideorozmowę (Zoom lub Google Meet), więc możesz się połączyć skądkolwiek jesteś, bez dojazdów.',
     enfoque_eyebrow: 'Jak pracuję',
@@ -985,7 +1022,7 @@ const translations = {
     hero_cta_telegram: 'Message me on Telegram',
     about_eyebrow: 'About me',
     about_h2: 'I\'m Paulo, and I help you speak Spanish without fear',
-    about_p1: 'I\'ve been teaching languages for years, but what really makes the difference isn\'t grammar — it\'s losing the fear of speaking. I work especially with shy people, or those who freeze up speaking in public, blending something like speech therapy with language teaching.',
+    about_p1: 'I\'ve been teaching languages for years, but what really makes the difference isn\'t grammar — it\'s losing the fear of speaking. I work especially with shy people, or those who freeze up speaking in public. We free up your voice first — speaking out loud, getting things wrong with no consequences, getting used to sounding different — and correction comes after.',
     about_p2: 'The goal isn\'t just to "know" Spanish, but to <strong>use</strong> it with confidence: in a job interview, a phone call, a trip, or any everyday conversation.',
     about_p3: 'Lessons are over video call (Zoom or Google Meet), so you can connect from wherever you are, no commuting.',
     enfoque_eyebrow: 'How I work',
@@ -1064,38 +1101,13 @@ function copyAddress() {
   });
 }
 
-// ---- Presentation polish ----
-// Both of these are progressive enhancement: if IntersectionObserver is
-// missing, or the visitor prefers reduced motion, everything is simply
-// visible from the start (see the .reveal rules in the reduced-motion block).
+// The header only grows its border once scrolled. The hero mark is the page's
+// single orchestrated moment and runs in CSS, so there is nothing else here.
 (function () {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Sticky header only grows its border/shadow once you've scrolled past the top.
   const header = document.querySelector('header');
   const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
-
-  if (reduced || !('IntersectionObserver' in window)) return;
-
-  // Stagger each section's children in as it enters the viewport.
-  const targets = document.querySelectorAll('.section-head, .card, .price-card, .payment-note, .about-grid');
-  targets.forEach(el => el.classList.add('reveal'));
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('is-visible');
-      io.unobserve(entry.target);
-    });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
-
-  targets.forEach((el, i) => {
-    // Small per-item delay within a row, capped so nothing feels sluggish.
-    el.style.transitionDelay = (i % 3) * 70 + 'ms';
-    io.observe(el);
-  });
 })();
 </script>
 

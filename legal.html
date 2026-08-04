@@ -6,44 +6,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacidad y Términos — Paulo Crespo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #FBF4EC; --bg-soft: #F5EBDD; --ink: #2A1F16; --ink-soft: #6B5A48;
-    --orange: #F26822; --orange-deep: #C1440E; --peach: #FBDDC5; --peach-line: #E9C8A6; --white: #FFFCF8;
+    /* Palette derived from Paulo's own photograph: cobalt ground, mustard
+       panels, warm grey blocks. Chosen so the portrait belongs on the page
+       instead of fighting it. */
+    --paper: #FAFAF8;
+    --paper-alt: #EFEEE9;
+    --ink: #12141A;
+    --ink-soft: #5A6070;
+    --accent: #2A4BA0;
+    --accent-deep: #1B3271;
+    --accent-soft: #DCE3F5;
+    --ochre: #E0A92E;
+    --line: #D9DAD2;
+    --surface: #FFFFFF;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Work Sans', sans-serif; line-height: 1.65; }
-  h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 600; margin: 0; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Archivo', system-ui, sans-serif; line-height: 1.65; }
+  h1, h2, h3 { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; margin: 0; }
   .wrap { max-width: 780px; margin: 0 auto; padding: 56px 24px 80px; }
   a.back { display: inline-block; margin-bottom: 24px; color: var(--ink-soft); text-decoration: none; font-size: 0.9rem; }
-  a.back:hover { color: var(--orange-deep); }
+  a.back:hover { color: var(--accent-deep); }
   h1 { font-size: clamp(1.9rem, 4vw, 2.5rem); margin-bottom: 8px; }
   .lede { color: var(--ink-soft); font-size: 0.95rem; margin-bottom: 36px; }
-  h2 { font-size: 1.25rem; margin-top: 40px; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid var(--peach-line); }
+  h2 { font-size: 1.25rem; margin-top: 40px; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
   h2:first-of-type { border-top: none; padding-top: 0; }
   h3 { font-size: 1.02rem; margin-top: 20px; margin-bottom: 8px; }
   p { margin: 0 0 14px; }
   ul, ol { padding-left: 22px; margin: 0 0 14px; }
   li { margin-bottom: 6px; }
-  .card { background: var(--white); border: 1px solid var(--peach-line); border-radius: 14px; padding: 22px 26px; margin: 18px 0; }
-  .placeholder { background: var(--peach); color: var(--orange-deep); padding: 1px 6px; border-radius: 4px; font-weight: 600; }
-  .withdrawal-box { background: var(--ink); color: var(--bg); border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
-  .withdrawal-box h3 { color: var(--bg); }
-  .withdrawal-box a { color: var(--peach); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; margin: 18px 0; }
+  .placeholder { background: var(--accent-soft); color: var(--accent-deep); padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+  .withdrawal-box { background: var(--ink); color: var(--paper); border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
+  .withdrawal-box h3 { color: var(--paper); }
+  .withdrawal-box a { color: var(--accent-soft); }
   .toc { font-size: 0.88rem; }
-  .toc a { color: var(--orange-deep); text-decoration: none; }
+  .toc a { color: var(--accent-deep); text-decoration: none; }
   .toc a:hover { text-decoration: underline; }
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--peach-line); vertical-align: top; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { font-size: 0.78rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; }
   .lang-btn {
-    border: 1px solid var(--peach-line); background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--line); background: transparent; color: var(--ink-soft);
     font-size: 0.78rem; font-weight: 600; padding: 4px 8px; border-radius: 5px; cursor: pointer;
-    font-family: 'Space Mono', monospace; margin-left: 4px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace; margin-left: 4px;
   }
-  .lang-btn.active { background: var(--orange); color: var(--white); border-color: var(--orange); }
-  .updated { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--ink-soft); }
+  .lang-btn.active { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+  .updated { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.78rem; color: var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -160,7 +171,7 @@
   <div class="card">
     <strong>Urząd Ochrony Danych Osobowych (UODO)</strong><br>
     ul. Stawki 2, 00-193 Warszawa, Polska<br>
-    <a href="https://uodo.gov.pl" target="_blank" rel="noopener" style="color:var(--orange-deep);">uodo.gov.pl</a>
+    <a href="https://uodo.gov.pl" target="_blank" rel="noopener" style="color:var(--accent-deep);">uodo.gov.pl</a>
   </div>
 
 </div>
