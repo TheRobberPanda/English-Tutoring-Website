@@ -520,6 +520,15 @@
     margin: 10px 0 0; font-family: 'Fraunces', serif; font-size: 0.9rem;
     font-weight: 600; color: var(--ink);
   }
+  .live-badge {
+    display: inline-block; margin-left: 6px; padding: 2px 9px; border-radius: 100px;
+    background: var(--orange); color: var(--white);
+    font-family: 'Space Mono', monospace; font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; vertical-align: middle;
+    animation: live-pulse 2s ease-in-out infinite;
+  }
+  @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { .live-badge { animation: none; } }
 </style>
 </head>
 <body>
@@ -908,6 +917,7 @@
       must_accept_terms: 'Debes aceptar la Política de Privacidad y los Términos para crear tu cuenta.',
       terms_checkbox_label: 'He leído la <a href="legal.html" target="_blank" style="color:var(--orange-deep);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.',
       no_classes_that_day: 'No hay clases disponibles ese día.', reserve_btn: 'Reservar', cancel_btn: 'Cancelar',
+      lesson_live: 'En curso',
       less_than_12h: '(menos de 12h)', not_cancelable_12h: '(no cancelable, faltan menos de 12h)',
       join_meet: '🔗 Unirse con Google Meet', meet_link_loading: 'Generando enlace de Google Meet…',
       confirm_cancel_booking: '¿Cancelar esta clase? Recuperarás el crédito.',
@@ -998,6 +1008,7 @@
       must_accept_terms: 'Musisz zaakceptować Politykę Prywatności i Regulamin, by utworzyć konto.',
       terms_checkbox_label: 'Przeczytałem/am <a href="legal.html" target="_blank" style="color:var(--orange-deep);">Politykę Prywatności i Regulamin</a> i rozumiem, że mogę poprosić o pierwszą lekcję od razu, rezygnując tym samym z prawa do odstąpienia od umowy w ciągu 14 dni dla tej lekcji.',
       no_classes_that_day: 'Brak dostępnych lekcji tego dnia.', reserve_btn: 'Zarezerwuj', cancel_btn: 'Anuluj',
+      lesson_live: 'Trwa teraz',
       less_than_12h: '(mniej niż 12h)', not_cancelable_12h: '(nie można anulować, zostało mniej niż 12h)',
       join_meet: '🔗 Dołącz przez Google Meet', meet_link_loading: 'Generowanie linku do Google Meet…',
       confirm_cancel_booking: 'Anulować tę lekcję? Kredyt zostanie zwrócony.',
@@ -1088,6 +1099,7 @@
       must_accept_terms: 'You must accept the Privacy Policy and Terms to create your account.',
       terms_checkbox_label: 'I\'ve read the <a href="legal.html" target="_blank" style="color:var(--orange-deep);">Privacy Policy and Terms</a>, and I understand I can request my first lesson right away, thereby waiving my 14-day withdrawal right for that lesson.',
       no_classes_that_day: 'No lessons available that day.', reserve_btn: 'Book', cancel_btn: 'Cancel',
+      lesson_live: 'Live now',
       less_than_12h: '(less than 12h)', not_cancelable_12h: '(not cancellable, less than 12h left)',
       join_meet: '🔗 Join with Google Meet', meet_link_loading: 'Generating Google Meet link…',
       confirm_cancel_booking: 'Cancel this lesson? You\'ll get your credit back.',
@@ -1498,6 +1510,10 @@
     const { data: bookings } = await sb
       .from('my_bookings')
       .select('id, start_time, end_time, google_meet_link')
+      // The view returns every booking ever made, so without this the list
+      // headed "your upcoming classes" fills up with past ones. end_time
+      // keeps a lesson that is running right now, when the link is needed.
+      .gte('end_time', new Date().toISOString())
       .order('start_time');
 
     const list = document.getElementById('my-slots');
@@ -1517,13 +1533,15 @@
       li.style.flexDirection = 'column';
       li.style.alignItems = 'flex-start';
       li.style.gap = '6px';
+      const nowTs = new Date();
+      const inProgress = new Date(b.start_time) <= nowTs && nowTs < new Date(b.end_time);
       const tooSoon = new Date(b.start_time) < twelveHoursFromNow;
       const meetHtml = b.google_meet_link
         ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--orange-deep);">${t('join_meet')}</a>`
         : `<span class="meet-loading"><span class="mini-spinner"></span>${t('meet_link_loading')}</span>`;
       li.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-          <span>${formatSlot(b.start_time, b.end_time)}${tooSoon ? ` <span style="color: var(--ink-soft); font-size: 0.78rem;">${t('not_cancelable_12h')}</span>` : ''}</span>
+          <span>${formatSlot(b.start_time, b.end_time)}${inProgress ? ` <span class="live-badge">${t('lesson_live')}</span>` : (tooSoon ? ` <span style="color: var(--ink-soft); font-size: 0.78rem;">${t('not_cancelable_12h')}</span>` : '')}</span>
           <button class="btn-cancel" ${tooSoon ? 'disabled' : ''} onclick="cancelBooking('${b.id}')">${t('cancel_btn')}</button>
         </div>
         ${meetHtml}`;
