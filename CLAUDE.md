@@ -36,7 +36,7 @@ All pages are plain HTML/CSS/vanilla JS (no build step, no framework) styled wit
 - **Edge Functions:** `telegram-webhook`, `booking-notifications`, `delete-account`, `check-calendar-conflicts` (all `verify_jwt: false`, each does its own custom secret-header auth)
 - **Booking bot:** Telegram `@InglesDePauloBot` (separate from Paulo's personal `@frelseisme`)
 - **Calendar/Meet:** Google Calendar + Meet via OAuth refresh token (NOT a service account — service accounts can't create Meet links or invite attendees on personal Gmail). OAuth app is published to production (was stuck in Testing mode, which caused 7-day refresh token expiry — now fixed).
-- **Payments:** Monero (25% discount vs standard payment)
+- **Payments:** 15€ per lesson standard, 12€ paying with Monero (a 20% discount). Monero is the primary method. First trial lesson 10€ (7€ with Monero). Prices are hardcoded in `index.html` (two `.price-amount` divs) and echoed in `monero.html` and the admin earnings estimate (`MONERO_PRICE_PER_CLASS`) — change all three together, and re-derive the discount percentage rather than leaving a stale claim.
 - **Email:** Resend SMTP; contact `yankxwtic@mozmail.com`
 - **Secrets:** Stored in **Supabase Vault**, referenced at runtime via `vault.decrypted_secrets` — nothing sensitive is hardcoded in `pg_cron` jobs or trigger functions anymore (this was a real problem that got fixed — see Security section).
 
