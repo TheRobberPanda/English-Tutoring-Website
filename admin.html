@@ -328,6 +328,17 @@
     font-family: 'Space Mono', monospace; font-size: 0.68rem;
     opacity: 0.75; font-weight: 700;
   }
+  /* A lesson happening right now — the one you most need to reach. */
+  .lesson-row.live { border-color: var(--orange); background: var(--peach); }
+  .live-badge {
+    display: inline-block; margin-left: 8px; padding: 2px 9px; border-radius: 100px;
+    background: var(--orange); color: var(--white);
+    font-family: 'Space Mono', monospace; font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; vertical-align: middle;
+  }
+  .lesson-row.live .live-badge { animation: live-pulse 2s ease-in-out infinite; }
+  @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { .lesson-row.live .live-badge { animation: none; } }
 </style>
 </head>
 <body>
@@ -632,7 +643,9 @@
       .from('schedule_slots')
       .select('id, start_time, end_time, student_id, google_meet_link')
       .eq('is_booked', true)
-      .gte('start_time', new Date().toISOString())
+      // Filter on end_time, not start_time: a lesson that has already begun is
+      // exactly when the join link is needed most.
+      .gte('end_time', new Date().toISOString())
       .order('start_time')
       .limit(8);
 
@@ -666,6 +679,8 @@
       const dateStr = start.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
       const startStr = start.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
       const endStr = end.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const now = new Date();
+      const inProgress = start <= now && now < end;
       const isSoon = start < soonThreshold;
       const studentName = escapeHtml(namesById[s.student_id] || 'Alumno/a');
 
@@ -674,9 +689,9 @@
         : `<span class="join-meet-btn pending" title="El enlace se genera automáticamente poco después de la reserva. Si tarda mucho, revisa la sincronización con Google.">⏳ Enlace pendiente</span>`;
 
       return `
-        <div class="lesson-row${isSoon ? ' soon' : ''}">
+        <div class="lesson-row${isSoon ? ' soon' : ''}${inProgress ? ' live' : ''}">
           <span>
-            <span class="who">${studentName}</span><br>
+            <span class="who">${studentName}${inProgress ? '<span class="live-badge">En curso</span>' : ''}</span><br>
             <span class="when">${dateStr}, ${startStr}–${endStr}</span>
           </span>
           ${joinHtml}
@@ -828,7 +843,7 @@
     document.getElementById('day-panel').style.display = 'none';
   }
 
-  // 25% off the 16€ standard price.
+  // 20% off the 15€ standard price.
   const MONERO_PRICE_PER_CLASS = 12;
 
   function renderEarnings() {

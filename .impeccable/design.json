@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-04T08:12:32.615899Z",
+  "title": "Design System: Inglés con Paulo",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "Warm Cream",
+        "canonical": "oklch(97.0% 0.013 71.3)",
+        "tonalRamp": [
+          "#0F0A06",
+          "#2B2520",
+          "#4A443E",
+          "#6B655E",
+          "#8E8881",
+          "#B0AAA2",
+          "#D3CCC5",
+          "#F4EDE5"
+        ]
+      },
+      "bg-soft": {
+        "role": "neutral",
+        "displayName": "Toasted Cream",
+        "canonical": "oklch(94.4% 0.022 76.5)",
+        "tonalRamp": [
+          "#100A03",
+          "#2D251B",
+          "#4C4438",
+          "#6D6559",
+          "#91887B",
+          "#B3A99C",
+          "#D6CCBF",
+          "#F7EDDF"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "canonical": "oklch(99.2% 0.006 75.4)",
+        "tonalRamp": [
+          "#0D0B08",
+          "#282623",
+          "#474541",
+          "#686662",
+          "#8B8985",
+          "#ADAAA7",
+          "#D0CDC9",
+          "#F1EEEA"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Bitter Cocoa",
+        "canonical": "oklch(25.0% 0.024 60.7)",
+        "tonalRamp": [
+          "#120903",
+          "#2F241B",
+          "#4F4238",
+          "#706359",
+          "#94867B",
+          "#B6A89C",
+          "#DACBBF",
+          "#FBEBDF"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Muted Cocoa",
+        "canonical": "oklch(47.9% 0.035 68.4)",
+        "tonalRamp": [
+          "#150800",
+          "#322313",
+          "#524230",
+          "#746350",
+          "#988673",
+          "#BAA793",
+          "#DECAB6",
+          "#FFEBD6"
+        ]
+      },
+      "orange": {
+        "role": "primary",
+        "displayName": "Signal Orange",
+        "canonical": "oklch(68.0% 0.186 43.1)",
+        "tonalRamp": [
+          "#3B0000",
+          "#640000",
+          "#8D0000",
+          "#B62E00",
+          "#E05800",
+          "#FF7C3B",
+          "#FFA061",
+          "#FFC182"
+        ]
+      },
+      "orange-deep": {
+        "role": "primary",
+        "displayName": "Burnt Orange",
+        "canonical": "oklch(55.5% 0.170 39.3)",
+        "tonalRamp": [
+          "#380000",
+          "#600000",
+          "#880000",
+          "#B13500",
+          "#DB5C2E",
+          "#FF7F52",
+          "#FFA375",
+          "#FFC495"
+        ]
+      },
+      "peach": {
+        "role": "secondary",
+        "displayName": "Peach",
+        "canonical": "oklch(91.6% 0.046 60.9)",
+        "tonalRamp": [
+          "#180600",
+          "#37210D",
+          "#573F2B",
+          "#7A604B",
+          "#9E836D",
+          "#C1A58E",
+          "#E5C8B0",
+          "#FFE8D0"
+        ]
+      },
+      "peach-line": {
+        "role": "secondary",
+        "displayName": "Peach Line",
+        "canonical": "oklch(85.2% 0.059 67.7)",
+        "tonalRamp": [
+          "#1A0500",
+          "#392000",
+          "#5A3F20",
+          "#7D6041",
+          "#A18363",
+          "#C4A483",
+          "#E8C7A5",
+          "#FFE8C5"
+        ]
+      },
+      "monero-ink": {
+        "role": "tertiary",
+        "displayName": "Monero Ink",
+        "canonical": "oklch(28.6% 0.030 61.8)",
+        "tonalRamp": [
+          "#140801",
+          "#312317",
+          "#514235",
+          "#736355",
+          "#978677",
+          "#B9A798",
+          "#DDCABB",
+          "#FEEBDB"
+        ]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Clay Red",
+        "canonical": "oklch(51.9% 0.161 34.3)",
+        "tonalRamp": [
+          "#360000",
+          "#5E0000",
+          "#860300",
+          "#AF371B",
+          "#D85E41",
+          "#FF8063",
+          "#FFA485",
+          "#FFC5A5"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only, once per page. Italic within it is set in Signal Orange."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles across marketing and app surfaces."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card and panel headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All prose. Reading columns cap around 560-620px."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Eyebrows, badges, prices, referral codes, timestamps, counts - values that are handled rather than read."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient",
+        "value": "0 1px 2px rgba(74,44,20,0.05)",
+        "purpose": "Resting cards and outline buttons; separates the sheet from the page."
+      },
+      {
+        "name": "raised",
+        "value": "0 4px 16px -4px rgba(74,44,20,0.10), 0 2px 4px rgba(74,44,20,0.04)",
+        "purpose": "Hovered pills and the standard pricing card."
+      },
+      {
+        "name": "lifted",
+        "value": "0 18px 40px -12px rgba(74,44,20,0.18), 0 4px 10px rgba(74,44,20,0.05)",
+        "purpose": "Hovered cards, the Monero card, the profile portrait."
+      },
+      {
+        "name": "accent-glow",
+        "value": "0 4px 14px -3px rgba(242,104,34,0.55)",
+        "purpose": "Primary buttons and the chat launcher only - orange casting its own coloured light."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+        "purpose": "Every hover, lift and panel transition."
+      },
+      {
+        "name": "hover-lift",
+        "value": "translateY(-2px) over 0.2s",
+        "purpose": "Buttons and pills; returns to 0 on :active so the press is felt."
+      },
+      {
+        "name": "card-lift",
+        "value": "translateY(-4px) over 0.28s",
+        "purpose": "Cards and pricing surfaces on hover."
+      },
+      {
+        "name": "waveform-draw",
+        "value": "stroke-dashoffset 900 to 0 over 2.2s ease-out, 0.3s delay",
+        "purpose": "The hero signature; draws once on load, never loops."
+      },
+      {
+        "name": "reveal",
+        "value": "opacity 0 to 1, translateY(18px) to 0 over 0.7s, staggered 70ms",
+        "purpose": "IntersectionObserver section reveal; fully disabled under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "pill-collide",
+        "value": "1180px"
+      },
+      {
+        "name": "panel-split",
+        "value": "760px"
+      },
+      {
+        "name": "stack",
+        "value": "720px"
+      },
+      {
+        "name": "tabs-tight",
+        "value": "560px"
+      },
+      {
+        "name": "compact",
+        "value": "480px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single orange action per view.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">Escríbeme por email</a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:10px;font-family:'Work Sans',sans-serif;font-weight:600;font-size:.95rem;text-decoration:none;transition:transform .2s cubic-bezier(.22,.61,.36,1),box-shadow .2s cubic-bezier(.22,.61,.36,1),background .2s cubic-bezier(.22,.61,.36,1)}.ds-btn-primary{background:#F26822;color:#FFFCF8;box-shadow:0 4px 14px -3px rgba(242,104,34,.55)}.ds-btn-primary:hover{background:#C1440E;transform:translateY(-2px);box-shadow:0 10px 24px -6px rgba(193,68,14,.55)}.ds-btn-primary:active{transform:translateY(0)}.ds-btn-primary:focus-visible{outline:2px solid #C1440E;outline-offset:2px}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action; paper-white with the system border.",
+      "html": "<a class=\"ds-btn-outline\" href=\"#\">Escríbeme por Telegram</a>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:10px;font-family:'Work Sans',sans-serif;font-weight:600;font-size:.95rem;text-decoration:none;background:#FFFCF8;color:#2A1F16;border:1.5px solid #E9C8A6;box-shadow:0 1px 2px rgba(74,44,20,.05);transition:all .2s cubic-bezier(.22,.61,.36,1)}.ds-btn-outline:hover{border-color:#F26822;transform:translateY(-2px);box-shadow:0 4px 16px -4px rgba(74,44,20,.10)}"
+    },
+    {
+      "name": "Eyebrow Chip",
+      "kind": "chip",
+      "refersTo": "eyebrow",
+      "description": "Mono uppercase section label on peach.",
+      "html": "<span class=\"ds-eyebrow\">Precios y pago</span>",
+      "css": ".ds-eyebrow{display:inline-block;font-family:'Space Mono',monospace;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:#C1440E;background:#FBDDC5;border:1px solid rgba(233,200,166,.8);padding:6px 15px;border-radius:100px}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Raised sheet with the signature gradient bar that wipes in on hover.",
+      "html": "<div class=\"ds-card\"><h3>Habla desde el primer día</h3><p>Nada de memorizar listas de verbos sin usarlos.</p></div>",
+      "css": ".ds-card{position:relative;overflow:hidden;background:#FFFCF8;border:1px solid #E9C8A6;border-radius:14px;padding:30px 26px;box-shadow:0 1px 2px rgba(74,44,20,.05);transition:transform .28s cubic-bezier(.22,.61,.36,1),box-shadow .28s cubic-bezier(.22,.61,.36,1),border-color .28s}.ds-card::before{content:\"\";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#F26822,#FBDDC5);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.22,.61,.36,1)}.ds-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px -12px rgba(74,44,20,.18);border-color:rgba(242,104,34,.35)}.ds-card:hover::before{transform:scaleX(1)}.ds-card h3{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:1.12rem;margin:0 0 10px;color:#2A1F16}.ds-card p{font-family:'Work Sans',sans-serif;font-size:.95rem;color:#6B5A48;margin:0;line-height:1.6}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Cream-filled field; border shifts to accent on focus.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"tu@email.com\">",
+      "css": ".ds-input{width:100%;padding:11px 14px;border-radius:8px;border:1.5px solid #E9C8A6;background:#FBF4EC;color:#2A1F16;font-family:'Work Sans',sans-serif;font-size:.95rem}.ds-input::placeholder{color:#6B5A48;opacity:.7}.ds-input:focus{outline:none;border-color:#F26822}.ds-input:focus-visible{outline:2px solid #C1440E;outline-offset:2px}"
+    },
+    {
+      "name": "Subpage Tabs",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Tab strip used on both authenticated surfaces; the active tab is a raised sheet with an orange rule.",
+      "html": "<nav class=\"ds-tabs\"><button class=\"ds-tab ds-tab-active\">Clases</button><button class=\"ds-tab\">Opiniones</button><button class=\"ds-tab\">Progreso</button></nav>",
+      "css": ".ds-tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #E9C8A6}.ds-tab{border:none;background:none;cursor:pointer;font-family:'Work Sans',sans-serif;font-size:.92rem;font-weight:600;color:#6B5A48;padding:10px 16px;border-radius:9px 9px 0 0;position:relative;transition:color .18s,background .18s}.ds-tab:hover{color:#C1440E;background:#F5EBDD}.ds-tab-active{color:#C1440E;background:#FFFCF8}.ds-tab-active::after{content:\"\";position:absolute;left:10px;right:10px;bottom:-1px;height:2.5px;background:#F26822;border-radius:2px}"
+    },
+    {
+      "name": "Two-Voice Panel",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Authorship is the content: orange edge for the student, cocoa edge and recessed ground for the tutor.",
+      "html": "<div class=\"ds-voice ds-voice-tutor\"><div class=\"ds-voice-head\"><span class=\"ds-voice-tag\">Paulo</span><strong>Lo que Paulo ha observado</strong></div><p>Confunde past simple y present perfect.</p></div>",
+      "css": ".ds-voice{border:1px solid #E9C8A6;border-left:4px solid #E9C8A6;border-radius:10px;padding:14px 16px;background:#FBF4EC;font-family:'Work Sans',sans-serif}.ds-voice-tutor{border-left-color:#2A1F16;background:#F5EBDD}.ds-voice-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}.ds-voice-head strong{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:1rem;color:#2A1F16}.ds-voice-tag{font-family:'Space Mono',monospace;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:100px;background:#2A1F16;color:#FBF4EC}.ds-voice p{margin:0;font-size:.88rem;color:#6B5A48}"
+    },
+    {
+      "name": "Waveform Signature",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The system's one ornament: a voice drawn once beneath the hero, never looping.",
+      "html": "<div class=\"ds-wave\"><svg viewBox=\"0 0 620 90\" xmlns=\"http://www.w3.org/2000/svg\"><path class=\"ds-wave-path\" d=\"M0,45 Q15,10 30,45 T60,45 Q75,70 90,45 T120,45 Q135,20 150,45 T180,45 Q195,60 210,45 T240,45 Q255,15 270,45 T300,45 Q315,45 330,45 T360,45 Q375,25 390,45 T420,45 Q435,55 450,45 T480,45 Q495,45 510,45 T540,45 Q555,30 570,45 T600,45 L620,45\"/></svg></div>",
+      "css": ".ds-wave{max-width:620px;margin:0 auto}.ds-wave svg{width:100%;height:auto;display:block}.ds-wave-path{fill:none;stroke:#F26822;stroke-width:3;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;animation:ds-draw 2.2s ease-out forwards .3s}@keyframes ds-draw{to{stroke-dashoffset:0}}@media (prefers-reduced-motion:reduce){.ds-wave-path{animation:none;stroke-dashoffset:0}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Language Notebook",
+    "overview": "The surface is paper before it is screen. Everything sits on a warm cream (#FBF4EC) that never goes pure white, text is a soft brown-black (#2A1F16) that never goes pure black, and the one accent is a confident orange used sparingly. The reference is a well-kept personal notebook: warm stock, a confident hand, generous margins, and the occasional mark in the margin.\n\nThe system is studious without being clinical. Fraunces gives headlines a literary weight that a geometric sans would flatten into software; Work Sans keeps the reading calm; Space Mono is reserved for the things you handle rather than read.\n\nWarmth here is functional, not decorative. The audience is adults who feel self-conscious about speaking, and the visual world is deliberately unhurried and un-institutional so that using it never feels like sitting an exam.",
+    "keyCharacteristics": [
+      "Paper-warm surfaces; pure white and pure black are absent by design",
+      "A single orange accent, plus peach as its quiet form",
+      "Serif display / sans body / mono label - three voices, strictly assigned",
+      "Flat at rest, lifting only in response to the cursor",
+      "Generous vertical air (88px section rhythm) and a 1040px reading column"
+    ],
+    "rules": [
+      {
+        "name": "The One Accent Rule",
+        "body": "Signal Orange is the system's only accent. When something needs emphasis and orange is already spoken for, reach for peach, weight, or space - never for a new hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Pure Rule",
+        "body": "Nothing is #FFFFFF or #000000. White is #FFFCF8, black is #2A1F16. A pure value anywhere is a bug, not a choice.",
+        "section": "colors"
+      },
+      {
+        "name": "The Earned Exception Rule",
+        "body": "Exactly one surface escapes the paper world: the near-black Monero pricing card, whose gravity is the point. A second exception must earn itself the same way. The green supporter medal currently does not, and is a known drift to reconcile.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Voices Rule",
+        "body": "Fraunces says it, Work Sans explains it, Space Mono labels it. A serif paragraph, a mono sentence, or a sans hero all break the system.",
+        "section": "typography"
+      },
+      {
+        "name": "The Handled-Value Rule",
+        "body": "If a value is meant to be copied, counted, or compared, it is Space Mono. If it is meant to be read, it is not.",
+        "section": "typography"
+      },
+      {
+        "name": "The Reading Column Rule",
+        "body": "Prose never exceeds ~620px even when its container is wider. The 1040px shell is for layout, not for line length.",
+        "section": "layout"
+      },
+      {
+        "name": "The Warm Shadow Rule",
+        "body": "Every shadow is rgba(74, 44, 20, ...). A grey or black shadow anywhere in this system is a defect.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "Cards, buttons, and chips carry ambient shadow or none. Elevation is earned by hover, focus, or genuine prominence - never assigned decoratively.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Pill-Means-Token Rule",
+        "body": "border-radius: 100px marks something as a label, count, or code - never a container of prose.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do tint every shadow rgba(74, 44, 20, ...).",
+      "Do keep Signal Orange scarce - roughly one primary action per view.",
+      "Do assign the three faces strictly: Fraunces to headline, Work Sans to prose, Space Mono to handled values.",
+      "Do convey depth by tone first (Warm Cream, Toasted Cream, Card White) and reach for shadow second.",
+      "Do stop looping animation completely under prefers-reduced-motion.",
+      "Do design labels to survive Polish, which runs materially longer than Spanish or English.",
+      "Do use 100px radius only for tokens (badges, codes, counts, pills)."
+    ],
+    "donts": [
+      "Don't introduce #FFFFFF or #000000.",
+      "Don't use a grey or black shadow.",
+      "Don't add a fourth typeface, or a new hue outside the orange family, without an exception as earned as the Monero card's.",
+      "Don't treat the green supporter medal as a precedent - it is recorded drift, not a sanctioned accent.",
+      "Don't make the waveform loop, or animate it on every navigation; it draws once.",
+      "Don't put prose inside a pill.",
+      "Don't stack more than three tonal layers; there is no fourth surface colour."
+    ]
+  }
+}
