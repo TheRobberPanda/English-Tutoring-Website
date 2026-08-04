@@ -551,9 +551,42 @@
   }
   @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
   @media (prefers-reduced-motion: reduce) { .live-badge { animation: none; } }
+
+  /* ---- Under-development banner ---- */
+  .dev-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 44px 9px 16px;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .dev-banner-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  .dev-banner-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 1.1rem; line-height: 1;
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .dev-banner-close:hover { background: var(--line); }
 </style>
 </head>
 <body>
+<div id="dev-banner" class="dev-banner">
+  <span class="dev-banner-dot" aria-hidden="true"></span>
+  <span data-i18n="dev_banner_text">🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.</span>
+  <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
+</div>
+
 <div class="wrap">
   <div style="display:flex; justify-content:space-between; align-items:center;">
     <a class="back" href="index.html" data-i18n="back_link">&larr; Volver a la web</a>
@@ -866,6 +899,7 @@
   // ---- TRANSLATIONS ----
   const translations = {
     es: {
+    dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
       back_link: 'Volver a la web', my_account: 'Mi cuenta',
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
       label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre', label_referral_code: 'Código de referido (opcional)',
@@ -957,6 +991,7 @@
       locale: 'es-ES'
     },
     pl: {
+    dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
       back_link: 'Wróć do strony', my_account: 'Moje konto',
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
       label_email: 'Email', label_password: 'Hasło', label_name: 'Imię', label_referral_code: 'Kod polecający (opcjonalnie)',
@@ -1048,6 +1083,7 @@
       locale: 'pl-PL'
     },
     en: {
+    dev_banner_text: '🚧 We\'re improving the site right now. You might notice small changes from day to day.',
       back_link: 'Back to the site', my_account: 'My account',
       login_title: 'Log in', signup_title: 'Create account',
       label_email: 'Email', label_password: 'Password', label_name: 'Name', label_referral_code: 'Referral code (optional)',
@@ -2181,6 +2217,19 @@
     const { data: { user } } = await sb.auth.getUser();
     if (user) await loadDashboard();
   })();
+</script>
+
+<script>
+(function () {
+  var KEY = 'dev_banner_dismissed_v1';
+  var el = document.getElementById('dev-banner');
+  if (!el) return;
+  if (!localStorage.getItem(KEY)) el.style.display = 'flex';
+  window.dismissDevBanner = function () {
+    localStorage.setItem(KEY, '1');
+    el.style.display = 'none';
+  };
+})();
 </script>
 </body>
 </html>

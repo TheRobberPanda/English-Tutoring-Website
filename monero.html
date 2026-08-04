@@ -48,9 +48,42 @@
     font-family: 'Inter', system-ui, sans-serif; margin-left: 4px;
   }
   .lang-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  /* ---- Under-development banner ---- */
+  .dev-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 44px 9px 16px;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .dev-banner-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  .dev-banner-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 1.1rem; line-height: 1;
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .dev-banner-close:hover { background: var(--line); }
 </style>
 </head>
 <body>
+<div id="dev-banner" class="dev-banner">
+  <span class="dev-banner-dot" aria-hidden="true"></span>
+  <span data-i18n="dev_banner_text">🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.</span>
+  <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
+</div>
+
 <div class="wrap">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
     <a class="back" href="index.html" data-i18n="back_link" style="margin-bottom:0;">&larr; Volver a la web</a>
@@ -97,6 +130,7 @@
 <script>
 const translations = {
   es: {
+    dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
     back_link: 'Volver a la web',
     h1: 'Cómo pagar con Monero',
     lede: 'Monero (XMR) es el método de pago principal para las clases, con un 20% de descuento sobre el precio estándar. Aquí tienes una explicación sencilla de qué es, cómo usarlo y por qué mucha gente lo prefiere.',
@@ -118,6 +152,7 @@ const translations = {
     disclaimer: '<strong>Nota:</strong> el valor de Monero, como el de cualquier criptomoneda, fluctúa con el mercado. Esta página es solo informativa y no constituye asesoramiento financiero ni una recomendación de inversión.'
   },
   pl: {
+    dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
     back_link: 'Wróć do strony',
     h1: 'Jak płacić Monero',
     lede: 'Monero (XMR) to główny sposób płatności za lekcje, z 20% zniżką od ceny standardowej. Oto proste wyjaśnienie, czym jest, jak go używać i dlaczego wiele osób go preferuje.',
@@ -139,6 +174,7 @@ const translations = {
     disclaimer: '<strong>Uwaga:</strong> wartość Monero, jak każdej kryptowaluty, zmienia się wraz z rynkiem. Ta strona ma charakter wyłącznie informacyjny i nie stanowi porady finansowej ani rekomendacji inwestycyjnej.'
   },
   en: {
+    dev_banner_text: '🚧 We\'re improving the site right now. You might notice small changes from day to day.',
     back_link: 'Back to the site',
     h1: 'How to pay with Monero',
     lede: 'Monero (XMR) is the main payment method for lessons, with a 20% discount off the standard price. Here\'s a simple explanation of what it is, how to use it, and why many people prefer it.',
@@ -187,6 +223,19 @@ function setLang(lang) {
 }
 
 applyTranslations();
+</script>
+
+<script>
+(function () {
+  var KEY = 'dev_banner_dismissed_v1';
+  var el = document.getElementById('dev-banner');
+  if (!el) return;
+  if (!localStorage.getItem(KEY)) el.style.display = 'flex';
+  window.dismissDevBanner = function () {
+    localStorage.setItem(KEY, '1');
+    el.style.display = 'none';
+  };
+})();
 </script>
 </body>
 </html>

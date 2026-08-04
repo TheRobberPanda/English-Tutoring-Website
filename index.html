@@ -617,6 +617,34 @@
     color: var(--ink-soft);
   }
 
+
+  /* ---- Latest video ---- */
+  .youtube-card {
+    display: grid; grid-template-columns: 280px 1fr; gap: 28px; align-items: center;
+    text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 20px; transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .youtube-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .youtube-thumb { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--paper-alt); aspect-ratio: 16/9; }
+  .youtube-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .youtube-play {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.28);
+  }
+  .youtube-play svg {
+    background: var(--accent); color: var(--accent-ink); border-radius: 50%;
+    padding: 14px; box-shadow: var(--shadow-md);
+  }
+  .youtube-channel {
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; font-weight: 600;
+    color: var(--ground); text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .youtube-info h3 { font-size: 1.3rem; margin: 10px 0 14px; letter-spacing: -0.01em; }
+  .youtube-watch { color: var(--ink-soft); font-size: 0.9rem; font-weight: 600; }
+  @media (max-width: 640px) {
+    .youtube-card { grid-template-columns: 1fr; }
+  }
   /* ---- Responsive ---- */
   @media (max-width: 720px) {
     .header-inner { padding: 14px 20px; }
@@ -648,9 +676,42 @@
     }
     html { scroll-behavior: auto; }
   }
+
+  /* ---- Under-development banner ---- */
+  .dev-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 44px 9px 16px;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .dev-banner-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  .dev-banner-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 1.1rem; line-height: 1;
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .dev-banner-close:hover { background: var(--line); }
 </style>
 </head>
 <body>
+<div id="dev-banner" class="dev-banner">
+  <span class="dev-banner-dot" aria-hidden="true"></span>
+  <span data-i18n="dev_banner_text">🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.</span>
+  <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
+</div>
+
 
 <header>
   <div class="header-inner">
@@ -667,6 +728,7 @@
       <a href="#opiniones" data-i18n="nav_reviews">Opiniones</a>
       <a href="#precios" data-i18n="nav_pricing">Precios</a>
       <a href="#contacto" data-i18n="nav_contact">Contacto</a>
+      <a href="blog.html" data-i18n="nav_blog">Blog</a>
       <a href="cuenta.html" class="nav-account" data-i18n="nav_account">Mi cuenta</a>
     </nav>
   </div>
@@ -912,7 +974,34 @@
         <p data-i18n="recursos_a3_p">Cómo prepararte de verdad sin quedarte en blanco.</p>
         <a href="ingles-para-entrevistas-trabajo.html" style="color: var(--ground); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
       </div>
+      <div class="card">
+        <h3 data-i18n="recursos_blog_h">Blog</h3>
+        <p data-i18n="recursos_blog_p">Notas e historias de alumnos, escritas según van pasando.</p>
+        <a href="blog.html" style="color: var(--ground); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_visit_blog">Visitar el blog →</a>
+      </div>
     </div>
+  </div>
+</section>
+
+<section id="youtube" style="display:none;">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="youtube_eyebrow">En vídeo</span>
+      <h2 data-i18n="youtube_h2">Último vídeo</h2>
+    </div>
+    <a class="youtube-card" id="youtube-card" href="#" target="_blank" rel="noopener">
+      <div class="youtube-thumb">
+        <img id="youtube-thumb-img" src="" alt="">
+        <span class="youtube-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+        </span>
+      </div>
+      <div class="youtube-info">
+        <span class="youtube-channel" data-i18n="youtube_channel">@frelseisme en YouTube</span>
+        <h3 id="youtube-title"></h3>
+        <span class="youtube-watch" data-i18n="youtube_watch">Ver en YouTube →</span>
+      </div>
+    </a>
   </div>
 </section>
 
@@ -932,7 +1021,8 @@
 <script>
 const translations = {
   es: {
-    nav_about: 'Sobre mí', nav_reviews: 'Opiniones', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_account: 'Mi cuenta',
+    dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
+    nav_about: 'Sobre mí', nav_reviews: 'Opiniones', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_blog: 'Blog', nav_account: 'Mi cuenta',
     hero_eyebrow: 'Inglés para comunicar, no solo para aprobar',
     hero_h1: 'Habla inglés como si hablaras con un <em>amigo</em>.',
     hero_p: 'Clases 1 a 1 por videollamada, notas personalizadas y un chat siempre abierto.',
@@ -973,12 +1063,15 @@ const translations = {
     recursos_a1_h: 'Cómo perder la vergüenza a hablar inglés', recursos_a1_p: 'Guía práctica con ejercicios concretos, no solo teoría.',
     recursos_a2_h: 'Angielski dla nieśmiałych online', recursos_a2_p: 'Poradnik po polsku o tym, jak przestać się blokować.',
     recursos_a3_h: 'Inglés para entrevistas de trabajo', recursos_a3_p: 'Cómo prepararte de verdad sin quedarte en blanco.',
+    recursos_blog_h: 'Blog', recursos_blog_p: 'Notas e historias de alumnos, escritas según van pasando.', recursos_visit_blog: 'Visitar el blog →',
+    youtube_eyebrow: 'En vídeo', youtube_h2: 'Último vídeo', youtube_channel: '@frelseisme en YouTube', youtube_watch: 'Ver en YouTube →',
     footer_h2: 'Hablemos', footer_sub: 'Escríbeme y empezamos cuando quieras.',
     footer_copyright: '© 2026 Paulo Crespo · Clases de inglés', footer_legal_link: 'Privacidad y Términos',
     copy_copied: '¡Copiado!', copy_error: 'Error'
   },
   pl: {
-    nav_about: 'O mnie', nav_reviews: 'Opinie', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_account: 'Moje konto',
+    dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
+    nav_about: 'O mnie', nav_reviews: 'Opinie', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_blog: 'Blog', nav_account: 'Moje konto',
     hero_eyebrow: 'Angielski i hiszpański, by się komunikować, nie tylko zdać egzamin',
     hero_h1: 'Mów, jakbyś rozmawiał z <em>przyjacielem</em>.',
     hero_p: 'Lekcje 1 na 1 przez wideorozmowę, spersonalizowane notatki i czat, który jest zawsze otwarty.',
@@ -1019,12 +1112,15 @@ const translations = {
     recursos_a1_h: 'Cómo perder la vergüenza a hablar inglés', recursos_a1_p: 'Praktyczny przewodnik po hiszpańsku z konkretnymi ćwiczeniami.',
     recursos_a2_h: 'Angielski dla nieśmiałych online', recursos_a2_p: 'Poradnik o tym, jak przestać się blokować podczas mówienia.',
     recursos_a3_h: 'Inglés para entrevistas de trabajo', recursos_a3_p: 'Jak naprawdę przygotować się do rozmowy kwalifikacyjnej po hiszpańsku.',
+    recursos_blog_h: 'Blog', recursos_blog_p: 'Notatki i historie uczniów, pisane na bieżąco.', recursos_visit_blog: 'Odwiedź blog →',
+    youtube_eyebrow: 'Wideo', youtube_h2: 'Najnowszy film', youtube_channel: '@frelseisme na YouTube', youtube_watch: 'Zobacz na YouTube →',
     footer_h2: 'Porozmawiajmy', footer_sub: 'Napisz do mnie i zaczynamy, kiedy chcesz — po angielsku czy po hiszpańsku.',
     footer_copyright: '© 2026 Paulo Crespo · Lekcje angielskiego i hiszpańskiego', footer_legal_link: 'Prywatność i regulamin',
     copy_copied: 'Skopiowano!', copy_error: 'Błąd'
   },
   en: {
-    nav_about: 'About me', nav_reviews: 'Reviews', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_account: 'My account',
+    dev_banner_text: '🚧 We\'re improving the site right now. You might notice small changes from day to day.',
+    nav_about: 'About me', nav_reviews: 'Reviews', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_blog: 'Blog', nav_account: 'My account',
     hero_eyebrow: 'Spanish to communicate, not just to pass a test',
     hero_h1: 'Speak Spanish like you\'re talking to a <em>friend</em>.',
     hero_p: '1-on-1 video lessons, personalized notes, and a chat that\'s always open.',
@@ -1065,6 +1161,8 @@ const translations = {
     recursos_a1_h: 'Losing the fear of speaking English (in Spanish)', recursos_a1_p: 'A practical guide with concrete exercises, not just theory.',
     recursos_a2_h: 'English for shy learners (in Polish)', recursos_a2_p: 'A guide on how to stop freezing up when speaking.',
     recursos_a3_h: 'Spanish for job interviews (in Spanish)', recursos_a3_p: 'How to really prepare without freezing up.',
+    recursos_blog_h: 'Blog', recursos_blog_p: 'Notes and student stories, written as they happen.', recursos_visit_blog: 'Visit the blog →',
+    youtube_eyebrow: 'On video', youtube_h2: 'Latest video', youtube_channel: '@frelseisme on YouTube', youtube_watch: 'Watch on YouTube →',
     footer_h2: 'Let\'s talk', footer_sub: 'Message me and we\'ll start whenever you\'re ready.',
     footer_copyright: '© 2026 Paulo Crespo · Spanish lessons', footer_legal_link: 'Privacy & Terms',
     copy_copied: 'Copied!', copy_error: 'Error'
@@ -1154,6 +1252,38 @@ function copyAddress() {
       </div>
     `).join('');
   })();
+
+  // ---- Latest video ----
+  (async () => {
+    try {
+      const res = await fetch('https://xmpajzrbgnmlttmlwopf.supabase.co/functions/v1/youtube-latest', {
+        headers: { apikey: SUPABASE_ANON_KEY }
+      });
+      const { video } = await res.json();
+      if (!video) return; // section stays hidden — fails soft, no broken state shown
+
+      document.getElementById('youtube-thumb-img').src = video.thumbnail;
+      document.getElementById('youtube-thumb-img').alt = video.title;
+      document.getElementById('youtube-title').textContent = video.title;
+      document.getElementById('youtube-card').href = video.url;
+      document.getElementById('youtube').style.display = '';
+    } catch (err) {
+      console.error('No se pudo cargar el último vídeo:', err);
+    }
+  })();
+</script>
+
+<script>
+(function () {
+  var KEY = 'dev_banner_dismissed_v1';
+  var el = document.getElementById('dev-banner');
+  if (!el) return;
+  if (!localStorage.getItem(KEY)) el.style.display = 'flex';
+  window.dismissDevBanner = function () {
+    localStorage.setItem(KEY, '1');
+    el.style.display = 'none';
+  };
+})();
 </script>
 </body>
 </html>

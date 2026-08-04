@@ -22,6 +22,7 @@ Files:
 - `monero.html` — explainer page for paying with Monero
 - `legal.html` — trilingual Privacy Policy + Terms + 14-day EU withdrawal-right page
 - `perder-verguenza-hablar-ingles.html`, `angielski-dla-niesmialych.html`, `ingles-para-entrevistas-trabajo.html` — SEO landing pages targeting specific long-tail search queries
+- `blog.html` — public blog (list + single-post view via `?post=slug`), written from `admin.html`'s Blog tab, read by anyone (no login required)
 - `robots.txt`, `sitemap.xml`, `favicon.svg`, `cv.png` (Paulo's portrait)
 - `supabase/functions/`, `supabase/migrations/` — version-controlled source for deployed Edge Functions and migrations
 
@@ -32,10 +33,10 @@ All pages are plain HTML/CSS/vanilla JS (no build step, no framework) styled wit
 - **Hosting:** Vercel
 - **Domain:** `inglesconpaulo.org`, live. Apex 308-redirects to `www`; the old `dpdns.org` subdomain redirects too. Only the Resend SPF/DKIM/DMARC verification is still outstanding.
 - **Backend:** Supabase project `xmpajzrbgnmlttmlwopf` (`https://xmpajzrbgnmlttmlwopf.supabase.co`)
-  - Tables: `profiles`, `schedule_slots`, `testimonials`, `testimonial_comments`, `chat_messages`, `student_focus`, `telegram_pending_language`, `referral_rewards`
+  - Tables: `profiles`, `schedule_slots`, `testimonials`, `testimonial_comments`, `chat_messages`, `student_focus`, `telegram_pending_language`, `referral_rewards`, `blog_posts`
   - Storage: private `chat-uploads` bucket (25MB/file, MIME allowlist, 30-day retention)
   - Uses the **new Supabase API key system** (`sb_publishable_...` / `sb_secret_...`) — legacy JWT-based `anon`/`service_role` keys have been **disabled** (not just rotated — Supabase's new key system doesn't support rotation, only disable+replace).
-- **Edge Functions:** `telegram-webhook`, `booking-notifications`, `delete-account`, `check-calendar-conflicts`, `chat-cleanup`, `chat-notify`, `lesson-reminders` (webhook/cron-driven ones run `verify_jwt: false` and do their own secret-header auth)
+- **Edge Functions:** `telegram-webhook`, `booking-notifications`, `delete-account`, `check-calendar-conflicts`, `chat-cleanup`, `chat-notify`, `lesson-reminders`, `youtube-latest` (webhook/cron-driven and public-read ones run `verify_jwt: false` and do their own auth, or none, as appropriate)
 - **Cron jobs:** `check-calendar-conflicts-job` (*/15), `lesson-reminders-job` (*/5), `chat-cleanup-job` (daily 04:15 UTC) — each reads its secret from Vault at call time
 - **Booking bot:** Telegram `@InglesDePauloBot` (separate from Paulo's personal `@frelseisme`)
 - **Calendar/Meet:** Google Calendar + Meet via OAuth refresh token (NOT a service account — service accounts can't create Meet links or invite attendees on personal Gmail). OAuth app is published to production (was stuck in Testing mode, which caused 7-day refresh token expiry — now fixed).
@@ -70,6 +71,12 @@ All pages are plain HTML/CSS/vanilla JS (no build step, no framework) styled wit
 21. **Visual identity — pairing 7a (Aug 2026)** — the original cream/terracotta + Fraunces palette was the most recognisable AI-generated design default. After cobalt/ochre and green interims, the site adopted **7a** from the Claude Design project `5f4a4e64-83a0-4d26-9084-6e4b9d8c6b1b` ("English tutoring color pairings"): pink ground `oklch(0.42 0.11 350)`, near-white text `oklch(0.97 0.01 350)`, yellow accent `oklch(0.85 0.17 95)` with `oklch(0.18 0.02 95)` on it, Archivo Black over Inter, 5px button radius, and 7a's signature device — a 2px yellow rule to the left of the headline rather than a fill behind it. Values are copied verbatim from the design doc so the site and the mock stay in sync.
 22. **Speech-therapy framing removed** — the homepage no longer says "algo parecido a la logopedia" in any language. `logopeda` is a regulated profession in Poland and the claim borrowed authority Paulo does not hold. The method is now described on its own terms ("first we free up your voice, correction comes after").
 
+23. **Under-development banner** — a thin, dismissible bar (`#dev-banner`) at the very top of every page, above the header. Not sticky, so it scrolls away; dismissal is remembered in `localStorage` (`dev_banner_dismissed_v1`). Bump the version suffix if the banner's message changes and it should reappear once.
+24. **Blog** — `blog_posts` table (slug, title, plain-text body, published). RLS: anyone can read published posts, only `is_admin()` can write. Body is stored as plain text and rendered by escaping it and splitting blank lines into `<p>` tags — no markdown pipeline, no raw HTML from the admin textarea, so there's no stored-XSS surface. Written from `admin.html`'s Blog tab (auto-slug from title, editable), read at `blog.html` (list + `?post=slug` single view, no page reload).
+25. **Latest YouTube video** — homepage section fetches `youtube-latest`, an Edge Function that resolves the `@frelseisme` handle to its channel ID by reading `externalId` out of the channel page's own HTML (YouTube's Data API needs a key nobody has set up; the channel's RSS feed is public and keyless, but only accepts a numeric channel ID, not the handle). Fails soft: any error returns `200 {video: null}` rather than an error status, so the section just stays hidden instead of showing a broken state. Response is cached 1h (`Cache-Control`) to stay easy on YouTube.
+26. **Fixed a real anon-read bug in production** — `is_admin()` had lost its `anon` EXECUTE grant at some point (likely the Aug 2026 hardening pass), which silently broke every RLS policy that ORs against it for a public-readable table. Confirmed live: an anon-key REST call to `testimonials` returned `permission denied for function is_admin` instead of the approved rows — the homepage's real-reviews fetch had been failing silently ever since. Fixed by granting `anon` EXECUTE on `is_admin()` (safe: `SECURITY DEFINER`, returns `false` when `auth.uid()` is null). `blog_posts` was built on top of the same fixed function.
+
+
 ## Known open items / TODO
 
 - **Resend domain (SPF/DKIM/DMARC) for `inglesconpaulo.org` still needs verifying**, and Supabase Auth's SMTP "from" address updated to the new domain. This is the real fix for the degraded email deliverability inherited from the free `dpdns.org` subdomain.
@@ -78,6 +85,7 @@ All pages are plain HTML/CSS/vanilla JS (no build step, no framework) styled wit
 - **Google Search Console / Bing Webmaster Tools submission** — `sitemap.xml` is live but has not been submitted anywhere; still the highest-leverage remaining SEO step.
 - **Homepage testimonials are illustrative placeholders**, labelled as such. Real reviews now exist as a feature but must be approved before they can replace them. Never present the placeholders as real student words, and never invent metrics, press, or student counts.
 - **Students only receive lesson reminders and booking notifications if they have linked Telegram.** Most have not yet, so the reminder mostly reaches Paulo. Worth nudging them toward the "Vincular Telegram" section on the Cuenta tab.
+- **The homepage "latest video" section pulls whatever is newest on the whole `@frelseisme` channel**, not a teaching-specific playlist — the channel isn't exclusively language-teaching content. If that's not the intended public face of the tutoring business, the fix is a dedicated playlist and pointing `youtube-latest` at that playlist's feed instead of the channel's.
 
 ## Conventions to follow when editing this codebase
 

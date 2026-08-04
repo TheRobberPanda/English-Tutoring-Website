@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Paulo Crespo</title>
+<meta name="description" content="Notas de Paulo sobre aprender inglés y español: ideas, historias de alumnos y reflexiones sobre perder el miedo a hablar.">
+<link rel="canonical" href="https://inglesconpaulo.org/blog.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Pairing 7a — pink ground, yellow accent. Values taken verbatim from
+       the design doc so the site and the mock stay in sync. */
+    --ground: oklch(0.42 0.11 350);        /* the pink card ground */
+    --ground-deep: oklch(0.33 0.10 350);   /* one step down, for stacking */
+    --ground-soft: oklch(0.94 0.02 350);   /* pale pink, light sections */
+    --on-ground: oklch(0.97 0.01 350);     /* near-white text on pink */
+    --accent: oklch(0.85 0.17 95);         /* the yellow */
+    --accent-ink: oklch(0.18 0.02 95);     /* text sitting on yellow */
+    --paper: oklch(0.98 0.008 350);
+    --paper-alt: oklch(0.94 0.02 350);
+    --ink: oklch(0.24 0.05 350);
+    --ink-soft: oklch(0.47 0.04 350);
+    --line: oklch(0.24 0.05 350 / 0.14);
+    --line-on-ground: oklch(0.97 0.01 350 / 0.15);
+    --surface: #FFFFFF;
+
+    --shadow-sm: 0 1px 2px rgba(18, 20, 26, 0.05);
+    --shadow-md: 0 4px 16px -4px rgba(18, 20, 26, 0.09), 0 2px 4px rgba(18, 20, 26, 0.04);
+    --shadow-lg: 0 18px 40px -12px rgba(18, 20, 26, 0.14), 0 4px 10px rgba(18, 20, 26, 0.05);
+    --radius: 14px;
+    --radius-lg: 20px;
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif; line-height: 1.65;
+  }
+  h1, h2, h3 { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; margin: 0; }
+  a { color: inherit; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- Header (matches index.html) ---- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: oklch(0.42 0.11 350 / 0.94);
+    color: var(--on-ground);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line-on-ground);
+    transition: background 0.3s var(--ease);
+  }
+  header.scrolled { background: var(--ground-deep); }
+  .header-inner {
+    display: flex; flex-wrap: wrap; row-gap: 10px;
+    justify-content: space-between; align-items: center;
+    padding: 18px 32px; max-width: 1040px; margin: 0 auto;
+  }
+  .lang-switcher { display: inline-flex; gap: 4px; }
+  .logo { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--on-ground); }
+  .logo span { color: var(--accent); }
+  nav { display: flex; gap: 28px; align-items: center; }
+  nav a {
+    position: relative; text-decoration: none; font-size: 0.92rem; font-weight: 500;
+    color: oklch(0.97 0.01 350 / 0.72); transition: color 0.2s var(--ease);
+  }
+  nav a::after {
+    content: ""; position: absolute; left: 0; bottom: -4px; width: 100%; height: 1.5px;
+    background: var(--accent); transform: scaleX(0); transform-origin: left;
+    transition: transform 0.25s var(--ease);
+  }
+  nav a:hover { color: var(--accent); }
+  nav a:hover::after { transform: scaleX(1); }
+  nav a.current { color: var(--accent); }
+  .nav-account {
+    background: var(--accent); color: var(--accent-ink) !important;
+    padding: 6px 14px; border-radius: 5px; font-weight: 700;
+  }
+  .nav-account::after { display: none; }
+  .lang-btn {
+    border: 1px solid var(--line-on-ground); background: transparent; color: oklch(0.97 0.01 350 / 0.75);
+    font-size: 0.78rem; font-weight: 600; padding: 4px 8px; border-radius: 5px; cursor: pointer;
+    font-family: 'Inter', system-ui, sans-serif; transition: all 0.2s var(--ease);
+  }
+  .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  /* ---- Page head ---- */
+  .blog-hero { padding: 56px 0 40px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem;
+    letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 3px; background: var(--accent); flex-shrink: 0; }
+  .blog-hero h1 {
+    font-size: clamp(2rem, 4.4vw, 2.8rem);
+    border-left: 3px solid var(--accent); padding-left: 20px; letter-spacing: -0.02em;
+  }
+  .blog-hero p { color: var(--ink-soft); margin: 18px 0 0 23px; max-width: 56ch; }
+
+  /* ---- Post list ---- */
+  .post-list { padding: 8px 0 80px; display: flex; flex-direction: column; gap: 18px; }
+  .post-card {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px 28px; transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .post-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: transparent; }
+  .post-date {
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.76rem; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+  .post-card h2 { font-size: 1.35rem; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .post-excerpt { color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
+  .post-readmore { display: inline-block; margin-top: 12px; color: var(--ground); font-weight: 600; font-size: 0.88rem; }
+
+  .empty-note { color: var(--ink-soft); font-size: 0.95rem; padding: 40px 0; text-align: center; }
+
+  /* ---- Single post ---- */
+  #post-view { display: none; padding: 8px 0 80px; }
+  .post-back {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 28px;
+  }
+  .post-back:hover { color: var(--ground); }
+  #post-title {
+    font-size: clamp(1.9rem, 4.2vw, 2.6rem);
+    border-left: 3px solid var(--accent); padding-left: 20px; letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  #post-date {
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.8rem; color: var(--ink-soft);
+    margin: 0 0 32px 23px;
+  }
+  #post-body { margin-left: 23px; font-size: 1.02rem; }
+  #post-body p { margin: 0 0 18px; }
+
+  /* ---- Footer ---- */
+  footer {
+    background: var(--ground); color: var(--on-ground);
+    padding: 56px 0 40px; text-align: center; margin-top: 40px;
+  }
+  footer a { color: var(--on-ground); text-decoration: underline; }
+  .copyright { font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; color: oklch(0.97 0.01 350 / 0.65); margin-top: 18px; }
+
+  /* ---- Under-development banner ---- */
+  .dev-banner {
+    display: none; align-items: center; justify-content: center; gap: 10px;
+    padding: 9px 44px 9px 16px; background: var(--paper-alt); color: var(--ink-soft);
+    font-size: 0.8rem; line-height: 1.4; text-align: center;
+    border-bottom: 1px solid var(--line); position: relative;
+  }
+  .dev-banner-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .dev-banner-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--ink-soft);
+    font-size: 1.1rem; line-height: 1; padding: 4px 8px; border-radius: 4px;
+  }
+  .dev-banner-close:hover { background: var(--line); }
+
+  @media (max-width: 560px) {
+    .header-inner { padding: 14px 20px; }
+    nav { gap: 14px; row-gap: 8px; flex-wrap: wrap; }
+    nav a::after { display: none; }
+    .wrap { padding: 0 20px; }
+  }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div id="dev-banner" class="dev-banner">
+  <span class="dev-banner-dot" aria-hidden="true"></span>
+  <span data-i18n="dev_banner_text">🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.</span>
+  <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <a href="index.html" class="logo" style="text-decoration:none;">Paulo <span>Crespo</span></a>
+      <span class="lang-switcher">
+        <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
+        <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
+        <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
+      </span>
+    </div>
+    <nav>
+      <a href="index.html" data-i18n="nav_home">Inicio</a>
+      <a href="blog.html" class="current" data-i18n="nav_blog">Blog</a>
+      <a href="index.html#precios" data-i18n="nav_pricing">Precios</a>
+      <a href="index.html#contacto" data-i18n="nav_contact">Contacto</a>
+      <a href="cuenta.html" class="nav-account" data-i18n="nav_account">Mi cuenta</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- LIST VIEW -->
+  <div id="list-view">
+    <div class="blog-hero">
+      <span class="eyebrow" data-i18n="blog_eyebrow">Blog</span>
+      <h1 data-i18n="blog_h1">Notas sobre aprender a hablar</h1>
+      <p data-i18n="blog_p">Ideas, historias de alumnos y reflexiones sobre perder el miedo a hablar en otro idioma.</p>
+    </div>
+    <div class="post-list" id="post-list"></div>
+    <p class="empty-note" id="post-list-empty" style="display:none;" data-i18n="blog_empty">Todavía no hay artículos publicados. Vuelve pronto.</p>
+  </div>
+
+  <!-- SINGLE POST VIEW -->
+  <div id="post-view">
+    <a href="blog.html" class="post-back" id="post-back">&larr; <span data-i18n="blog_back">Volver al blog</span></a>
+    <h1 id="post-title"></h1>
+    <p id="post-date"></p>
+    <div id="post-body"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <h2 data-i18n="footer_h2" style="font-size: 1.6rem;">Hablemos</h2>
+    <p class="copyright" data-i18n-html="footer_copy">
+      <a href="index.html">&larr; inglesconpaulo.org</a> · © 2026 Paulo Crespo
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://xmpajzrbgnmlttmlwopf.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_fX8s759ASUSsg57VBf45EQ_41wPvAov';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const translations = {
+    es: {
+      dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
+      nav_home: 'Inicio', nav_blog: 'Blog', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_account: 'Mi cuenta',
+      blog_eyebrow: 'Blog', blog_h1: 'Notas sobre aprender a hablar',
+      blog_p: 'Ideas, historias de alumnos y reflexiones sobre perder el miedo a hablar en otro idioma.',
+      blog_empty: 'Todavía no hay artículos publicados. Vuelve pronto.',
+      blog_back: 'Volver al blog',
+      footer_h2: 'Hablemos',
+      footer_copy: '<a href="index.html">&larr; inglesconpaulo.org</a> · © 2026 Paulo Crespo',
+      post_not_found: 'No se ha encontrado ese artículo.',
+      locale: 'es-ES',
+    },
+    pl: {
+      dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
+      nav_home: 'Strona główna', nav_blog: 'Blog', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_account: 'Moje konto',
+      blog_eyebrow: 'Blog', blog_h1: 'Notatki o nauce mówienia',
+      blog_p: 'Pomysły, historie uczniów i przemyślenia o pokonywaniu strachu przed mówieniem w innym języku.',
+      blog_empty: 'Nie ma jeszcze opublikowanych artykułów. Zajrzyj tu wkrótce.',
+      blog_back: 'Wróć do bloga',
+      footer_h2: 'Porozmawiajmy',
+      footer_copy: '<a href="index.html">&larr; inglesconpaulo.org</a> · © 2026 Paulo Crespo',
+      post_not_found: 'Nie znaleziono tego artykułu.',
+      locale: 'pl-PL',
+    },
+    en: {
+      dev_banner_text: "🚧 We're improving the site right now. You might notice small changes from day to day.",
+      nav_home: 'Home', nav_blog: 'Blog', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_account: 'My account',
+      blog_eyebrow: 'Blog', blog_h1: 'Notes on learning to speak',
+      blog_p: 'Ideas, student stories, and thoughts on losing the fear of speaking another language.',
+      blog_empty: 'No articles published yet. Check back soon.',
+      blog_back: 'Back to the blog',
+      footer_h2: "Let's talk",
+      footer_copy: '<a href="index.html">&larr; inglesconpaulo.org</a> · © 2026 Paulo Crespo',
+      post_not_found: 'That article could not be found.',
+      locale: 'en-GB',
+    },
+  };
+
+  let currentLang = localStorage.getItem('site_lang') || 'es';
+
+  function t(key) { return translations[currentLang][key]; }
+
+  function applyTranslations() {
+    const dict = translations[currentLang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key]) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if (dict[key]) el.innerHTML = dict[key];
+    });
+    document.getElementById('lang-btn-es').classList.toggle('active', currentLang === 'es');
+    document.getElementById('lang-btn-pl').classList.toggle('active', currentLang === 'pl');
+    document.getElementById('lang-btn-en').classList.toggle('active', currentLang === 'en');
+    document.documentElement.lang = currentLang;
+  }
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('site_lang', lang);
+    applyTranslations();
+    renderCurrentView();
+  }
+
+  applyTranslations();
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.innerText = str == null ? '' : str;
+    return div.innerHTML;
+  }
+
+  // Plain-text bodies only (admin input is escaped, never rendered as raw
+  // HTML), so a blank line becomes a paragraph break — enough formatting
+  // for a personal blog without needing a markdown pipeline.
+  function bodyToHtml(body) {
+    return body
+      .split(/\n{2,}/)
+      .map(para => `<p>${escapeHtml(para).replace(/\n/g, '<br>')}</p>`)
+      .join('');
+  }
+
+  function excerptOf(body, len) {
+    const flat = body.replace(/\s+/g, ' ').trim();
+    return flat.length > len ? flat.slice(0, len).trim() + '…' : flat;
+  }
+
+  let allPosts = [];
+
+  async function loadPosts() {
+    const { data, error } = await sb
+      .from('blog_posts')
+      .select('slug, title, body, created_at')
+      .eq('published', true)
+      .order('created_at', { ascending: false });
+
+    if (error) { console.error('Error cargando el blog:', error); return; }
+    allPosts = data || [];
+    renderCurrentView();
+  }
+
+  function renderList() {
+    const list = document.getElementById('post-list');
+    const empty = document.getElementById('post-list-empty');
+    if (!allPosts.length) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    list.innerHTML = allPosts.map(p => {
+      const date = new Date(p.created_at).toLocaleDateString(t('locale'), { day: 'numeric', month: 'long', year: 'numeric' });
+      return `
+        <a class="post-card" href="blog.html?post=${encodeURIComponent(p.slug)}">
+          <div class="post-date">${date}</div>
+          <h2>${escapeHtml(p.title)}</h2>
+          <p class="post-excerpt">${escapeHtml(excerptOf(p.body, 180))}</p>
+        </a>`;
+    }).join('');
+  }
+
+  function renderPost(slug) {
+    const post = allPosts.find(p => p.slug === slug);
+    document.getElementById('list-view').style.display = 'none';
+    document.getElementById('post-view').style.display = 'block';
+    if (!post) {
+      document.getElementById('post-title').textContent = t('post_not_found');
+      document.getElementById('post-date').textContent = '';
+      document.getElementById('post-body').innerHTML = '';
+      return;
+    }
+    document.title = post.title + ' — Blog — Paulo Crespo';
+    document.getElementById('post-title').textContent = post.title;
+    document.getElementById('post-date').textContent =
+      new Date(post.created_at).toLocaleDateString(t('locale'), { day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('post-body').innerHTML = bodyToHtml(post.body);
+  }
+
+  function renderCurrentView() {
+    const slug = new URLSearchParams(window.location.search).get('post');
+    if (slug) {
+      renderPost(slug);
+    } else {
+      document.title = 'Blog — Paulo Crespo';
+      document.getElementById('list-view').style.display = 'block';
+      document.getElementById('post-view').style.display = 'none';
+      renderList();
+    }
+  }
+
+  window.addEventListener('popstate', renderCurrentView);
+
+  loadPosts();
+
+  // Sticky header border once scrolled.
+  (function () {
+    const header = document.querySelector('header');
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+</script>
+
+<script>
+(function () {
+  var KEY = 'dev_banner_dismissed_v1';
+  var el = document.getElementById('dev-banner');
+  if (!el) return;
+  if (!localStorage.getItem(KEY)) el.style.display = 'flex';
+  window.dismissDevBanner = function () {
+    localStorage.setItem(KEY, '1');
+    el.style.display = 'none';
+  };
+})();
+</script>
+
+</body>
+</html>

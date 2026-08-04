@@ -51,9 +51,42 @@
     font-weight: 600; text-decoration: none; font-size: 0.95rem;
   }
   .btn:hover { background: var(--ground); }
+
+  /* ---- Under-development banner ---- */
+  .dev-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 44px 9px 16px;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .dev-banner-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  .dev-banner-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 1.1rem; line-height: 1;
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .dev-banner-close:hover { background: var(--line); }
 </style>
 </head>
 <body>
+<div id="dev-banner" class="dev-banner">
+  <span class="dev-banner-dot" aria-hidden="true"></span>
+  <span>🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.</span>
+  <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
+</div>
+
 <div class="wrap">
   <a class="back" href="index.html">&larr; Volver a la web</a>
 
@@ -93,5 +126,18 @@
     <a class="btn" href="cuenta.html">Reservar mi clase de prueba</a>
   </div>
 </div>
+
+<script>
+(function () {
+  var KEY = 'dev_banner_dismissed_v1';
+  var el = document.getElementById('dev-banner');
+  if (!el) return;
+  if (!localStorage.getItem(KEY)) el.style.display = 'flex';
+  window.dismissDevBanner = function () {
+    localStorage.setItem(KEY, '1');
+    el.style.display = 'none';
+  };
+})();
+</script>
 </body>
 </html>

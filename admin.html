@@ -352,9 +352,42 @@
   .lesson-row.live .live-badge { animation: live-pulse 2s ease-in-out infinite; }
   @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
   @media (prefers-reduced-motion: reduce) { .lesson-row.live .live-badge { animation: none; } }
+
+  /* ---- Under-development banner ---- */
+  .dev-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 44px 9px 16px;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .dev-banner-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  .dev-banner-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 1.1rem; line-height: 1;
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .dev-banner-close:hover { background: var(--line); }
 </style>
 </head>
 <body>
+<div id="dev-banner" class="dev-banner">
+  <span class="dev-banner-dot" aria-hidden="true"></span>
+  <span>🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.</span>
+  <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
+</div>
+
 <div class="wrap">
   <a class="back" href="cuenta.html">&larr; Volver a mi cuenta</a>
 
@@ -377,6 +410,7 @@
       <button class="tab" data-tab="notas" role="tab" onclick="showAdminTab('notas')">Notas</button>
       <button class="tab" data-tab="mensajes" role="tab" onclick="showAdminTab('mensajes')">Mensajes <span id="tab-msg-badge"></span></button>
       <button class="tab" data-tab="opiniones" role="tab" onclick="showAdminTab('opiniones')">Opiniones</button>
+      <button class="tab" data-tab="blog" role="tab" onclick="showAdminTab('blog')">Blog</button>
     </nav>
 
     <section class="tab-panel" id="apanel-clases" role="tabpanel">
@@ -577,6 +611,35 @@
         <p class="empty-note" id="pending-empty" style="display:none;">No hay opiniones pendientes.</p>
       </div>
     </section>
+
+    <section class="tab-panel" id="apanel-blog" role="tabpanel">
+      <!-- BLOG -->
+      <div class="card">
+        <h3 id="blog-form-title">Nuevo artículo</h3>
+        <p class="hint">Los artículos publicados aparecen en <a href="blog.html" target="_blank" rel="noopener">/blog.html</a> para cualquier visitante, con o sin cuenta.</p>
+        <label for="blog-title-input">Título</label>
+        <input type="text" id="blog-title-input" maxlength="200" placeholder="Ej: Por qué te bloqueas al hablar" style="width:100%; margin-bottom:12px;">
+        <label for="blog-slug-input">Slug (URL)</label>
+        <input type="text" id="blog-slug-input" maxlength="200" placeholder="se-genera-solo-del-titulo" style="width:100%; margin-bottom:12px;">
+        <label for="blog-body-input">Contenido</label>
+        <textarea id="blog-body-input" rows="10" placeholder="Escribe aquí. Deja una línea en blanco entre párrafos." style="width:100%; margin-bottom:12px;"></textarea>
+        <label style="display:flex; align-items:center; gap:8px; margin-bottom:14px; font-weight:500; cursor:pointer;">
+          <input type="checkbox" id="blog-published-input" style="width:16px; height:16px; cursor:pointer;">
+          Publicado (visible para todos)
+        </label>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" onclick="saveBlogPost()">Guardar</button>
+          <button class="btn-outline" id="blog-cancel-edit" style="display:none;" onclick="resetBlogForm()">Cancelar edición</button>
+        </div>
+        <div id="blog-form-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Artículos</h3>
+        <div id="blog-list"></div>
+        <p class="empty-note" id="blog-list-empty" style="display:none;">Todavía no has escrito nada.</p>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -647,6 +710,7 @@
     await loadPendingTestimonials();
     await loadChatThreads();
     subscribeAdminChat();
+    await loadBlogPosts();
     showAdminTab((window.location.hash || '#clases').slice(1));
   }
 
@@ -1435,7 +1499,7 @@
   }
 
   // ---- SUBPAGE TABS ----
-  const ADMIN_TABS = ['clases', 'alumnos', 'notas', 'mensajes', 'opiniones'];
+  const ADMIN_TABS = ['clases', 'alumnos', 'notas', 'mensajes', 'opiniones', 'blog'];
 
   function showAdminTab(name) {
     if (!ADMIN_TABS.includes(name)) name = 'clases';
@@ -1465,7 +1529,139 @@
     card.classList.add('flash');
   }
 
+
+  // ---- BLOG ----
+  let allBlogPosts = [];
+  let editingBlogId = null;
+
+  function slugify(str) {
+    return str
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // strip accents
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 200);
+  }
+
+  // Slug follows the title automatically, but only until the admin edits
+  // the slug field by hand — after that we stop overwriting their choice.
+  let slugTouched = false;
+  document.getElementById('blog-slug-input').addEventListener('input', () => { slugTouched = true; });
+  document.getElementById('blog-title-input').addEventListener('input', (e) => {
+    if (!slugTouched) document.getElementById('blog-slug-input').value = slugify(e.target.value);
+  });
+
+  async function loadBlogPosts() {
+    const { data, error } = await sb
+      .from('blog_posts')
+      .select('id, slug, title, body, published, created_at')
+      .order('created_at', { ascending: false });
+
+    const list = document.getElementById('blog-list');
+    const empty = document.getElementById('blog-list-empty');
+    if (error) { list.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+
+    allBlogPosts = data || [];
+    empty.style.display = allBlogPosts.length ? 'none' : 'block';
+
+    list.innerHTML = allBlogPosts.map(p => {
+      const date = new Date(p.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+      const statusTag = p.published
+        ? '<span class="blog-status-tag" style="border:1px solid var(--accent); color:var(--ground); padding:2px 8px; border-radius:100px; font-size:0.72rem;">Publicado</span>'
+        : '<span class="blog-status-tag" style="border:1px solid var(--line); color:var(--ink-soft); padding:2px 8px; border-radius:100px; font-size:0.72rem;">Borrador</span>';
+      return `
+        <div class="testimonial-row">
+          <div class="content" style="font-style:normal; font-weight:600;">${escapeHtml(p.title)}</div>
+          <div class="who">${date} · ${statusTag}</div>
+          <div class="actions">
+            <button class="btn btn-small btn-outline" onclick="editBlogPost('${p.id}')">Editar</button>
+            <button class="btn btn-small btn-danger" onclick="deleteBlogPost('${p.id}')">Eliminar</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function editBlogPost(id) {
+    const post = allBlogPosts.find(p => p.id === id);
+    if (!post) return;
+    editingBlogId = id;
+    slugTouched = true; // don't let further title edits clobber the saved slug
+    document.getElementById('blog-form-title').textContent = 'Editar artículo';
+    document.getElementById('blog-title-input').value = post.title;
+    document.getElementById('blog-slug-input').value = post.slug;
+    document.getElementById('blog-body-input').value = post.body;
+    document.getElementById('blog-published-input').checked = post.published;
+    document.getElementById('blog-cancel-edit').style.display = 'inline-block';
+    document.getElementById('blog-form-msg').innerHTML = '';
+    document.getElementById('blog-title-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function resetBlogForm() {
+    editingBlogId = null;
+    slugTouched = false;
+    document.getElementById('blog-form-title').textContent = 'Nuevo artículo';
+    document.getElementById('blog-title-input').value = '';
+    document.getElementById('blog-slug-input').value = '';
+    document.getElementById('blog-body-input').value = '';
+    document.getElementById('blog-published-input').checked = false;
+    document.getElementById('blog-cancel-edit').style.display = 'none';
+    document.getElementById('blog-form-msg').innerHTML = '';
+  }
+
+  async function saveBlogPost() {
+    const title = document.getElementById('blog-title-input').value.trim();
+    const slug = document.getElementById('blog-slug-input').value.trim();
+    const body = document.getElementById('blog-body-input').value.trim();
+    const published = document.getElementById('blog-published-input').checked;
+    const msgBox = document.getElementById('blog-form-msg');
+
+    if (!title || !slug || !body) {
+      msgBox.innerHTML = '<div class="msg error">Rellena título, slug y contenido.</div>';
+      return;
+    }
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
+      msgBox.innerHTML = '<div class="msg error">El slug solo puede tener minúsculas, números y guiones (ej: mi-articulo).</div>';
+      return;
+    }
+
+    const payload = { title, slug, body, published };
+    const { error } = editingBlogId
+      ? await sb.from('blog_posts').update(payload).eq('id', editingBlogId)
+      : await sb.from('blog_posts').insert(payload);
+
+    if (error) {
+      // Postgres unique_violation on the slug column.
+      msgBox.innerHTML = `<div class="msg error">${error.code === '23505' ? 'Ya existe un artículo con ese slug.' : escapeHtml(error.message)}</div>`;
+      return;
+    }
+
+    msgBox.innerHTML = '<div class="msg ok">Guardado.</div>';
+    resetBlogForm();
+    await loadBlogPosts();
+  }
+
+  async function deleteBlogPost(id) {
+    if (!confirm('¿Eliminar este artículo? No se puede deshacer.')) return;
+    const { error } = await sb.from('blog_posts').delete().eq('id', id);
+    if (error) { alert(error.message); return; }
+    if (editingBlogId === id) resetBlogForm();
+    await loadBlogPosts();
+  }
+
   checkAccess();
+</script>
+
+<script>
+(function () {
+  var KEY = 'dev_banner_dismissed_v1';
+  var el = document.getElementById('dev-banner');
+  if (!el) return;
+  if (!localStorage.getItem(KEY)) el.style.display = 'flex';
+  window.dismissDevBanner = function () {
+    localStorage.setItem(KEY, '1');
+    el.style.display = 'none';
+  };
+})();
 </script>
 </body>
 </html>

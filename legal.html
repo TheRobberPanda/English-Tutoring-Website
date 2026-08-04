@@ -57,9 +57,42 @@
   }
   .lang-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   .updated { font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; color: var(--ink-soft); }
+
+  /* ---- Under-development banner ---- */
+  .dev-banner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 44px 9px 16px;
+    background: var(--paper-alt);
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .dev-banner-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  .dev-banner-close {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 1.1rem; line-height: 1;
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .dev-banner-close:hover { background: var(--line); }
 </style>
 </head>
 <body>
+<div id="dev-banner" class="dev-banner">
+  <span class="dev-banner-dot" aria-hidden="true"></span>
+  <span data-i18n="dev_banner_text">🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.</span>
+  <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
+</div>
+
 <div class="wrap">
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
     <a class="back" href="index.html" data-i18n="back_link" style="margin-bottom:0;">&larr; Volver a la web</a>
@@ -181,6 +214,7 @@
 <script>
 const translations = {
   es: {
+    dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
     back_link: 'Volver a la web', h1: 'Privacidad y Términos',
     last_updated: 'Última actualización: 27 de julio de 2026',
     lede: 'Esta página explica qué datos recogemos, por qué, con quién los compartimos, y cuáles son tus derechos — incluido tu derecho de desistimiento como consumidor de la Unión Europea. Si tienes cualquier duda, escríbeme directamente.',
@@ -240,6 +274,7 @@ const translations = {
     contacto_p2: 'Si consideras que no hemos resuelto tu duda adecuadamente, tienes derecho a presentar una reclamación ante la autoridad de protección de datos polaca:'
   },
   pl: {
+    dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
     back_link: 'Wróć do strony', h1: 'Prywatność i regulamin',
     last_updated: 'Ostatnia aktualizacja: 27 lipca 2026',
     lede: 'Ta strona wyjaśnia jakie dane zbieramy, dlaczego, komu je udostępniamy i jakie masz prawa — w tym prawo do odstąpienia od umowy jako konsument Unii Europejskiej. Jeśli masz jakiekolwiek wątpliwości, napisz do mnie bezpośrednio.',
@@ -299,6 +334,7 @@ const translations = {
     contacto_p2: 'Jeśli uważasz, że nie rozwiązaliśmy twojej sprawy odpowiednio, masz prawo złożyć skargę do polskiego organu ochrony danych:'
   },
   en: {
+    dev_banner_text: '🚧 We\'re improving the site right now. You might notice small changes from day to day.',
     back_link: 'Back to the site', h1: 'Privacy & Terms',
     last_updated: 'Last updated: July 27, 2026',
     lede: 'This page explains what data we collect, why, who we share it with, and what your rights are — including your withdrawal right as an EU consumer. If you have any questions, message me directly.',
@@ -385,6 +421,19 @@ function setLang(lang) {
 }
 
 applyTranslations();
+</script>
+
+<script>
+(function () {
+  var KEY = 'dev_banner_dismissed_v1';
+  var el = document.getElementById('dev-banner');
+  if (!el) return;
+  if (!localStorage.getItem(KEY)) el.style.display = 'flex';
+  window.dismissDevBanner = function () {
+    localStorage.setItem(KEY, '1');
+    el.style.display = 'none';
+  };
+})();
 </script>
 </body>
 </html>
