@@ -6,30 +6,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel admin — Paulo Crespo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    /* Palette derived from Paulo's own photograph: cobalt ground, mustard
-       panels, warm grey blocks. Chosen so the portrait belongs on the page
-       instead of fighting it. */
-    --paper: #FAFAF8;
-    --paper-alt: #EFEEE9;
-    --ink: #12141A;
-    --ink-soft: #5A6070;
-    --accent: #2A4BA0;
-    --accent-deep: #1B3271;
-    --accent-soft: #DCE3F5;
-    --ochre: #E0A92E;
-    --line: #D9DAD2;
+    /* Pairing 7a — pink ground, yellow accent. Values taken verbatim from
+       the design doc so the site and the mock stay in sync. */
+    --ground: oklch(0.42 0.11 350);        /* the pink card ground */
+    --ground-deep: oklch(0.33 0.10 350);   /* one step down, for stacking */
+    --ground-soft: oklch(0.94 0.02 350);   /* pale pink, light sections */
+    --on-ground: oklch(0.97 0.01 350);     /* near-white text on pink */
+    --accent: oklch(0.85 0.17 95);         /* the yellow */
+    --accent-ink: oklch(0.18 0.02 95);     /* text sitting on yellow */
+    --paper: oklch(0.98 0.008 350);
+    --paper-alt: oklch(0.94 0.02 350);
+    --ink: oklch(0.24 0.05 350);
+    --ink-soft: oklch(0.47 0.04 350);
+    --line: oklch(0.24 0.05 350 / 0.14);
+    --line-on-ground: oklch(0.97 0.01 350 / 0.15);
     --surface: #FFFFFF;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Archivo', system-ui, sans-serif; line-height: 1.6; }
-  h1, h2, h3 { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; margin: 0; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
+  h1, h2, h3 { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; margin: 0; }
   .wrap { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
   a.back { display: inline-block; margin-bottom: 20px; color: var(--ink-soft); text-decoration: none; font-size: 0.9rem; }
-  a.back:hover { color: var(--accent-deep); }
+  a.back:hover { color: var(--ground); }
 
   .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
   .logout-link { background: none; border: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 0.88rem; }
@@ -41,15 +43,15 @@
   label { display: block; font-size: 0.82rem; font-weight: 500; margin-bottom: 5px; }
   input, textarea {
     padding: 10px 12px; border-radius: 8px; border: 1.5px solid var(--line);
-    background: var(--paper); font-family: 'Archivo', system-ui, sans-serif; font-size: 0.92rem;
+    background: var(--paper); font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem;
   }
   input:focus, textarea:focus { outline: none; border-color: var(--accent); }
 
   .btn {
     display: inline-block; padding: 10px 20px; border-radius: 8px; border: none;
-    background: var(--accent); color: var(--surface); font-weight: 600; font-size: 0.88rem; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 0.88rem; cursor: pointer;
   }
-  .btn:hover { background: var(--accent-deep); }
+  .btn:hover { background: var(--ground); }
   .btn-small { padding: 6px 14px; font-size: 0.8rem; }
   .btn-outline { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
   .btn-outline:hover { border-color: var(--accent); background: none; }
@@ -57,8 +59,8 @@
   .btn-danger:hover { background: #8C1D18; }
 
   .msg { margin-top: 12px; font-size: 0.85rem; padding: 9px 13px; border-radius: 8px; }
-  .msg.error { background: #FCE8E6; color: var(--accent-deep); }
-  .msg.ok { background: var(--accent-soft); color: var(--accent-deep); }
+  .msg.error { background: #FCE8E6; color: var(--ground); }
+  .msg.ok { background: var(--ground-soft); color: var(--ground); }
 
   .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
   .form-row > div { flex: 1; min-width: 140px; }
@@ -77,7 +79,7 @@
   }
   .cal-cell.empty { background: transparent; border: none; cursor: default; }
   .cal-cell:hover:not(.empty) { border-color: var(--accent); }
-  .cal-cell.selected { border-color: var(--accent-deep); border-width: 2px; }
+  .cal-cell.selected { border-color: var(--ground); border-width: 2px; }
   .cal-daynum { font-weight: 600; margin-bottom: 4px; }
   .cal-dot-row { display: flex; gap: 3px; flex-wrap: wrap; }
   .cal-dot { width: 7px; height: 7px; border-radius: 50%; }
@@ -88,9 +90,9 @@
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
     font-size: 0.62rem; font-weight: 700; color: var(--surface); line-height: 1;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Inter', system-ui, sans-serif;
   }
-  .cal-badge.open { background: var(--accent); }
+  .cal-badge.open { background: var(--accent); color: var(--accent-ink); }
   .cal-badge.booked { background: var(--ink); }
   .cal-badge.blocked { background: #DC2626; }
 
@@ -100,7 +102,7 @@
     padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; font-size: 0.88rem;
   }
   .slot-row .status { font-size: 0.78rem; padding: 2px 9px; border-radius: 100px; margin-left: 8px; }
-  .slot-row .status.open { background: var(--accent-soft); color: var(--accent-deep); }
+  .slot-row .status.open { background: var(--ground-soft); color: var(--ground); }
   .slot-row .status.booked { background: var(--ink); color: var(--paper); }
 
   /* Next lessons */
@@ -110,13 +112,13 @@
   }
   .lesson-row .who { font-weight: 600; }
   .lesson-row .when { color: var(--ink-soft); font-size: 0.85rem; }
-  .lesson-row .soon { border-color: var(--accent); background: var(--accent-soft); }
+  .lesson-row .soon { border-color: var(--accent); background: var(--ground-soft); }
   .join-meet-btn {
     display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: none;
-    background: var(--accent); color: var(--surface); font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 0.85rem; cursor: pointer;
     text-decoration: none; white-space: nowrap;
   }
-  .join-meet-btn:hover { background: var(--accent-deep); }
+  .join-meet-btn:hover { background: var(--ground); }
   .join-meet-btn.pending {
     background: var(--paper-alt); color: var(--ink-soft); border: 1.5px solid var(--line); cursor: default;
   }
@@ -147,7 +149,7 @@
     font-family: inherit;
   }
   .chat-thread:hover { background: var(--paper-alt); }
-  .chat-thread.active { background: var(--accent-soft); border-left-color: var(--accent); }
+  .chat-thread.active { background: var(--ground-soft); border-left-color: var(--accent); }
   .chat-thread-name { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; }
   /* Was a single nowrap line in a 240px column, which clipped almost every
      message. Now wraps to two lines and clamps there. */
@@ -173,25 +175,25 @@
     word-wrap: break-word; overflow-wrap: anywhere;
   }
   .chat-bubble.them { align-self: flex-start; background: var(--paper-alt); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
-  .chat-bubble.me   { align-self: flex-end; background: var(--accent); color: var(--surface); border-bottom-right-radius: 4px; }
-  .chat-time { display: block; margin-top: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.66rem; opacity: 0.65; }
+  .chat-bubble.me   { align-self: flex-end; background: var(--accent); color: var(--accent-ink); border-bottom-right-radius: 4px; }
+  .chat-time { display: block; margin-top: 4px; font-family: 'Inter', system-ui, sans-serif; font-size: 0.66rem; opacity: 0.65; }
   .chat-bubble img, .chat-bubble video { max-width: 100%; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer; }
   .chat-bubble audio { width: 100%; margin-top: 6px; }
   .chat-file-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: underline; }
   .chat-compose textarea {
     width: 100%; padding: 10px 13px; border-radius: 8px; border: 1.5px solid var(--line);
-    background: var(--surface); font-family: 'Archivo', system-ui, sans-serif; font-size: 0.92rem; resize: vertical;
+    background: var(--surface); font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem; resize: vertical;
   }
   .chat-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
   .chat-attach {
-    cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--accent-deep);
+    cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--ground);
     border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 13px; background: var(--surface);
   }
   .chat-attach:hover { border-color: var(--accent); }
   .chat-file-name { font-size: 0.78rem; color: var(--ink-soft); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .chat-badge {
     display: inline-block; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
-    background: var(--accent); color: var(--surface); font-size: 0.68rem; font-weight: 700;
+    background: var(--accent); color: var(--accent-ink); font-size: 0.68rem; font-weight: 700;
     text-align: center; line-height: 18px;
   }
   @media (max-width: 720px) {
@@ -203,18 +205,18 @@
   .msg-fab {
     position: fixed; right: 22px; bottom: 22px; z-index: 60;
     width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer;
-    background: var(--accent); color: var(--surface);
+    background: var(--accent); color: var(--accent-ink);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 22px -6px rgba(27, 50, 113, 0.42);
+    box-shadow: 0 8px 22px -6px oklch(0.42 0.11 350 /  0.42);
     transition: transform 0.2s ease, background 0.2s ease;
   }
-  .msg-fab:hover { background: var(--accent-deep); transform: translateY(-2px); }
+  .msg-fab:hover { background: var(--ground); transform: translateY(-2px); }
 
   .msg-fab-badge {
     position: absolute; top: -3px; right: -3px;
     min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px;
     background: #B3261E; color: var(--surface);
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.7rem; font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.7rem; font-weight: 700;
     line-height: 21px; text-align: center; border: 2px solid var(--paper);
   }
 
@@ -244,8 +246,8 @@
   /* The card flashes briefly when you jump to it, so it's obvious where
      the notification landed you. */
   @keyframes card-flash {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(42, 75, 160, 0); }
-    30%      { box-shadow: 0 0 0 4px rgba(42, 75, 160, 0.35); }
+    0%, 100% { box-shadow: 0 0 0 0 oklch(0.85 0.17 95 /  0); }
+    30%      { box-shadow: 0 0 0 4px oklch(0.85 0.17 95 /  0.35); }
   }
   .card.flash { animation: card-flash 1.2s ease; }
 
@@ -263,19 +265,19 @@
   .focus-col.focus-tutor { border-left-color: var(--ink); background: var(--paper-alt); }
   .focus-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
   .focus-tag {
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.64rem; font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.64rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 9px;
     border-radius: 100px; white-space: nowrap;
   }
-  .focus-tag-mine  { background: var(--accent-soft); color: var(--accent-deep); }
+  .focus-tag-mine  { background: var(--ground-soft); color: var(--ground); }
   .focus-tag-tutor { background: var(--ink); color: var(--paper); }
   .focus-form { display: flex; gap: 8px; margin-bottom: 12px; }
   .focus-form input { flex: 1; }
   .focus-form button {
-    background: var(--accent); color: var(--surface); border: none; border-radius: 8px;
+    background: var(--accent); color: var(--accent-ink); border: none; border-radius: 8px;
     padding: 9px 15px; font-weight: 600; font-size: 0.84rem; cursor: pointer;
   }
-  .focus-form button:hover { background: var(--accent-deep); }
+  .focus-form button:hover { background: var(--ground); }
   .focus-list { list-style: none; margin: 0; padding: 0; }
   .focus-item {
     display: flex; align-items: flex-start; gap: 9px; padding: 9px 0;
@@ -288,9 +290,9 @@
     border: 1.5px solid var(--line); background: var(--surface); cursor: pointer;
     padding: 0; line-height: 1; font-size: 0.78rem; color: var(--surface);
   }
-  .focus-check.on { background: var(--accent); border-color: var(--accent); }
+  .focus-check.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .focus-body { flex: 1; overflow-wrap: anywhere; }
-  .focus-when { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.68rem; color: var(--ink-soft); white-space: nowrap; }
+  .focus-when { font-family: 'Inter', system-ui, sans-serif; font-size: 0.68rem; color: var(--ink-soft); white-space: nowrap; }
   .focus-del { background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 1rem; line-height: 1; padding: 0 2px; }
   .focus-del:hover { color: #B3261E; }
   /* ---- Subpage tabs ---- */
@@ -300,12 +302,12 @@
   }
   .tab {
     border: none; background: none; cursor: pointer;
-    font-family: 'Archivo', system-ui, sans-serif; font-size: 0.92rem; font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem; font-weight: 600;
     color: var(--ink-soft); padding: 10px 16px; border-radius: 9px 9px 0 0;
     position: relative; transition: color 0.18s ease, background 0.18s ease;
   }
-  .tab:hover { color: var(--accent-deep); background: var(--paper-alt); }
-  .tab.active { color: var(--accent-deep); background: var(--surface); }
+  .tab:hover { color: var(--ground); background: var(--paper-alt); }
+  .tab.active { color: var(--ground); background: var(--surface); }
   .tab.active::after {
     content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
     height: 2.5px; background: var(--accent); border-radius: 2px;
@@ -320,31 +322,31 @@
     display: inline-flex; align-items: center; gap: 8px;
     border: 1.5px solid var(--line); background: var(--paper);
     border-radius: 100px; padding: 7px 15px 7px 7px; cursor: pointer;
-    font-family: 'Archivo', system-ui, sans-serif; font-size: 0.88rem; font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.88rem; font-weight: 600;
     color: var(--ink); transition: all 0.16s ease;
   }
   .student-chip:hover { border-color: var(--accent); background: var(--surface); }
   .student-chip.active {
-    border-color: var(--accent); background: var(--accent); color: var(--surface);
-    box-shadow: 0 4px 12px -3px rgba(42, 75, 160, 0.35);
+    border-color: var(--accent); background: var(--accent); color: var(--accent-ink);
+    box-shadow: 0 4px 12px -3px oklch(0.85 0.17 95 /  0.35);
   }
   .student-avatar {
     width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
-    background: var(--accent-soft); color: var(--accent-deep);
+    background: var(--ground-soft); color: var(--ground);
     display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 0.8rem;
+    font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 0.8rem;
   }
   .student-chip.active .student-avatar { background: var(--surface); }
   .student-chip .chip-count {
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.68rem;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.68rem;
     opacity: 0.75; font-weight: 700;
   }
   /* A lesson happening right now — the one you most need to reach. */
-  .lesson-row.live { border-color: var(--accent); background: var(--accent-soft); }
+  .lesson-row.live { border-color: var(--accent); background: var(--ground-soft); }
   .live-badge {
     display: inline-block; margin-left: 8px; padding: 2px 9px; border-radius: 100px;
-    background: var(--accent); color: var(--surface);
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.62rem; font-weight: 700;
+    background: var(--accent); color: var(--accent-ink);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.62rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em; vertical-align: middle;
   }
   .lesson-row.live .live-badge { animation: live-pulse 2s ease-in-out infinite; }
@@ -494,12 +496,12 @@
         <p class="hint">Calculado sobre el mes mostrado en el calendario de arriba, suponiendo que todas las clases se pagan con Monero (12€/clase).</p>
         <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px;">
           <div>
-            <div class="price-label" style="color: var(--ink-soft); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.78rem; text-transform: uppercase;">Clases reservadas</div>
-            <div style="font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 1.8rem;" id="earnings-count">0</div>
+            <div class="price-label" style="color: var(--ink-soft); font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; text-transform: uppercase;">Clases reservadas</div>
+            <div style="font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.8rem;" id="earnings-count">0</div>
           </div>
           <div>
-            <div class="price-label" style="color: var(--ink-soft); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.78rem; text-transform: uppercase;">Ingreso estimado</div>
-            <div style="font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 1.8rem; color: var(--accent-deep);" id="earnings-total">0€</div>
+            <div class="price-label" style="color: var(--ink-soft); font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; text-transform: uppercase;">Ingreso estimado</div>
+            <div style="font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.8rem; color: var(--ground);" id="earnings-total">0€</div>
           </div>
         </div>
       </div>

@@ -6,30 +6,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mi cuenta — Paulo Crespo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    /* Palette derived from Paulo's own photograph: cobalt ground, mustard
-       panels, warm grey blocks. Chosen so the portrait belongs on the page
-       instead of fighting it. */
-    --paper: #FAFAF8;
-    --paper-alt: #EFEEE9;
-    --ink: #12141A;
-    --ink-soft: #5A6070;
-    --accent: #2A4BA0;
-    --accent-deep: #1B3271;
-    --accent-soft: #DCE3F5;
-    --ochre: #E0A92E;
-    --line: #D9DAD2;
+    /* Pairing 7a — pink ground, yellow accent. Values taken verbatim from
+       the design doc so the site and the mock stay in sync. */
+    --ground: oklch(0.42 0.11 350);        /* the pink card ground */
+    --ground-deep: oklch(0.33 0.10 350);   /* one step down, for stacking */
+    --ground-soft: oklch(0.94 0.02 350);   /* pale pink, light sections */
+    --on-ground: oklch(0.97 0.01 350);     /* near-white text on pink */
+    --accent: oklch(0.85 0.17 95);         /* the yellow */
+    --accent-ink: oklch(0.18 0.02 95);     /* text sitting on yellow */
+    --paper: oklch(0.98 0.008 350);
+    --paper-alt: oklch(0.94 0.02 350);
+    --ink: oklch(0.24 0.05 350);
+    --ink-soft: oklch(0.47 0.04 350);
+    --line: oklch(0.24 0.05 350 / 0.14);
+    --line-on-ground: oklch(0.97 0.01 350 / 0.15);
     --surface: #FFFFFF;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Archivo', system-ui, sans-serif; line-height: 1.6; }
-  h1, h2, h3 { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; margin: 0; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
+  h1, h2, h3 { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; margin: 0; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
   a.back { display: inline-block; margin-bottom: 28px; color: var(--ink-soft); text-decoration: none; font-size: 0.9rem; }
-  a.back:hover { color: var(--accent-deep); }
+  a.back:hover { color: var(--ground); }
 
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 32px; margin-bottom: 24px; }
 
@@ -37,7 +39,7 @@
   label:first-child { margin-top: 0; }
   input:not([type="checkbox"]) {
     width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--line);
-    background: var(--paper); font-family: 'Archivo', system-ui, sans-serif; font-size: 0.95rem;
+    background: var(--paper); font-family: 'Inter', system-ui, sans-serif; font-size: 0.95rem;
   }
   input:focus { outline: none; border-color: var(--accent); }
   input[type="checkbox"] {
@@ -49,20 +51,20 @@
 
   .btn {
     display: inline-block; margin-top: 22px; padding: 12px 24px; border-radius: 8px; border: none;
-    background: var(--accent); color: var(--surface); font-weight: 600; font-size: 0.95rem; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 0.95rem; cursor: pointer;
     transition: background 0.15s ease;
   }
-  .btn:hover { background: var(--accent-deep); }
+  .btn:hover { background: var(--ground); }
   .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .btn-link { background: none; color: var(--accent-deep); text-decoration: underline; padding: 0; margin-top: 14px; font-size: 0.88rem; }
+  .btn-link { background: none; color: var(--ground); text-decoration: underline; padding: 0; margin-top: 14px; font-size: 0.88rem; }
 
   .msg { margin-top: 14px; font-size: 0.88rem; padding: 10px 14px; border-radius: 8px; }
-  .msg.error { background: #FCE8E6; color: var(--accent-deep); }
-  .msg.ok { background: var(--accent-soft); color: var(--accent-deep); }
+  .msg.error { background: #FCE8E6; color: var(--ground); }
+  .msg.ok { background: var(--ground-soft); color: var(--ground); }
 
   .credit-badge {
     display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--paper);
-    padding: 10px 18px; border-radius: 100px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.9rem;
+    padding: 10px 18px; border-radius: 100px; font-family: 'Inter', system-ui, sans-serif; font-size: 0.9rem;
   }
   .credit-badge b { color: var(--accent); font-size: 1.1rem; }
 
@@ -73,16 +75,16 @@
     font-size: 0.92rem;
   }
   .slot-item button {
-    padding: 7px 16px; border-radius: 6px; border: none; background: var(--accent); color: var(--surface);
+    padding: 7px 16px; border-radius: 6px; border: none; background: var(--accent); color: var(--accent-ink);
     font-weight: 600; font-size: 0.85rem; cursor: pointer;
   }
-  .slot-item button:hover { background: var(--accent-deep); }
+  .slot-item button:hover { background: var(--ground); }
   .slot-item button:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-cancel {
     padding: 7px 16px; border-radius: 6px; border: 1.5px solid var(--line); background: transparent;
     color: var(--ink-soft); font-weight: 600; font-size: 0.85rem; cursor: pointer;
   }
-  .btn-cancel:hover { border-color: var(--accent-deep); color: var(--accent-deep); }
+  .btn-cancel:hover { border-color: var(--ground); color: var(--ground); }
   .btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-cancel:disabled:hover { border-color: var(--line); color: var(--ink-soft); }
   .empty-note { color: var(--ink-soft); font-size: 0.9rem; margin-top: 8px; }
@@ -105,12 +107,12 @@
   .week-day-btn {
     display: flex; flex-direction: column; align-items: center; gap: 4px;
     padding: 10px 4px; border-radius: 10px; border: 1.5px solid var(--line);
-    background: var(--paper); cursor: pointer; font-family: 'Archivo', system-ui, sans-serif;
+    background: var(--paper); cursor: pointer; font-family: 'Inter', system-ui, sans-serif;
   }
   .week-day-btn .dow { font-size: 0.7rem; color: var(--ink-soft); text-transform: uppercase; }
-  .week-day-btn .num { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 1.1rem; }
+  .week-day-btn .num { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.1rem; }
   .week-day-btn .avail-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 2px; }
-  .week-day-btn.selected { border-color: var(--accent-deep); border-width: 2px; background: var(--accent-soft); }
+  .week-day-btn.selected { border-color: var(--ground); border-width: 2px; background: var(--ground-soft); }
   .week-day-btn:disabled { opacity: 0.4; cursor: default; }
 
   .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
@@ -118,9 +120,9 @@
   .lang-btn {
     border: 1px solid var(--line); background: transparent; color: var(--ink-soft);
     font-size: 0.78rem; font-weight: 600; padding: 4px 8px; border-radius: 5px; cursor: pointer;
-    font-family: 'JetBrains Mono', ui-monospace, monospace; margin-left: 4px;
+    font-family: 'Inter', system-ui, sans-serif; margin-left: 4px;
   }
-  .lang-btn.active { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   /* ---- Chat ---- */
   .chat-log {
     max-height: 380px;
@@ -145,8 +147,8 @@
     overflow-wrap: anywhere;
   }
   .chat-bubble.them { align-self: flex-start; background: var(--surface); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
-  .chat-bubble.me   { align-self: flex-end;   background: var(--accent); color: var(--surface); border-bottom-right-radius: 4px; }
-  .chat-time { display: block; margin-top: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.66rem; opacity: 0.65; }
+  .chat-bubble.me   { align-self: flex-end;   background: var(--accent); color: var(--accent-ink); border-bottom-right-radius: 4px; }
+  .chat-time { display: block; margin-top: 4px; font-family: 'Inter', system-ui, sans-serif; font-size: 0.66rem; opacity: 0.65; }
   .chat-bubble img, .chat-bubble video {
     max-width: 100%; border-radius: 8px; margin-top: 6px; display: block; cursor: pointer;
   }
@@ -157,11 +159,11 @@
   }
   .chat-compose textarea {
     width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--line);
-    background: var(--paper); font-family: 'Archivo', system-ui, sans-serif; font-size: 0.95rem; resize: vertical;
+    background: var(--paper); font-family: 'Inter', system-ui, sans-serif; font-size: 0.95rem; resize: vertical;
   }
   .chat-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
   .chat-attach {
-    cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--accent-deep);
+    cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--ground);
     border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 14px; background: var(--paper);
   }
   .chat-attach:hover { border-color: var(--accent); }
@@ -172,19 +174,19 @@
 
   .chat-launcher {
     width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer;
-    background: var(--accent); color: var(--surface);
+    background: var(--accent); color: var(--accent-ink);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 22px -6px rgba(27, 50, 113, 0.42);
+    box-shadow: 0 8px 22px -6px oklch(0.42 0.11 350 /  0.42);
     transition: transform 0.2s ease, background 0.2s ease;
     position: relative;
   }
-  .chat-launcher:hover { background: var(--accent-deep); transform: translateY(-2px); }
+  .chat-launcher:hover { background: var(--ground); transform: translateY(-2px); }
 
   .chat-launcher-badge {
     position: absolute; top: -3px; right: -3px;
     min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px;
     background: #B3261E; color: var(--surface);
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.7rem; font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.7rem; font-weight: 700;
     line-height: 21px; text-align: center;
     border: 2px solid var(--paper);
   }
@@ -204,9 +206,9 @@
 
   .chat-window-head {
     display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
-    padding: 14px 16px; background: var(--accent); color: var(--surface);
+    padding: 14px 16px; background: var(--accent); color: var(--accent-ink);
   }
-  .chat-window-title { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 1rem; }
+  .chat-window-title { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1rem; }
   .chat-window-sub { font-size: 0.76rem; opacity: 0.9; margin-top: 2px; }
   .chat-close {
     background: none; border: none; color: var(--surface);
@@ -237,7 +239,7 @@
     font-size: 0.8rem; color: var(--ink-soft);
   }
   .credits-pill-num {
-    font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 1.15rem; color: var(--accent-deep);
+    font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.15rem; color: var(--ground);
   }
   /* Below ~1180px the pill would collide with the content column, so it
      tucks under the header as a compact chip instead. */
@@ -257,20 +259,20 @@
   }
   .tab {
     border: none; background: none; cursor: pointer;
-    font-family: 'Archivo', system-ui, sans-serif; font-size: 0.92rem; font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem; font-weight: 600;
     color: var(--ink-soft); padding: 10px 16px; border-radius: 9px 9px 0 0;
     position: relative; transition: color 0.18s ease, background 0.18s ease;
   }
-  .tab:hover { color: var(--accent-deep); background: var(--paper-alt); }
-  .tab.active { color: var(--accent-deep); background: var(--surface); }
+  .tab:hover { color: var(--ground); background: var(--paper-alt); }
+  .tab.active { color: var(--ground); background: var(--surface); }
   .tab.active::after {
     content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
     height: 2.5px; background: var(--accent); border-radius: 2px;
   }
   .tab-badge {
     display: inline-block; min-width: 17px; height: 17px; padding: 0 5px;
-    border-radius: 9px; background: var(--accent); color: var(--surface);
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.64rem; font-weight: 700;
+    border-radius: 9px; background: var(--accent); color: var(--accent-ink);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.64rem; font-weight: 700;
     line-height: 17px; text-align: center; margin-left: 6px;
   }
 
@@ -299,11 +301,11 @@
   .focus-head { display: flex; align-items: center; gap: 9px; margin-bottom: 4px; }
   .focus-head h3 { font-size: 1rem; margin: 0; }
   .focus-tag {
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.66rem; font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.66rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em;
     padding: 3px 9px; border-radius: 100px; white-space: nowrap;
   }
-  .focus-tag-mine  { background: var(--accent-soft); color: var(--accent-deep); }
+  .focus-tag-mine  { background: var(--ground-soft); color: var(--ground); }
   .focus-tag-tutor { background: var(--ink); color: var(--paper); }
 
   .focus-hint { color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 14px; }
@@ -311,13 +313,13 @@
   .focus-form { display: flex; gap: 8px; margin-bottom: 14px; }
   .focus-form input {
     flex: 1; padding: 10px 13px; border-radius: 8px; border: 1.5px solid var(--line);
-    background: var(--surface); font-family: 'Archivo', system-ui, sans-serif; font-size: 0.9rem;
+    background: var(--surface); font-family: 'Inter', system-ui, sans-serif; font-size: 0.9rem;
   }
   .focus-form button {
-    background: var(--accent); color: var(--surface); border: none; border-radius: 8px;
+    background: var(--accent); color: var(--accent-ink); border: none; border-radius: 8px;
     padding: 10px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
   }
-  .focus-form button:hover { background: var(--accent-deep); }
+  .focus-form button:hover { background: var(--ground); }
 
   .focus-list { list-style: none; margin: 0; padding: 0; }
   .focus-item {
@@ -331,14 +333,14 @@
     flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px;
     border: 1.5px solid var(--line); border-radius: 5px; background: var(--surface);
     cursor: pointer; padding: 0; line-height: 1; font-size: 0.8rem;
-    color: var(--accent-deep);
+    color: var(--ground);
   }
   .focus-check:hover { border-color: var(--accent); }
-  .focus-check.on { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+  .focus-check.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 
   .focus-body { flex: 1; overflow-wrap: anywhere; }
   .focus-when {
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.7rem; color: var(--ink-soft); white-space: nowrap;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.7rem; color: var(--ink-soft); white-space: nowrap;
   }
   .focus-del {
     background: none; border: none; cursor: pointer; color: var(--ink-soft);
@@ -368,20 +370,20 @@
   .review.mine { border-color: var(--accent); background: var(--surface); }
   .review-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .review-who { font-weight: 600; font-size: 0.92rem; }
-  .review-when { font-size: 0.76rem; color: var(--ink-soft); font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .review-when { font-size: 0.76rem; color: var(--ink-soft); font-family: 'Inter', system-ui, sans-serif; }
   .review-body { margin: 8px 0 0; font-size: 0.93rem; font-style: italic; }
   .review-pending {
     display: inline-block; margin-left: 8px; font-size: 0.68rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.05em;
-    background: var(--accent-soft); color: var(--accent-deep);
+    background: var(--ground-soft); color: var(--ground);
     padding: 2px 8px; border-radius: 100px;
   }
 
   .review-actions { margin-top: 10px; }
   .review-toggle {
     background: none; border: none; padding: 0; cursor: pointer;
-    color: var(--accent-deep); font-size: 0.82rem; font-weight: 600;
-    font-family: 'Archivo', system-ui, sans-serif; text-decoration: underline;
+    color: var(--ground); font-size: 0.82rem; font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif; text-decoration: underline;
   }
 
   .comments { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 12px; }
@@ -389,7 +391,7 @@
   .comment + .comment { border-top: 1px solid var(--line); }
   .comment-who { font-weight: 600; white-space: nowrap; }
   .comment-body { flex: 1; overflow-wrap: anywhere; }
-  .comment-when { font-size: 0.72rem; color: var(--ink-soft); font-family: 'JetBrains Mono', ui-monospace, monospace; white-space: nowrap; }
+  .comment-when { font-size: 0.72rem; color: var(--ink-soft); font-family: 'Inter', system-ui, sans-serif; white-space: nowrap; }
   .comment-del {
     background: none; border: none; cursor: pointer; color: var(--ink-soft);
     font-size: 0.95rem; line-height: 1; padding: 0 2px;
@@ -399,13 +401,13 @@
   .comment-form { display: flex; gap: 8px; margin-top: 10px; }
   .comment-form input {
     flex: 1; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--line);
-    background: var(--surface); font-family: 'Archivo', system-ui, sans-serif; font-size: 0.88rem;
+    background: var(--surface); font-family: 'Inter', system-ui, sans-serif; font-size: 0.88rem;
   }
   .comment-form button {
-    background: var(--accent); color: var(--surface); border: none; border-radius: 8px;
+    background: var(--accent); color: var(--accent-ink); border: none; border-radius: 8px;
     padding: 9px 15px; font-weight: 600; font-size: 0.84rem; cursor: pointer;
   }
-  .comment-form button:hover { background: var(--accent-deep); }
+  .comment-form button:hover { background: var(--ground); }
 
   @media (prefers-reduced-motion: reduce) {
     .tab-panel.active { animation: none; }
@@ -419,13 +421,13 @@
     padding: 30px 26px 26px;
     margin-bottom: 24px;
     text-align: center;
-    color: var(--surface);
-    background: var(--accent);
-    box-shadow: 0 14px 34px -12px rgba(27, 50, 113, 0.38);
+    color: var(--on-ground);
+    background: var(--ground);
+    box-shadow: 0 14px 34px -12px oklch(0.42 0.11 350 /  0.38);
     isolation: isolate;
   }
 
-  /* Permanent attention cue: an ochre rule that travels the bottom edge.
+  /* Permanent attention cue: a yellow rule that travels the bottom edge.
      A diagonal light sheen is the stock "premium card" effect and reads as
      generated; a moving rule in the brand's second colour is quieter, stays
      on palette, and still catches the eye every few seconds. */
@@ -437,7 +439,7 @@
     content: "";
     position: absolute; inset: 0 auto 0 0;
     width: 38%;
-    background: var(--ochre);
+    background: var(--accent);
     animation: referral-run 4.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
   @keyframes referral-run {
@@ -445,12 +447,12 @@
     55%, 100% { transform: translateX(300%); }
   }
 
-  /* A blocky ochre corner, echoing the panels in Paulo's portrait. */
+  /* A blocky yellow corner — the same accent-as-block idea as the cards. */
   .referral-hero::after {
     content: "";
     position: absolute; top: 0; right: 0;
     width: 64px; height: 64px;
-    background: var(--ochre);
+    background: var(--accent);
     z-index: 0; pointer-events: none;
   }
 
@@ -458,9 +460,9 @@
 
   .referral-pill {
     display: inline-block;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
-    background: var(--surface); color: var(--accent-deep);
+    background: var(--accent); color: var(--accent-ink);
     padding: 5px 14px; border-radius: 100px; margin-bottom: 14px;
     animation: referral-pulse 2.6s ease-in-out infinite;
   }
@@ -470,7 +472,7 @@
   }
 
   .referral-h {
-    font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600;
+    font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400;
     font-size: 1.5rem; margin: 0 0 8px; letter-spacing: -0.02em;
   }
   .referral-sub {
@@ -489,9 +491,9 @@
     font-size: 1.25rem; font-weight: 700; letter-spacing: 0.14em;
   }
   .referral-copy {
-    background: var(--surface); color: var(--accent-deep);
+    background: var(--surface); color: var(--ground);
     border: none; border-radius: 10px; padding: 11px 18px;
-    font-family: 'Archivo', system-ui, sans-serif; font-size: 0.86rem; font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.86rem; font-weight: 600;
     cursor: pointer; transition: transform 0.15s ease, background 0.15s ease;
   }
   .referral-copy:hover { background: #EEF2FB; transform: translateY(-1px); }
@@ -512,7 +514,7 @@
 
   .chat-unread-dot {
     display: inline-block; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
-    background: var(--accent); color: var(--surface); font-size: 0.7rem; font-weight: 700;
+    background: var(--accent); color: var(--accent-ink); font-size: 0.7rem; font-weight: 700;
     text-align: center; line-height: 18px; margin-left: 6px;
   }
   /* Quiet thank-you shown only once a referral has actually paid out.
@@ -522,13 +524,13 @@
     vertical-align: middle; margin-left: 10px;
     background: #E7F4EC; color: #2F6B45; border: 1px solid #BFE0CC;
     border-radius: 100px; padding: 4px 12px 4px 9px;
-    font-family: 'Archivo', system-ui, sans-serif; font-size: 0.72rem; font-weight: 600;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem; font-weight: 600;
     letter-spacing: 0.01em; white-space: nowrap;
   }
   .btn-refer {
-    background: var(--accent-soft); color: var(--accent-deep);
+    background: var(--ground-soft); color: var(--ground);
     border: 1.5px solid var(--line); border-radius: 8px;
-    padding: 9px 16px; font-family: 'Archivo', system-ui, sans-serif;
+    padding: 9px 16px; font-family: 'Inter', system-ui, sans-serif;
     font-size: 0.85rem; font-weight: 600; cursor: pointer;
     transition: border-color 0.15s ease, background 0.15s ease;
   }
@@ -537,13 +539,13 @@
   .honesty-card { border-left: 4px solid var(--accent); }
   .honesty-body { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.65; margin: 0; }
   .honesty-sign {
-    margin: 10px 0 0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 0.9rem;
-    font-weight: 600; color: var(--ink);
+    margin: 10px 0 0; font-family: 'Archivo Black', system-ui, sans-serif; font-size: 0.9rem;
+    font-weight: 400; color: var(--ink);
   }
   .live-badge {
     display: inline-block; margin-left: 6px; padding: 2px 9px; border-radius: 100px;
-    background: var(--accent); color: var(--surface);
-    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.62rem; font-weight: 700;
+    background: var(--accent); color: var(--accent-ink);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.62rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em; vertical-align: middle;
     animation: live-pulse 2s ease-in-out infinite;
   }
@@ -582,14 +584,14 @@
         <label for="referral_code_input" data-i18n="label_referral_code">Código de referido (opcional)</label>
         <input type="text" id="referral_code_input" placeholder="Ej: 8A6D62" style="text-transform:uppercase;">
       </div>
-      <div id="spam-warning" style="display:none; margin: 16px 0 4px; padding: 14px 16px; background: #FCE8E6; border: 1.5px solid var(--accent-deep); border-radius: 10px; font-size: 0.85rem; color: var(--accent-deep); line-height: 1.55;" data-i18n-html="spam_warning">
+      <div id="spam-warning" style="display:none; margin: 16px 0 4px; padding: 14px 16px; background: #FCE8E6; border: 1.5px solid var(--ground); border-radius: 10px; font-size: 0.85rem; color: var(--ground); line-height: 1.55;" data-i18n-html="spam_warning">
         ⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.
       </div>
       <div id="terms-field" style="display:none; margin-top: 14px;">
         <label class="checkbox-label" style="align-items:flex-start;">
           <input type="checkbox" id="terms-checkbox" style="margin-top:3px;">
           <span data-i18n-html="terms_checkbox_label" style="font-size:0.85rem; color:var(--ink-soft); line-height:1.5;">
-            He leído la <a href="legal.html" target="_blank" style="color:var(--accent-deep);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.
+            He leído la <a href="legal.html" target="_blank" style="color:var(--ground);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.
           </span>
         </label>
       </div>
@@ -700,7 +702,7 @@
         </div>
 
         <textarea id="testimonial-text" rows="3" data-i18n-placeholder="review_placeholder" placeholder="Cuenta tu experiencia con las clases..."
-          style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--paper); font-family: 'Archivo', system-ui, sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
+          style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--paper); font-family: 'Inter', system-ui, sans-serif; font-size: 0.95rem; resize: vertical;"></textarea>
         <button class="btn" onclick="submitTestimonial()" data-i18n="send_review_btn">Enviar opinión</button>
         <div id="testimonial-msg"></div>
       </div>
@@ -790,7 +792,7 @@
         <button class="btn" onclick="generateTelegramCode()" data-i18n="generate_code_btn">Generar código</button>
         <button class="btn-cancel" onclick="unlinkTelegram()" data-i18n="unlink_telegram_btn">Desvincular Telegram</button>
         <div id="telegram-code-box" style="display:none; margin-top: 14px;">
-          <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--accent-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:</p>
+          <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> en Telegram:</p>
           <div class="xmr-address-row" style="background: var(--paper-alt); border: 1px solid var(--line);">
             <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
           </div>
@@ -799,7 +801,7 @@
       </div>
 
       <div class="card" style="border-color: #E7C3BF;">
-        <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--accent-deep);" data-i18n="delete_account_title">Eliminar mi cuenta</h3>
+        <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--ground);" data-i18n="delete_account_title">Eliminar mi cuenta</h3>
         <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="delete_account_hint">
           Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer.
           Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.
@@ -893,7 +895,7 @@
       telegram_benefit_3: 'Avisos automáticos si una clase se cancela o hay que reprogramarla',
       telegram_benefit_4: 'Cambia el idioma del bot cuando quieras con /idioma',
       generate_code_btn: 'Generar código', unlink_telegram_btn: 'Desvincular Telegram',
-      telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--accent-deep);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
+      telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
       chat_title: 'Chat con Paulo', chat_sub: 'Normalmente respondo en unas horas',
       chat_hint: 'Escríbeme si tienes dudas entre clases. Puedes enviar fotos, vídeos o PDF como apoyo.',
       chat_placeholder: 'Escribe tu mensaje...', chat_attach: 'Adjuntar', chat_send: 'Enviar',
@@ -935,7 +937,7 @@
       delete_account_btn: 'Eliminar mi cuenta',
       fill_email_password: 'Rellena email y contraseña.', account_created: 'Cuenta creada. Ya puedes iniciar sesión.',
       must_accept_terms: 'Debes aceptar la Política de Privacidad y los Términos para crear tu cuenta.',
-      terms_checkbox_label: 'He leído la <a href="legal.html" target="_blank" style="color:var(--accent-deep);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.',
+      terms_checkbox_label: 'He leído la <a href="legal.html" target="_blank" style="color:var(--ground);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.',
       no_classes_that_day: 'No hay clases disponibles ese día.', reserve_btn: 'Reservar', cancel_btn: 'Cancelar',
       lesson_live: 'En curso',
       less_than_12h: '(menos de 12h)', not_cancelable_12h: '(no cancelable, faltan menos de 12h)',
@@ -984,7 +986,7 @@
       telegram_benefit_3: 'Automatyczne powiadomienia, jeśli lekcja zostanie odwołana lub przełożona',
       telegram_benefit_4: 'Zmień język bota, kiedy chcesz, komendą /jezyk',
       generate_code_btn: 'Wygeneruj kod', unlink_telegram_btn: 'Odłącz Telegram',
-      telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--accent-deep);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
+      telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
       chat_title: 'Czat z Paulo', chat_sub: 'Zwykle odpowiadam w ciągu kilku godzin',
       chat_hint: 'Napisz do mnie, jeśli masz pytania między lekcjami. Możesz wysyłać zdjęcia, filmy lub PDF jako pomoc.',
       chat_placeholder: 'Napisz wiadomość...', chat_attach: 'Załącz', chat_send: 'Wyślij',
@@ -1026,7 +1028,7 @@
       delete_account_btn: 'Usuń moje konto',
       fill_email_password: 'Uzupełnij email i hasło.', account_created: 'Konto utworzone. Możesz się teraz zalogować.',
       must_accept_terms: 'Musisz zaakceptować Politykę Prywatności i Regulamin, by utworzyć konto.',
-      terms_checkbox_label: 'Przeczytałem/am <a href="legal.html" target="_blank" style="color:var(--accent-deep);">Politykę Prywatności i Regulamin</a> i rozumiem, że mogę poprosić o pierwszą lekcję od razu, rezygnując tym samym z prawa do odstąpienia od umowy w ciągu 14 dni dla tej lekcji.',
+      terms_checkbox_label: 'Przeczytałem/am <a href="legal.html" target="_blank" style="color:var(--ground);">Politykę Prywatności i Regulamin</a> i rozumiem, że mogę poprosić o pierwszą lekcję od razu, rezygnując tym samym z prawa do odstąpienia od umowy w ciągu 14 dni dla tej lekcji.',
       no_classes_that_day: 'Brak dostępnych lekcji tego dnia.', reserve_btn: 'Zarezerwuj', cancel_btn: 'Anuluj',
       lesson_live: 'Trwa teraz',
       less_than_12h: '(mniej niż 12h)', not_cancelable_12h: '(nie można anulować, zostało mniej niż 12h)',
@@ -1075,7 +1077,7 @@
       telegram_benefit_3: 'Automatic alerts if a lesson gets cancelled or needs rescheduling',
       telegram_benefit_4: 'Change the bot\'s language any time with /language',
       generate_code_btn: 'Generate code', unlink_telegram_btn: 'Unlink Telegram',
-      telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--accent-deep);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
+      telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
       chat_title: 'Chat with Paulo', chat_sub: 'I usually reply within a few hours',
       chat_hint: 'Message me if you have questions between lessons. You can send photos, videos or PDFs as support material.',
       chat_placeholder: 'Write your message...', chat_attach: 'Attach', chat_send: 'Send',
@@ -1117,7 +1119,7 @@
       delete_account_btn: 'Delete my account',
       fill_email_password: 'Fill in your email and password.', account_created: 'Account created. You can now log in.',
       must_accept_terms: 'You must accept the Privacy Policy and Terms to create your account.',
-      terms_checkbox_label: 'I\'ve read the <a href="legal.html" target="_blank" style="color:var(--accent-deep);">Privacy Policy and Terms</a>, and I understand I can request my first lesson right away, thereby waiving my 14-day withdrawal right for that lesson.',
+      terms_checkbox_label: 'I\'ve read the <a href="legal.html" target="_blank" style="color:var(--ground);">Privacy Policy and Terms</a>, and I understand I can request my first lesson right away, thereby waiving my 14-day withdrawal right for that lesson.',
       no_classes_that_day: 'No lessons available that day.', reserve_btn: 'Book', cancel_btn: 'Cancel',
       lesson_live: 'Live now',
       less_than_12h: '(less than 12h)', not_cancelable_12h: '(not cancellable, less than 12h left)',
@@ -1557,7 +1559,7 @@
       const inProgress = new Date(b.start_time) <= nowTs && nowTs < new Date(b.end_time);
       const tooSoon = new Date(b.start_time) < twelveHoursFromNow;
       const meetHtml = b.google_meet_link
-        ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--accent-deep);">${t('join_meet')}</a>`
+        ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--ground);">${t('join_meet')}</a>`
         : `<span class="meet-loading"><span class="mini-spinner"></span>${t('meet_link_loading')}</span>`;
       li.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">

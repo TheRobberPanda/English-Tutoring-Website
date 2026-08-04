@@ -8,29 +8,31 @@
 <meta name="description" content="Guía sencilla sobre qué es Monero (XMR), cómo conseguirlo y cómo usarlo para pagar tus clases de inglés con un 20% de descuento.">
 <link rel="canonical" href="https://inglesconpaulo.org/monero.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Palette derived from Paulo's own photograph: cobalt ground, mustard
-       panels, warm grey blocks. Chosen so the portrait belongs on the page
-       instead of fighting it. */
-    --paper: #FAFAF8;
-    --paper-alt: #EFEEE9;
-    --ink: #12141A;
-    --ink-soft: #5A6070;
-    --accent: #2A4BA0;
-    --accent-deep: #1B3271;
-    --accent-soft: #DCE3F5;
-    --ochre: #E0A92E;
-    --line: #D9DAD2;
+    /* Pairing 7a — pink ground, yellow accent. Values taken verbatim from
+       the design doc so the site and the mock stay in sync. */
+    --ground: oklch(0.42 0.11 350);        /* the pink card ground */
+    --ground-deep: oklch(0.33 0.10 350);   /* one step down, for stacking */
+    --ground-soft: oklch(0.94 0.02 350);   /* pale pink, light sections */
+    --on-ground: oklch(0.97 0.01 350);     /* near-white text on pink */
+    --accent: oklch(0.85 0.17 95);         /* the yellow */
+    --accent-ink: oklch(0.18 0.02 95);     /* text sitting on yellow */
+    --paper: oklch(0.98 0.008 350);
+    --paper-alt: oklch(0.94 0.02 350);
+    --ink: oklch(0.24 0.05 350);
+    --ink-soft: oklch(0.47 0.04 350);
+    --line: oklch(0.24 0.05 350 / 0.14);
+    --line-on-ground: oklch(0.97 0.01 350 / 0.15);
     --surface: #FFFFFF;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Archivo', system-ui, sans-serif; line-height: 1.65; }
-  h1, h2, h3 { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; margin: 0; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.65; }
+  h1, h2, h3 { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; margin: 0; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
   a.back { display: inline-block; margin-bottom: 24px; color: var(--ink-soft); text-decoration: none; font-size: 0.9rem; }
-  a.back:hover { color: var(--accent-deep); }
+  a.back:hover { color: var(--ground); }
   h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); margin-bottom: 12px; }
   .lede { color: var(--ink-soft); font-size: 1.05rem; margin-bottom: 40px; }
   h2 { font-size: 1.3rem; margin-top: 40px; margin-bottom: 14px; }
@@ -38,14 +40,14 @@
   ol, ul { padding-left: 22px; margin: 0 0 14px; }
   li { margin-bottom: 8px; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px 28px; margin: 20px 0; }
-  .disclaimer { background: var(--accent-soft); border-radius: 10px; padding: 16px 20px; font-size: 0.9rem; color: var(--accent-deep); margin-top: 40px; }
-  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.85rem; background: var(--paper-alt); padding: 2px 6px; border-radius: 4px; }
+  .disclaimer { background: var(--ground-soft); border-radius: 10px; padding: 16px 20px; font-size: 0.9rem; color: var(--ground); margin-top: 40px; }
+  .mono { font-family: 'Inter', system-ui, sans-serif; font-size: 0.85rem; background: var(--paper-alt); padding: 2px 6px; border-radius: 4px; }
   .lang-btn {
     border: 1px solid var(--line); background: transparent; color: var(--ink-soft);
     font-size: 0.78rem; font-weight: 600; padding: 4px 8px; border-radius: 5px; cursor: pointer;
-    font-family: 'JetBrains Mono', ui-monospace, monospace; margin-left: 4px;
+    font-family: 'Inter', system-ui, sans-serif; margin-left: 4px;
   }
-  .lang-btn.active { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 </style>
 </head>
 <body>
