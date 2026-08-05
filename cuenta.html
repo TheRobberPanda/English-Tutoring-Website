@@ -8,13 +8,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="color-scheme" content="light dark">
+<script>
+  // Stamp the theme before first paint, otherwise the light palette shows
+  // for a frame on every load. An explicit choice always beats the OS.
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('site_theme'); } catch (e) {}
+    var dark = saved ? saved === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  })();
+</script>
 <style>
   :root {
     /* Pairing 7a — pink ground, yellow accent. Values taken verbatim from
        the design doc so the site and the mock stay in sync. */
+    /* Unstyled UA widgets (bare <button>, scrollbars, form controls) pick
+       their colours from color-scheme. Without this it follows the OS, so a
+       light theme on a dark-mode OS rendered white button text on pale pink. */
+    color-scheme: light;
     --ground: oklch(0.42 0.11 350);        /* the pink card ground */
     --ground-deep: oklch(0.33 0.10 350);   /* one step down, for stacking */
     --ground-soft: oklch(0.94 0.02 350);   /* pale pink, light sections */
+    --on-ground-soft: oklch(0.42 0.11 350); /* text on --ground-soft */
+    --link: oklch(0.42 0.11 350);          /* brand pink as text on paper */
     --on-ground: oklch(0.97 0.01 350);     /* near-white text on pink */
     --accent: oklch(0.85 0.17 95);         /* the yellow */
     --accent-ink: oklch(0.18 0.02 95);     /* text sitting on yellow */
@@ -25,13 +43,76 @@
     --line: oklch(0.24 0.05 350 / 0.14);
     --line-on-ground: oklch(0.97 0.01 350 / 0.15);
     --surface: #FFFFFF;
+
+    /* Semantic colours are tokens so the dark theme can restate them once,
+       instead of every call site hardcoding a light-mode hex. */
+    --danger: #B3261E;
+    --danger-hover: #8C1D18;
+    --danger-bg: #FCE8E6;
+    --danger-line: #E7C3BF;
+    --success: #2F6B45;
+    --success-bg: #E7F4EC;
+    --success-line: #BFE0CC;
   }
+  /* ---- Dark theme ---------------------------------------------------
+     data-theme is stamped on <html> before first paint (see the script in
+     <head>), so this block is the single source of truth for dark and no
+     frame of the light palette ever shows. The yellow accent is left
+     unchanged on purpose: it already carries its contrast on a dark
+     ground, and holding it constant is what keeps both themes reading as
+     one identity rather than two skins. */
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: oklch(0.46 0.12 350);
+    --ground-deep: oklch(0.36 0.10 350);
+    --ground-soft: oklch(0.26 0.04 350);
+    --on-ground-soft: oklch(0.88 0.05 350);
+    --link: oklch(0.80 0.11 350);
+    --on-ground: oklch(0.97 0.01 350);
+    --accent: oklch(0.85 0.17 95);
+    --accent-ink: oklch(0.18 0.02 95);
+    --paper: oklch(0.16 0.018 350);
+    --paper-alt: oklch(0.21 0.025 350);
+    --ink: oklch(0.95 0.012 350);
+    --ink-soft: oklch(0.74 0.02 350);
+    --line: oklch(0.95 0.012 350 / 0.16);
+    --line-on-ground: oklch(0.97 0.01 350 / 0.18);
+    --surface: oklch(0.20 0.022 350);
+
+    --danger: oklch(0.68 0.17 25);
+    --danger-hover: oklch(0.60 0.17 25);
+    --danger-bg: oklch(0.26 0.05 25);
+    --danger-line: oklch(0.40 0.08 25);
+    --success: oklch(0.78 0.13 155);
+    --success-bg: oklch(0.24 0.04 155);
+    --success-line: oklch(0.38 0.06 155);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.44);
+    --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.34);
+    --shadow-lg: 0 18px 40px -12px rgba(0, 0, 0, 0.62), 0 4px 10px rgba(0, 0, 0, 0.38);
+  }
+
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; padding: 0; margin-left: 4px;
+    font-family: inherit; font-size: 0.95rem; line-height: 1;
+    background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--line); border-radius: 5px;
+    cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* On the pink header band the toggle sits on --on-ground, not --ink. */
+  header .theme-toggle { color: var(--on-ground); border-color: var(--line-on-ground); }
+  header .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .back-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
   h1, h2, h3 { font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; margin: 0; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
   a.back { display: inline-block; margin-bottom: 28px; color: var(--ink-soft); text-decoration: none; font-size: 0.9rem; }
-  a.back:hover { color: var(--ground); }
+  a.back:hover { color: var(--link); }
 
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 32px; margin-bottom: 24px; }
 
@@ -55,15 +136,20 @@
     transition: background 0.15s ease;
   }
   .btn:hover { background: var(--ground); }
+  /* Destructive variant: overriding only .btn's background left its
+     near-black --accent-ink text sitting on red. */
+  .btn-danger { background: var(--danger); color: oklch(0.99 0 0); }
+  .btn-danger:hover { background: var(--danger-hover); }
+  :root[data-theme="dark"] .btn-danger { color: oklch(0.16 0.02 25); }
   .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .btn-link { background: none; color: var(--ground); text-decoration: underline; padding: 0; margin-top: 14px; font-size: 0.88rem; }
+  .btn-link { background: none; color: var(--link); text-decoration: underline; padding: 0; margin-top: 14px; font-size: 0.88rem; }
 
   .msg { margin-top: 14px; font-size: 0.88rem; padding: 10px 14px; border-radius: 8px; }
-  .msg.error { background: #FCE8E6; color: var(--ground); }
-  .msg.ok { background: var(--ground-soft); color: var(--ground); }
+  .msg.error { background: var(--danger-bg); color: var(--link); }
+  .msg.ok { background: var(--ground-soft); color: var(--on-ground-soft); }
 
   .credit-badge {
-    display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--paper);
+    display: inline-flex; align-items: center; gap: 8px; background: var(--ground-deep); color: var(--on-ground);
     padding: 10px 18px; border-radius: 100px; font-family: 'Inter', system-ui, sans-serif; font-size: 0.9rem;
   }
   .credit-badge b { color: var(--accent); font-size: 1.1rem; }
@@ -84,7 +170,7 @@
     padding: 7px 16px; border-radius: 6px; border: 1.5px solid var(--line); background: transparent;
     color: var(--ink-soft); font-weight: 600; font-size: 0.85rem; cursor: pointer;
   }
-  .btn-cancel:hover { border-color: var(--ground); color: var(--ground); }
+  .btn-cancel:hover { border-color: var(--ground); color: var(--link); }
   .btn-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-cancel:disabled:hover { border-color: var(--line); color: var(--ink-soft); }
   .empty-note { color: var(--ink-soft); font-size: 0.9rem; margin-top: 8px; }
@@ -163,7 +249,7 @@
   }
   .chat-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
   .chat-attach {
-    cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--ground);
+    cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--link);
     border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 14px; background: var(--paper);
   }
   .chat-attach:hover { border-color: var(--accent); }
@@ -185,7 +271,7 @@
   .chat-launcher-badge {
     position: absolute; top: -3px; right: -3px;
     min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px;
-    background: #B3261E; color: var(--surface);
+    background: var(--danger); color: var(--surface);
     font-family: 'Inter', system-ui, sans-serif; font-size: 0.7rem; font-weight: 700;
     line-height: 21px; text-align: center;
     border: 2px solid var(--paper);
@@ -230,6 +316,54 @@
   }
 
   /* ---- Floating credits pill ---- */
+  /* Telegram nudge. Sits bottom-left because the chat launcher and the
+     credits pill both occupy the right. Snoozed for a week when dismissed
+     rather than killed forever: an unlinked account silently receives no
+     lesson reminders and no Meet links at all, so it's worth asking again. */
+  .tg-nudge {
+    position: fixed; left: 22px; bottom: 22px; z-index: 56;
+    width: min(330px, calc(100vw - 44px));
+    background: var(--surface);
+    border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 12px; padding: 15px 17px 14px;
+    box-shadow: var(--shadow-lg);
+    animation: tg-nudge-in 0.35s var(--ease) both;
+  }
+  @keyframes tg-nudge-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .tg-nudge-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .tg-nudge-title {
+    font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 0.95rem;
+  }
+  .tg-nudge p { margin: 0 0 12px; font-size: 0.85rem; color: var(--ink-soft); line-height: 1.55; }
+  .tg-nudge-actions { display: flex; gap: 10px; align-items: center; }
+  .tg-nudge-cta {
+    background: var(--accent); color: var(--accent-ink); border: none; border-radius: 5px;
+    padding: 8px 14px; font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  }
+  .tg-nudge-later {
+    background: none; border: none; color: var(--ink-soft);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.82rem;
+    cursor: pointer; text-decoration: underline;
+  }
+  .tg-nudge-close {
+    margin-left: auto; background: none; border: none; color: var(--ink-soft);
+    font-size: 1.2rem; line-height: 1; cursor: pointer; padding: 0 2px;
+  }
+  /* Brief highlight so the card the nudge sent you to is obvious on arrival. */
+  .card-flash { animation: card-flash 1.6s var(--ease) 1; }
+  @keyframes card-flash {
+    0%, 100% { box-shadow: none; border-color: var(--line); }
+    18%, 62% { box-shadow: 0 0 0 3px oklch(0.85 0.17 95 / 0.42); border-color: var(--accent); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tg-nudge { animation: none; }
+    .card-flash { animation: none; border-color: var(--accent); }
+  }
+  @media (max-width: 560px) {
+    .tg-nudge { left: 12px; right: 12px; bottom: 92px; width: auto; }
+  }
+
   .credits-pill {
     position: fixed; right: 22px; top: 84px; z-index: 55;
     background: var(--surface); border: 1px solid var(--line);
@@ -239,7 +373,7 @@
     font-size: 0.8rem; color: var(--ink-soft);
   }
   .credits-pill-num {
-    font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.15rem; color: var(--ground);
+    font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.15rem; color: var(--link);
   }
   /* Below ~1180px the pill would collide with the content column, so it
      tucks under the header as a compact chip instead. */
@@ -263,8 +397,8 @@
     color: var(--ink-soft); padding: 10px 16px; border-radius: 9px 9px 0 0;
     position: relative; transition: color 0.18s ease, background 0.18s ease;
   }
-  .tab:hover { color: var(--ground); background: var(--paper-alt); }
-  .tab.active { color: var(--ground); background: var(--surface); }
+  .tab:hover { color: var(--link); background: var(--paper-alt); }
+  .tab.active { color: var(--link); background: var(--surface); }
   .tab.active::after {
     content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
     height: 2.5px; background: var(--accent); border-radius: 2px;
@@ -305,7 +439,7 @@
     text-transform: uppercase; letter-spacing: 0.06em;
     padding: 3px 9px; border-radius: 100px; white-space: nowrap;
   }
-  .focus-tag-mine  { background: var(--ground-soft); color: var(--ground); }
+  .focus-tag-mine  { background: var(--ground-soft); color: var(--on-ground-soft); }
   .focus-tag-tutor { background: var(--ink); color: var(--paper); }
 
   .focus-hint { color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 14px; }
@@ -333,7 +467,7 @@
     flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px;
     border: 1.5px solid var(--line); border-radius: 5px; background: var(--surface);
     cursor: pointer; padding: 0; line-height: 1; font-size: 0.8rem;
-    color: var(--ground);
+    color: var(--link);
   }
   .focus-check:hover { border-color: var(--accent); }
   .focus-check.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -346,7 +480,7 @@
     background: none; border: none; cursor: pointer; color: var(--ink-soft);
     font-size: 1rem; line-height: 1; padding: 0 2px;
   }
-  .focus-del:hover { color: #B3261E; }
+  .focus-del:hover { color: var(--danger); }
 
   /* ---- Stars ---- */
   .star-picker { display: flex; align-items: center; gap: 2px; margin-bottom: 12px; }
@@ -375,14 +509,14 @@
   .review-pending {
     display: inline-block; margin-left: 8px; font-size: 0.68rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.05em;
-    background: var(--ground-soft); color: var(--ground);
+    background: var(--ground-soft); color: var(--on-ground-soft);
     padding: 2px 8px; border-radius: 100px;
   }
 
   .review-actions { margin-top: 10px; }
   .review-toggle {
     background: none; border: none; padding: 0; cursor: pointer;
-    color: var(--ground); font-size: 0.82rem; font-weight: 600;
+    color: var(--link); font-size: 0.82rem; font-weight: 600;
     font-family: 'Inter', system-ui, sans-serif; text-decoration: underline;
   }
 
@@ -396,7 +530,7 @@
     background: none; border: none; cursor: pointer; color: var(--ink-soft);
     font-size: 0.95rem; line-height: 1; padding: 0 2px;
   }
-  .comment-del:hover { color: #B3261E; }
+  .comment-del:hover { color: var(--danger); }
 
   .comment-form { display: flex; gap: 8px; margin-top: 10px; }
   .comment-form input {
@@ -491,12 +625,12 @@
     font-size: 1.25rem; font-weight: 700; letter-spacing: 0.14em;
   }
   .referral-copy {
-    background: var(--surface); color: var(--ground);
+    background: var(--on-ground); color: var(--ground-deep);
     border: none; border-radius: 10px; padding: 11px 18px;
     font-family: 'Inter', system-ui, sans-serif; font-size: 0.86rem; font-weight: 600;
     cursor: pointer; transition: transform 0.15s ease, background 0.15s ease;
   }
-  .referral-copy:hover { background: #EEF2FB; transform: translateY(-1px); }
+  .referral-copy:hover { background: oklch(0.97 0.01 350 / 0.85); transform: translateY(-1px); }
   .referral-stats { margin: 0; font-size: 0.8rem; color: #C9D2E8; }
 
   @media (max-width: 480px) {
@@ -522,19 +656,19 @@
   .medal {
     display: inline-flex; align-items: center; gap: 5px;
     vertical-align: middle; margin-left: 10px;
-    background: #E7F4EC; color: #2F6B45; border: 1px solid #BFE0CC;
+    background: var(--success-bg); color: var(--success); border: 1px solid var(--success-line);
     border-radius: 100px; padding: 4px 12px 4px 9px;
     font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem; font-weight: 600;
     letter-spacing: 0.01em; white-space: nowrap;
   }
   .btn-refer {
-    background: var(--ground-soft); color: var(--ground);
+    background: var(--ground-soft); color: var(--on-ground-soft);
     border: 1.5px solid var(--line); border-radius: 8px;
     padding: 9px 16px; font-family: 'Inter', system-ui, sans-serif;
     font-size: 0.85rem; font-weight: 600; cursor: pointer;
     transition: border-color 0.15s ease, background 0.15s ease;
   }
-  .btn-refer:hover { border-color: var(--accent); background: #EEF2FB; }
+  .btn-refer:hover { border-color: var(--accent); }
 
   .honesty-card { border-left: 4px solid var(--accent); }
   .honesty-body { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.65; margin: 0; }
@@ -594,6 +728,7 @@
       <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
       <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
       <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
+      <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
     </span>
   </div>
 
@@ -617,14 +752,14 @@
         <label for="referral_code_input" data-i18n="label_referral_code">Código de referido (opcional)</label>
         <input type="text" id="referral_code_input" placeholder="Ej: 8A6D62" style="text-transform:uppercase;">
       </div>
-      <div id="spam-warning" style="display:none; margin: 16px 0 4px; padding: 14px 16px; background: #FCE8E6; border: 1.5px solid var(--ground); border-radius: 10px; font-size: 0.85rem; color: var(--ground); line-height: 1.55;" data-i18n-html="spam_warning">
+      <div id="spam-warning" style="display:none; margin: 16px 0 4px; padding: 14px 16px; background: var(--danger-bg); border: 1.5px solid var(--ground); border-radius: 10px; font-size: 0.85rem; color: var(--link); line-height: 1.55;" data-i18n-html="spam_warning">
         ⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.
       </div>
       <div id="terms-field" style="display:none; margin-top: 14px;">
         <label class="checkbox-label" style="align-items:flex-start;">
           <input type="checkbox" id="terms-checkbox" style="margin-top:3px;">
           <span data-i18n-html="terms_checkbox_label" style="font-size:0.85rem; color:var(--ink-soft); line-height:1.5;">
-            He leído la <a href="legal.html" target="_blank" style="color:var(--ground);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.
+            He leído la <a href="legal.html" target="_blank" style="color:var(--link);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.
           </span>
         </label>
       </div>
@@ -813,7 +948,7 @@
 
     <!-- ============ CUENTA ============ -->
     <section class="tab-panel" id="panel-cuenta" role="tabpanel">
-      <div class="card">
+      <div class="card" id="telegram-card">
         <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="link_telegram_title">Vincular Telegram</h3>
         <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 10px;" data-i18n="link_telegram_hint">Vincula tu cuenta para reservar clases y recibir avisos por Telegram.</p>
         <ul style="color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 14px; padding-left: 20px; line-height: 1.7;">
@@ -825,7 +960,7 @@
         <button class="btn" onclick="generateTelegramCode()" data-i18n="generate_code_btn">Generar código</button>
         <button class="btn-cancel" onclick="unlinkTelegram()" data-i18n="unlink_telegram_btn">Desvincular Telegram</button>
         <div id="telegram-code-box" style="display:none; margin-top: 14px;">
-          <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> en Telegram:</p>
+          <p style="font-size: 0.88rem; margin-bottom: 8px;" data-i18n-html="telegram_send_msg">Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--link);"><strong>@InglesDePauloBot</strong></a> en Telegram:</p>
           <div class="xmr-address-row" style="background: var(--paper-alt); border: 1px solid var(--line);">
             <span class="mono" id="telegram-code" style="flex:1; font-size: 0.9rem; color: var(--ink);"></span>
           </div>
@@ -833,16 +968,31 @@
         <div id="telegram-msg"></div>
       </div>
 
-      <div class="card" style="border-color: #E7C3BF;">
-        <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--ground);" data-i18n="delete_account_title">Eliminar mi cuenta</h3>
+      <div class="card" style="border-color: var(--danger-line);">
+        <h3 style="font-size: 1rem; margin-bottom: 4px; color: var(--link);" data-i18n="delete_account_title">Eliminar mi cuenta</h3>
         <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px;" data-i18n="delete_account_hint">
           Esto borra tu cuenta, tus créditos y tu vínculo de Telegram de forma permanente. No se puede deshacer.
           Tus clases reservadas quedarán liberadas y tus opiniones publicadas se mantendrán, pero sin asociarlas a tu cuenta.
         </p>
-        <button class="btn" style="background: #B3261E;" onmouseover="this.style.background='#8C1D18'" onmouseout="this.style.background='#B3261E'" onclick="deleteAccount()" data-i18n="delete_account_btn">Eliminar mi cuenta</button>
+        <button class="btn btn-danger" onclick="deleteAccount()" data-i18n="delete_account_btn">Eliminar mi cuenta</button>
         <div id="delete-account-msg"></div>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- Shown only to students who have not linked Telegram, and only once the
+     profile confirms it, so it never flashes at someone who already has. -->
+<div class="tg-nudge" id="tg-nudge" style="display:none;" role="status">
+  <div class="tg-nudge-head">
+    <span aria-hidden="true">✈️</span>
+    <span class="tg-nudge-title" data-i18n="tg_nudge_title">Vincula Telegram</span>
+    <button class="tg-nudge-close" onclick="snoozeTelegramNudge()" aria-label="Cerrar" data-i18n-aria="tg_nudge_close">&times;</button>
+  </div>
+  <p data-i18n="tg_nudge_body">Sin Telegram vinculado no puedo avisarte 20 minutos antes de cada clase ni enviarte el enlace de Google Meet. Se tarda un minuto.</p>
+  <div class="tg-nudge-actions">
+    <button class="tg-nudge-cta" onclick="goLinkTelegram()" data-i18n="tg_nudge_cta">Vincular ahora</button>
+    <button class="tg-nudge-later" onclick="snoozeTelegramNudge()" data-i18n="tg_nudge_later">Más tarde</button>
   </div>
 </div>
 
@@ -928,8 +1078,11 @@
       telegram_benefit_2: 'Recibe el enlace de Google Meet de cada clase al instante',
       telegram_benefit_3: 'Avisos automáticos si una clase se cancela o hay que reprogramarla',
       telegram_benefit_4: 'Cambia el idioma del bot cuando quieras con /idioma',
+      tg_nudge_title: 'Vincula Telegram', tg_nudge_close: 'Cerrar',
+      tg_nudge_body: 'Sin Telegram vinculado no puedo avisarte 20 minutos antes de cada clase ni enviarte el enlace de Google Meet. Se tarda un minuto.',
+      tg_nudge_cta: 'Vincular ahora', tg_nudge_later: 'Más tarde',
       generate_code_btn: 'Generar código', unlink_telegram_btn: 'Desvincular Telegram',
-      telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
+      telegram_send_msg: 'Envía este mensaje a <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--link);"><strong>@InglesDePauloBot</strong></a> en Telegram:',
       chat_title: 'Chat con Paulo', chat_sub: 'Normalmente respondo en unas horas',
       chat_hint: 'Escríbeme si tienes dudas entre clases. Puedes enviar fotos, vídeos o PDF como apoyo.',
       chat_placeholder: 'Escribe tu mensaje...', chat_attach: 'Adjuntar', chat_send: 'Enviar',
@@ -971,7 +1124,7 @@
       delete_account_btn: 'Eliminar mi cuenta',
       fill_email_password: 'Rellena email y contraseña.', account_created: 'Cuenta creada. Ya puedes iniciar sesión.',
       must_accept_terms: 'Debes aceptar la Política de Privacidad y los Términos para crear tu cuenta.',
-      terms_checkbox_label: 'He leído la <a href="legal.html" target="_blank" style="color:var(--ground);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.',
+      terms_checkbox_label: 'He leído la <a href="legal.html" target="_blank" style="color:var(--link);">Política de Privacidad y los Términos</a>, y entiendo que puedo pedir mi primera clase de inmediato, renunciando así a mi derecho de desistimiento de 14 días para esa clase.',
       no_classes_that_day: 'No hay clases disponibles ese día.', reserve_btn: 'Reservar', cancel_btn: 'Cancelar',
       lesson_live: 'En curso',
       less_than_12h: '(menos de 12h)', not_cancelable_12h: '(no cancelable, faltan menos de 12h)',
@@ -1020,8 +1173,11 @@
       telegram_benefit_2: 'Otrzymuj link do Google Meet dla każdej lekcji natychmiast',
       telegram_benefit_3: 'Automatyczne powiadomienia, jeśli lekcja zostanie odwołana lub przełożona',
       telegram_benefit_4: 'Zmień język bota, kiedy chcesz, komendą /jezyk',
+      tg_nudge_title: 'Połącz Telegram', tg_nudge_close: 'Zamknij',
+      tg_nudge_body: 'Bez połączonego Telegrama nie mogę przypomnieć Ci o lekcji 20 minut wcześniej ani wysłać linku do Google Meet. To zajmie minutę.',
+      tg_nudge_cta: 'Połącz teraz', tg_nudge_later: 'Później',
       generate_code_btn: 'Wygeneruj kod', unlink_telegram_btn: 'Odłącz Telegram',
-      telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
+      telegram_send_msg: 'Wyślij tę wiadomość do <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--link);"><strong>@InglesDePauloBot</strong></a> na Telegramie:',
       chat_title: 'Czat z Paulo', chat_sub: 'Zwykle odpowiadam w ciągu kilku godzin',
       chat_hint: 'Napisz do mnie, jeśli masz pytania między lekcjami. Możesz wysyłać zdjęcia, filmy lub PDF jako pomoc.',
       chat_placeholder: 'Napisz wiadomość...', chat_attach: 'Załącz', chat_send: 'Wyślij',
@@ -1063,7 +1219,7 @@
       delete_account_btn: 'Usuń moje konto',
       fill_email_password: 'Uzupełnij email i hasło.', account_created: 'Konto utworzone. Możesz się teraz zalogować.',
       must_accept_terms: 'Musisz zaakceptować Politykę Prywatności i Regulamin, by utworzyć konto.',
-      terms_checkbox_label: 'Przeczytałem/am <a href="legal.html" target="_blank" style="color:var(--ground);">Politykę Prywatności i Regulamin</a> i rozumiem, że mogę poprosić o pierwszą lekcję od razu, rezygnując tym samym z prawa do odstąpienia od umowy w ciągu 14 dni dla tej lekcji.',
+      terms_checkbox_label: 'Przeczytałem/am <a href="legal.html" target="_blank" style="color:var(--link);">Politykę Prywatności i Regulamin</a> i rozumiem, że mogę poprosić o pierwszą lekcję od razu, rezygnując tym samym z prawa do odstąpienia od umowy w ciągu 14 dni dla tej lekcji.',
       no_classes_that_day: 'Brak dostępnych lekcji tego dnia.', reserve_btn: 'Zarezerwuj', cancel_btn: 'Anuluj',
       lesson_live: 'Trwa teraz',
       less_than_12h: '(mniej niż 12h)', not_cancelable_12h: '(nie można anulować, zostało mniej niż 12h)',
@@ -1112,8 +1268,11 @@
       telegram_benefit_2: 'Get the Google Meet link for each lesson instantly',
       telegram_benefit_3: 'Automatic alerts if a lesson gets cancelled or needs rescheduling',
       telegram_benefit_4: 'Change the bot\'s language any time with /language',
+      tg_nudge_title: 'Link Telegram', tg_nudge_close: 'Close',
+      tg_nudge_body: "Without Telegram linked I can't remind you 20 minutes before each lesson or send you the Google Meet link. It takes a minute.",
+      tg_nudge_cta: 'Link now', tg_nudge_later: 'Later',
       generate_code_btn: 'Generate code', unlink_telegram_btn: 'Unlink Telegram',
-      telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--ground);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
+      telegram_send_msg: 'Send this message to <a href="https://t.me/InglesDePauloBot" target="_blank" rel="noopener" style="color: var(--link);"><strong>@InglesDePauloBot</strong></a> on Telegram:',
       chat_title: 'Chat with Paulo', chat_sub: 'I usually reply within a few hours',
       chat_hint: 'Message me if you have questions between lessons. You can send photos, videos or PDFs as support material.',
       chat_placeholder: 'Write your message...', chat_attach: 'Attach', chat_send: 'Send',
@@ -1155,7 +1314,7 @@
       delete_account_btn: 'Delete my account',
       fill_email_password: 'Fill in your email and password.', account_created: 'Account created. You can now log in.',
       must_accept_terms: 'You must accept the Privacy Policy and Terms to create your account.',
-      terms_checkbox_label: 'I\'ve read the <a href="legal.html" target="_blank" style="color:var(--ground);">Privacy Policy and Terms</a>, and I understand I can request my first lesson right away, thereby waiving my 14-day withdrawal right for that lesson.',
+      terms_checkbox_label: 'I\'ve read the <a href="legal.html" target="_blank" style="color:var(--link);">Privacy Policy and Terms</a>, and I understand I can request my first lesson right away, thereby waiving my 14-day withdrawal right for that lesson.',
       no_classes_that_day: 'No lessons available that day.', reserve_btn: 'Book', cancel_btn: 'Cancel',
       lesson_live: 'Live now',
       less_than_12h: '(less than 12h)', not_cancelable_12h: '(not cancellable, less than 12h left)',
@@ -1193,6 +1352,13 @@
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       const key = el.getAttribute('data-i18n-placeholder');
       if (dict[key]) el.placeholder = dict[key];
+    });
+    // Icon-only buttons carry their whole meaning in aria-label, so that
+    // needs translating too — otherwise a screen reader gets Spanish on the
+    // Polish and English versions of the page.
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+      const key = el.getAttribute('data-i18n-aria');
+      if (dict[key]) el.setAttribute('aria-label', dict[key]);
     });
     document.getElementById('lang-btn-es').classList.toggle('active', currentLang === 'es');
     document.getElementById('lang-btn-pl').classList.toggle('active', currentLang === 'pl');
@@ -1380,7 +1546,7 @@
 
     const { data: profile, error: profileError } = await sb
       .from('profiles')
-      .select('full_name, credits, is_admin, language')
+      .select('full_name, credits, is_admin, language, telegram_chat_id')
       .eq('id', user.id)
       .single();
 
@@ -1425,6 +1591,7 @@
     await loadChat();
     // Honour a #hash so a reload keeps you on the same subpage.
     showTab((window.location.hash || '#clases').slice(1));
+    maybeShowTelegramNudge(!!profile?.telegram_chat_id);
   }
 
   function formatSlot(start, end) {
@@ -1595,7 +1762,7 @@
       const inProgress = new Date(b.start_time) <= nowTs && nowTs < new Date(b.end_time);
       const tooSoon = new Date(b.start_time) < twelveHoursFromNow;
       const meetHtml = b.google_meet_link
-        ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--ground);">${t('join_meet')}</a>`
+        ? `<a href="${b.google_meet_link}" target="_blank" rel="noopener" style="font-size: 0.82rem; color: var(--link);">${t('join_meet')}</a>`
         : `<span class="meet-loading"><span class="mini-spinner"></span>${t('meet_link_loading')}</span>`;
       li.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
@@ -1809,6 +1976,45 @@
   }
 
   // ---- SUBPAGE TABS ----
+  // ---- Telegram nudge -------------------------------------------------
+  // An unlinked account receives no lesson reminders and no Meet links at
+  // all, and most students never find the linking card on their own. Asked
+  // again after a week rather than once-and-never, but never on the same
+  // visit twice, and never at all once the account is actually linked.
+  const TG_NUDGE_KEY = 'tg_nudge_snoozed_until';
+  const TG_NUDGE_SNOOZE_DAYS = 7;
+
+  function maybeShowTelegramNudge(isLinked) {
+    if (isLinked) return;
+    let until = 0;
+    try { until = Number(localStorage.getItem(TG_NUDGE_KEY) || 0); } catch (e) {}
+    if (Date.now() < until) return;
+    // A beat after the dashboard settles, so it reads as a nudge rather
+    // than an interruption thrown up over a still-loading page.
+    setTimeout(() => {
+      const el = document.getElementById('tg-nudge');
+      if (el) el.style.display = 'block';
+    }, 2500);
+  }
+
+  function snoozeTelegramNudge() {
+    const el = document.getElementById('tg-nudge');
+    if (el) el.style.display = 'none';
+    try {
+      localStorage.setItem(TG_NUDGE_KEY, String(Date.now() + TG_NUDGE_SNOOZE_DAYS * 86400000));
+    } catch (e) {}
+  }
+
+  function goLinkTelegram() {
+    snoozeTelegramNudge();
+    showTab('cuenta');
+    const card = document.getElementById('telegram-card');
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.add('card-flash');
+    setTimeout(() => card.classList.remove('card-flash'), 1700);
+  }
+
   const TABS = ['clases', 'opiniones', 'progreso', 'referidos', 'cuenta'];
 
   function showTab(name) {
@@ -2230,6 +2436,27 @@
     el.style.display = 'none';
   };
 })();
+</script>
+<script>
+  // Theme toggle. Shares the localStorage key with the pre-paint script in
+  // <head>, so a choice made here survives navigation to any other page.
+  function toggleTheme() {
+    var root = document.documentElement;
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('site_theme', next); } catch (e) {}
+    syncThemeToggle();
+  }
+  function syncThemeToggle() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('.theme-toggle').forEach(function (btn) {
+      btn.textContent = dark ? '\u2600' : '\u263E';
+      var label = dark ? 'Modo claro' : 'Modo oscuro';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+    });
+  }
+  syncThemeToggle();
 </script>
 </body>
 </html>

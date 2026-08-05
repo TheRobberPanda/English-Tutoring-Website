@@ -10,13 +10,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="color-scheme" content="light dark">
+<script>
+  // Stamp the theme before first paint, otherwise the light palette shows
+  // for a frame on every load. An explicit choice always beats the OS.
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('site_theme'); } catch (e) {}
+    var dark = saved ? saved === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  })();
+</script>
 <style>
   :root {
     /* Pairing 7a — pink ground, yellow accent. Values taken verbatim from
        the design doc so the site and the mock stay in sync. */
+    /* Unstyled UA widgets (bare <button>, scrollbars, form controls) pick
+       their colours from color-scheme. Without this it follows the OS, so a
+       light theme on a dark-mode OS rendered white button text on pale pink. */
+    color-scheme: light;
     --ground: oklch(0.42 0.11 350);        /* the pink card ground */
     --ground-deep: oklch(0.33 0.10 350);   /* one step down, for stacking */
     --ground-soft: oklch(0.94 0.02 350);   /* pale pink, light sections */
+    --on-ground-soft: oklch(0.42 0.11 350); /* text on --ground-soft */
+    --link: oklch(0.42 0.11 350);          /* brand pink as text on paper */
     --on-ground: oklch(0.97 0.01 350);     /* near-white text on pink */
     --accent: oklch(0.85 0.17 95);         /* the yellow */
     --accent-ink: oklch(0.18 0.02 95);     /* text sitting on yellow */
@@ -35,7 +53,70 @@
     --radius: 14px;
     --radius-lg: 20px;
     --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* Semantic colours are tokens so the dark theme can restate them once,
+       instead of every call site hardcoding a light-mode hex. */
+    --danger: #B3261E;
+    --danger-hover: #8C1D18;
+    --danger-bg: #FCE8E6;
+    --danger-line: #E7C3BF;
+    --success: #2F6B45;
+    --success-bg: #E7F4EC;
+    --success-line: #BFE0CC;
   }
+  /* ---- Dark theme ---------------------------------------------------
+     data-theme is stamped on <html> before first paint (see the script in
+     <head>), so this block is the single source of truth for dark and no
+     frame of the light palette ever shows. The yellow accent is left
+     unchanged on purpose: it already carries its contrast on a dark
+     ground, and holding it constant is what keeps both themes reading as
+     one identity rather than two skins. */
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: oklch(0.46 0.12 350);
+    --ground-deep: oklch(0.36 0.10 350);
+    --ground-soft: oklch(0.26 0.04 350);
+    --on-ground-soft: oklch(0.88 0.05 350);
+    --link: oklch(0.80 0.11 350);
+    --on-ground: oklch(0.97 0.01 350);
+    --accent: oklch(0.85 0.17 95);
+    --accent-ink: oklch(0.18 0.02 95);
+    --paper: oklch(0.16 0.018 350);
+    --paper-alt: oklch(0.21 0.025 350);
+    --ink: oklch(0.95 0.012 350);
+    --ink-soft: oklch(0.74 0.02 350);
+    --line: oklch(0.95 0.012 350 / 0.16);
+    --line-on-ground: oklch(0.97 0.01 350 / 0.18);
+    --surface: oklch(0.20 0.022 350);
+
+    --danger: oklch(0.68 0.17 25);
+    --danger-hover: oklch(0.60 0.17 25);
+    --danger-bg: oklch(0.26 0.05 25);
+    --danger-line: oklch(0.40 0.08 25);
+    --success: oklch(0.78 0.13 155);
+    --success-bg: oklch(0.24 0.04 155);
+    --success-line: oklch(0.38 0.06 155);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.44);
+    --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.34);
+    --shadow-lg: 0 18px 40px -12px rgba(0, 0, 0, 0.62), 0 4px 10px rgba(0, 0, 0, 0.38);
+  }
+
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; padding: 0; margin-left: 4px;
+    font-family: inherit; font-size: 0.95rem; line-height: 1;
+    background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--line); border-radius: 5px;
+    cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* On the pink header band the toggle sits on --on-ground, not --ink. */
+  header .theme-toggle { color: var(--on-ground); border-color: var(--line-on-ground); }
+  header .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .back-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
 
   * { box-sizing: border-box; }
 
@@ -185,7 +266,8 @@
     color: var(--ink-soft);
     margin-bottom: 22px;
   }
-  .hero .eyebrow { color: oklch(0.97 0.01 350 / 0.7); padding-left: 25px; }
+  /* 0.7 alpha landed at 4.29:1 on the pink ground — just under AA. */
+  .hero .eyebrow { color: oklch(0.97 0.01 350 / 0.82); padding-left: 25px; }
   .eyebrow::before {
     content: "";
     width: 26px;
@@ -327,7 +409,7 @@
     font-family: 'Archivo Black', system-ui, sans-serif;
     font-size: 2.8rem;
     font-weight: 600;
-    color: var(--ground);
+    color: var(--link);
     flex-shrink: 0;
     overflow: hidden;
     position: relative;
@@ -468,7 +550,7 @@
     margin-bottom: 14px;
   }
 
-  .price-card.xmr .price-label { color: var(--ground-soft); opacity: 1; }
+  .price-card.xmr .price-label { color: var(--on-ground); opacity: 0.88; }
 
   .price-amount {
     font-family: 'Archivo Black', system-ui, sans-serif;
@@ -498,6 +580,38 @@
     box-shadow: 0 3px 10px -2px oklch(0.85 0.17 95 /  0.35);
   }
 
+  /* Monero is paused, not withdrawn. The card stays visible so returning
+     students can see it's a real method coming back, but the pink ground is
+     desaturated to a neutral, the price is struck through, and nothing in it
+     is clickable — so it can't be mistaken for a live option. */
+  .price-card.xmr.unavailable { background: oklch(0.44 0.006 350); box-shadow: var(--shadow-sm); }
+  :root[data-theme="dark"] .price-card.xmr.unavailable { background: oklch(0.33 0.006 350); }
+  .price-card.xmr.unavailable .price-amount {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    opacity: 0.75;
+  }
+  .price-card.xmr.unavailable .badge-discount {
+    background: transparent; color: var(--on-ground);
+    border: 1px solid var(--line-on-ground); box-shadow: none;
+    text-decoration: line-through;
+  }
+  .price-card.xmr.unavailable .copy-btn { pointer-events: none; opacity: 0.45; }
+  .price-card.xmr.unavailable .xmr-address { opacity: 0.6; }
+  .price-unavailable {
+    display: inline-block;
+    margin-bottom: 14px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 6px 13px;
+    border-radius: 5px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
   .price-card p.desc {
     margin-top: 18px;
     font-size: 0.92rem;
@@ -514,7 +628,7 @@
 
   .xmr-address-label {
     font-size: 0.78rem;
-    color: var(--ground-soft);
+    color: var(--on-ground);
     margin-bottom: 8px;
     font-family: 'Inter', system-ui, sans-serif;
     letter-spacing: 0.03em;
@@ -564,7 +678,7 @@
     padding: 17px 21px;
   }
 
-  .payment-note strong { color: var(--ground); }
+  .payment-note strong { color: var(--on-ground-soft); }
 
   /* ---- Contact / footer ---- */
   footer {
@@ -619,6 +733,34 @@
 
 
   /* ---- Latest video ---- */
+  /* Two equal cards. The video card is hidden until the fetch succeeds, so
+     the blog card has to look deliberate on its own — hence auto-fit rather
+     than a hard two-column track. */
+  .personal-grid {
+    display: grid; gap: 22px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    align-items: stretch;
+  }
+  .personal-card {
+    display: flex; flex-direction: column; gap: 8px;
+    text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-lg); padding: 26px 24px;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .personal-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--accent); }
+  .personal-kicker {
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem;
+    font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .personal-card h3 { font-size: 1.15rem; margin: 0; }
+  .personal-card p { color: var(--ink-soft); font-size: 0.94rem; margin: 0; flex: 1; }
+  .personal-go { color: var(--link); font-size: 0.9rem; font-weight: 600; }
+  /* Inside the two-up grid the video card stacks like its neighbour instead
+     of using its old wide thumb-beside-text layout. */
+  .personal-grid .youtube-card { grid-template-columns: 1fr; gap: 16px; align-items: start; }
+
   .youtube-card {
     display: grid; grid-template-columns: 280px 1fr; gap: 28px; align-items: center;
     text-decoration: none; color: inherit;
@@ -638,7 +780,7 @@
   }
   .youtube-channel {
     font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; font-weight: 600;
-    color: var(--ground); text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--link); text-transform: uppercase; letter-spacing: 0.04em;
   }
   .youtube-info h3 { font-size: 1.3rem; margin: 10px 0 14px; letter-spacing: -0.01em; }
   .youtube-watch { color: var(--ink-soft); font-size: 0.9rem; font-weight: 600; }
@@ -722,6 +864,7 @@
         <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
         <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
       </span>
+      <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
     </div>
     <nav>
       <a href="#sobre-mi" data-i18n="nav_about">Sobre mí</a>
@@ -907,11 +1050,12 @@
         <p class="desc" data-i18n="precios_std_desc">Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.</p>
       </div>
 
-      <div class="price-card xmr">
+      <div class="price-card xmr unavailable">
+        <span class="price-unavailable" data-i18n="precios_xmr_unavailable">Temporalmente no disponible</span>
         <div class="price-label" data-i18n="precios_xmr_label">Pagando con Monero (XMR)</div>
         <div class="price-amount">12€ <span data-i18n="precios_per_class">/ clase</span></div>
         <span class="badge-discount" data-i18n="precios_discount_badge">−20% de descuento</span>
-        <p class="desc" data-i18n="precios_xmr_desc">Monero es mi método de pago principal. Envía el pago a esta dirección:</p>
+        <p class="desc" data-i18n="precios_xmr_desc">El pago con Monero está pausado ahora mismo. Escríbeme y te digo cómo pagar mientras tanto.</p>
         <div class="xmr-address-box">
           <div class="xmr-address-label" data-i18n="precios_xmr_address_label">Dirección Monero (XMR)</div>
           <div class="xmr-address-row">
@@ -962,46 +1106,55 @@
       <div class="card">
         <h3 data-i18n="recursos_a1_h">Cómo perder la vergüenza a hablar inglés</h3>
         <p data-i18n="recursos_a1_p">Guía práctica con ejercicios concretos, no solo teoría.</p>
-        <a href="perder-verguenza-hablar-ingles.html" style="color: var(--ground); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
+        <a href="perder-verguenza-hablar-ingles.html" style="color: var(--link); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
       </div>
       <div class="card">
         <h3 data-i18n="recursos_a2_h">Angielski dla nieśmiałych online</h3>
         <p data-i18n="recursos_a2_p">Poradnik po polsku o tym, jak przestać się blokować.</p>
-        <a href="angielski-dla-niesmialych.html" style="color: var(--ground); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
+        <a href="angielski-dla-niesmialych.html" style="color: var(--link); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
       </div>
       <div class="card">
         <h3 data-i18n="recursos_a3_h">Inglés para entrevistas de trabajo</h3>
         <p data-i18n="recursos_a3_p">Cómo prepararte de verdad sin quedarte en blanco.</p>
-        <a href="ingles-para-entrevistas-trabajo.html" style="color: var(--ground); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
-      </div>
-      <div class="card">
-        <h3 data-i18n="recursos_blog_h">Blog</h3>
-        <p data-i18n="recursos_blog_p">Notas e historias de alumnos, escritas según van pasando.</p>
-        <a href="blog.html" style="color: var(--ground); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_visit_blog">Visitar el blog →</a>
+        <a href="ingles-para-entrevistas-trabajo.html" style="color: var(--link); font-size: 0.9rem; font-weight: 600; text-decoration: none;" data-i18n="recursos_read_more">Leer guía →</a>
       </div>
     </div>
   </div>
 </section>
 
-<section id="youtube" style="display:none;">
+<!-- Deliberately separate from #recursos. Those are teaching guides that
+     serve the tutoring business; this section is Paulo's personal work and
+     other ventures, and conflating the two would misrepresent both. -->
+<section id="personal">
   <div class="wrap">
     <div class="section-head">
-      <span class="eyebrow" data-i18n="youtube_eyebrow">En vídeo</span>
-      <h2 data-i18n="youtube_h2">Último vídeo</h2>
+      <span class="eyebrow" data-i18n="personal_eyebrow">Fuera de clase</span>
+      <h2 data-i18n="personal_h2">En qué ando cuando no estoy dando clase</h2>
+      <p data-i18n="personal_p">Mi blog y mi canal no van de aprender idiomas: son mis proyectos personales y otras cosas en las que trabajo. Si te pica la curiosidad, pasa a verlos.</p>
     </div>
-    <a class="youtube-card" id="youtube-card" href="#" target="_blank" rel="noopener">
-      <div class="youtube-thumb">
-        <img id="youtube-thumb-img" src="" alt="">
-        <span class="youtube-play" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
-        </span>
-      </div>
-      <div class="youtube-info">
-        <span class="youtube-channel" data-i18n="youtube_channel">@frelseisme en YouTube</span>
-        <h3 id="youtube-title"></h3>
-        <span class="youtube-watch" data-i18n="youtube_watch">Ver en YouTube →</span>
-      </div>
-    </a>
+
+    <div class="personal-grid">
+      <a class="personal-card" href="blog.html">
+        <span class="personal-kicker" data-i18n="personal_blog_kicker">El blog</span>
+        <h3 data-i18n="personal_blog_h">Lo que escribo</h3>
+        <p data-i18n="personal_blog_p">Ideas, proyectos y lo que me va pasando. Escrito por mí, sin calendario ni tema fijo.</p>
+        <span class="personal-go" data-i18n="personal_blog_go">Leer el blog →</span>
+      </a>
+
+      <a class="youtube-card" id="youtube-card" style="display:none;" href="#" target="_blank" rel="noopener">
+        <div class="youtube-thumb">
+          <img id="youtube-thumb-img" src="" alt="">
+          <span class="youtube-play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+          </span>
+        </div>
+        <div class="youtube-info">
+          <span class="youtube-channel" data-i18n="youtube_channel">@frelseisme en YouTube</span>
+          <h3 id="youtube-title"></h3>
+          <span class="youtube-watch" data-i18n="youtube_watch">Ver en YouTube →</span>
+        </div>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -1046,15 +1199,16 @@ const translations = {
     opiniones_eyebrow: 'Opiniones', opiniones_h2: 'Lo que dicen quienes ya han probado las clases',
     opiniones_note: 'Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.',
     opiniones_note_real: 'Opiniones reales de alumnos.',
-    precios_eyebrow: 'Precios y pago', precios_h2: 'Una clase, un precio claro', precios_p: 'Pagando con Monero, tienes un 20% de descuento.',
-    precios_trial_note: '<strong>¿Primera vez?</strong> Tu primera clase de prueba cuesta 10€ (7€ pagando con Monero), para que veas cómo trabajamos antes de comprometerte.',
+    precios_eyebrow: 'Precios y pago', precios_h2: 'Una clase, un precio claro', precios_p: 'Una clase, un precio. El pago con Monero está pausado temporalmente.',
+    precios_trial_note: '<strong>¿Primera vez?</strong> Tu primera clase de prueba cuesta 10€, para que veas cómo trabajamos antes de comprometerte.',
     precios_std_label: 'Pago estándar', precios_per_class: '/ clase',
     precios_std_desc: 'Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.',
     precios_xmr_label: 'Pagando con Monero (XMR)', precios_discount_badge: '−20% de descuento',
-    precios_xmr_desc: 'Monero es mi método de pago principal. Envía el pago a esta dirección:',
+    precios_xmr_desc: 'El pago con Monero está pausado ahora mismo. Escríbeme y te digo cómo pagar mientras tanto.',
+    precios_xmr_unavailable: 'Temporalmente no disponible',
     precios_xmr_address_label: 'Dirección Monero (XMR)', precios_copy_btn: 'Copiar',
     precios_monero_link: '¿Qué es Monero y cómo se usa?',
-    precios_booking_note: '<strong>¿Cómo reservar tu clase?</strong> Escríbeme por email o Telegram para cuadrar horarios. Si vas a pagar con un método distinto a Monero, cuéntamelo en el mensaje y te explico cómo hacerlo.',
+    precios_booking_note: '<strong>¿Cómo reservar tu clase?</strong> Escríbeme por email o Telegram para cuadrar horarios y te explico cómo hacer el pago.',
     faq_eyebrow: 'Preguntas frecuentes', faq_h2: 'Antes de escribirme',
     faq_q1_h: '¿Necesito ya un buen nivel de inglés?', faq_q1_p: 'No. Adaptamos las clases a tu nivel real, desde quien tiene una base y quiere soltarse, hasta quien ya se defiende pero se bloquea al hablar.',
     faq_q2_h: '¿Cómo son las clases?', faq_q2_p: 'Por videollamada (Zoom o Google Meet), individuales, centradas en conversación y en tus situaciones concretas.',
@@ -1063,8 +1217,12 @@ const translations = {
     recursos_a1_h: 'Cómo perder la vergüenza a hablar inglés', recursos_a1_p: 'Guía práctica con ejercicios concretos, no solo teoría.',
     recursos_a2_h: 'Angielski dla nieśmiałych online', recursos_a2_p: 'Poradnik po polsku o tym, jak przestać się blokować.',
     recursos_a3_h: 'Inglés para entrevistas de trabajo', recursos_a3_p: 'Cómo prepararte de verdad sin quedarte en blanco.',
-    recursos_blog_h: 'Blog', recursos_blog_p: 'Notas e historias de alumnos, escritas según van pasando.', recursos_visit_blog: 'Visitar el blog →',
-    youtube_eyebrow: 'En vídeo', youtube_h2: 'Último vídeo', youtube_channel: '@frelseisme en YouTube', youtube_watch: 'Ver en YouTube →',
+    personal_eyebrow: 'Fuera de clase', personal_h2: 'En qué ando cuando no estoy dando clase',
+    personal_p: 'Mi blog y mi canal no van de aprender idiomas: son mis proyectos personales y otras cosas en las que trabajo. Si te pica la curiosidad, pasa a verlos.',
+    personal_blog_kicker: 'El blog', personal_blog_h: 'Lo que escribo',
+    personal_blog_p: 'Ideas, proyectos y lo que me va pasando. Escrito por mí, sin calendario ni tema fijo.',
+    personal_blog_go: 'Leer el blog →',
+    youtube_channel: '@frelseisme en YouTube', youtube_watch: 'Ver en YouTube →',
     footer_h2: 'Hablemos', footer_sub: 'Escríbeme y empezamos cuando quieras.',
     footer_copyright: '© 2026 Paulo Crespo · Clases de inglés', footer_legal_link: 'Privacidad y Términos',
     copy_copied: '¡Copiado!', copy_error: 'Error'
@@ -1095,15 +1253,16 @@ const translations = {
     opiniones_eyebrow: 'Opinie', opiniones_h2: 'Co mówią ci, którzy już wypróbowali lekcje',
     opiniones_note: 'Przykładowe opinie — zostaną zaktualizowane prawdziwymi opiniami uczniów.',
     opiniones_note_real: 'Prawdziwe opinie uczniów.',
-    precios_eyebrow: 'Cennik i płatność', precios_h2: 'Jedna lekcja, jasna cena', precios_p: 'Płacąc Monero, otrzymujesz 20% zniżki. Cena jest taka sama niezależnie od tego, czy uczysz się angielskiego czy hiszpańskiego.',
-    precios_trial_note: '<strong>Pierwszy raz?</strong> Twoja pierwsza lekcja próbna kosztuje 10€ (7€ płacąc Monero), byś zobaczył, jak pracujemy, zanim się zdecydujesz.',
+    precios_eyebrow: 'Cennik i płatność', precios_h2: 'Jedna lekcja, jasna cena', precios_p: 'Jedna lekcja, jedna cena. Płatność Monero jest tymczasowo wstrzymana. Cena jest taka sama niezależnie od tego, czy uczysz się angielskiego czy hiszpańskiego.',
+    precios_trial_note: '<strong>Pierwszy raz?</strong> Twoja pierwsza lekcja próbna kosztuje 10€, byś zobaczył, jak pracujemy, zanim się zdecydujesz.',
     precios_std_label: 'Płatność standardowa', precios_per_class: '/ lekcja',
     precios_std_desc: 'Przelew, PayPal lub inne metody. Napisz do mnie, by ustalić sposób płatności.',
     precios_xmr_label: 'Płacąc Monero (XMR)', precios_discount_badge: '−20% zniżki',
-    precios_xmr_desc: 'Monero to mój główny sposób płatności. Wyślij płatność na ten adres:',
+    precios_xmr_desc: 'Płatność Monero jest w tej chwili wstrzymana. Napisz do mnie, a powiem Ci, jak zapłacić w międzyczasie.',
+    precios_xmr_unavailable: 'Tymczasowo niedostępne',
     precios_xmr_address_label: 'Adres Monero (XMR)', precios_copy_btn: 'Kopiuj',
     precios_monero_link: 'Czym jest Monero i jak go używać?',
-    precios_booking_note: '<strong>Jak zarezerwować lekcję?</strong> Napisz do mnie e-mail lub na Telegramie, by ustalić termin — nie zapomnij wspomnieć, czy chcesz uczyć się angielskiego czy hiszpańskiego. Jeśli chcesz zapłacić inną metodą niż Monero, napisz o tym w wiadomości, a wytłumaczę jak to zrobić.',
+    precios_booking_note: '<strong>Jak zarezerwować lekcję?</strong> Napisz do mnie e-mail lub na Telegramie, by ustalić termin — nie zapomnij wspomnieć, czy chcesz uczyć się angielskiego czy hiszpańskiego. Wytłumaczę Ci też, jak dokonać płatności.',
     faq_eyebrow: 'Najczęstsze pytania', faq_h2: 'Zanim napiszesz',
     faq_q1_h: 'Czy muszę już dobrze znać ten język?', faq_q1_p: 'Nie. Dostosowujemy lekcje do twojego rzeczywistego poziomu — od osób z podstawami, które chcą się otworzyć, po te, które radzą sobie, ale blokują się mówiąc. Dotyczy to zarówno angielskiego, jak i hiszpańskiego.',
     faq_q2_h: 'Jak wyglądają lekcje?', faq_q2_p: 'Przez wideorozmowę (Zoom lub Google Meet), indywidualnie, skupione na konwersacji i twoich konkretnych sytuacjach.',
@@ -1112,8 +1271,12 @@ const translations = {
     recursos_a1_h: 'Cómo perder la vergüenza a hablar inglés', recursos_a1_p: 'Praktyczny przewodnik po hiszpańsku z konkretnymi ćwiczeniami.',
     recursos_a2_h: 'Angielski dla nieśmiałych online', recursos_a2_p: 'Poradnik o tym, jak przestać się blokować podczas mówienia.',
     recursos_a3_h: 'Inglés para entrevistas de trabajo', recursos_a3_p: 'Jak naprawdę przygotować się do rozmowy kwalifikacyjnej po hiszpańsku.',
-    recursos_blog_h: 'Blog', recursos_blog_p: 'Notatki i historie uczniów, pisane na bieżąco.', recursos_visit_blog: 'Odwiedź blog →',
-    youtube_eyebrow: 'Wideo', youtube_h2: 'Najnowszy film', youtube_channel: '@frelseisme na YouTube', youtube_watch: 'Zobacz na YouTube →',
+    personal_eyebrow: 'Poza lekcjami', personal_h2: 'Czym się zajmuję, gdy nie uczę',
+    personal_p: 'Mój blog i kanał nie są o nauce języków — to moje osobiste projekty i inne rzeczy, nad którymi pracuję. Jeśli Cię to ciekawi, zajrzyj.',
+    personal_blog_kicker: 'Blog', personal_blog_h: 'To, co piszę',
+    personal_blog_p: 'Pomysły, projekty i to, co u mnie słychać. Pisane przeze mnie, bez harmonogramu i bez stałego tematu.',
+    personal_blog_go: 'Czytaj blog →',
+    youtube_channel: '@frelseisme na YouTube', youtube_watch: 'Zobacz na YouTube →',
     footer_h2: 'Porozmawiajmy', footer_sub: 'Napisz do mnie i zaczynamy, kiedy chcesz — po angielsku czy po hiszpańsku.',
     footer_copyright: '© 2026 Paulo Crespo · Lekcje angielskiego i hiszpańskiego', footer_legal_link: 'Prywatność i regulamin',
     copy_copied: 'Skopiowano!', copy_error: 'Błąd'
@@ -1144,15 +1307,16 @@ const translations = {
     opiniones_eyebrow: 'Reviews', opiniones_h2: 'What people who\'ve tried the lessons say',
     opiniones_note: 'Illustrative example reviews — these will be updated with real student reviews.',
     opiniones_note_real: 'Real reviews from students.',
-    precios_eyebrow: 'Pricing and payment', precios_h2: 'One lesson, one clear price', precios_p: 'Pay with Monero and get a 20% discount.',
-    precios_trial_note: '<strong>First time?</strong> Your first trial lesson costs €10 (€7 paying with Monero), so you can see how we work before committing.',
+    precios_eyebrow: 'Pricing and payment', precios_h2: 'One lesson, one clear price', precios_p: 'One lesson, one price. Monero payments are temporarily paused.',
+    precios_trial_note: '<strong>First time?</strong> Your first trial lesson costs €10, so you can see how we work before committing.',
     precios_std_label: 'Standard payment', precios_per_class: '/ lesson',
     precios_std_desc: 'Bank transfer, PayPal, or other methods. Message me to confirm how you\'d like to pay.',
     precios_xmr_label: 'Paying with Monero (XMR)', precios_discount_badge: '−20% discount',
-    precios_xmr_desc: 'Monero is my main payment method. Send the payment to this address:',
+    precios_xmr_desc: 'Monero payments are paused right now. Message me and I\'ll tell you how to pay in the meantime.',
+    precios_xmr_unavailable: 'Temporarily unavailable',
     precios_xmr_address_label: 'Monero address (XMR)', precios_copy_btn: 'Copy',
     precios_monero_link: 'What is Monero and how do I use it?',
-    precios_booking_note: '<strong>How do I book a lesson?</strong> Message me by email or Telegram to arrange a time. If you\'ll be paying with a method other than Monero, mention it in your message and I\'ll explain how to do it.',
+    precios_booking_note: '<strong>How do I book a lesson?</strong> Message me by email or Telegram to arrange a time and I\'ll explain how to pay.',
     faq_eyebrow: 'Frequently asked questions', faq_h2: 'Before you write to me',
     faq_q1_h: 'Do I need to already speak good Spanish?', faq_q1_p: 'No. We adapt lessons to your real level, from people with some basics who want to open up, to those who get by but freeze up when speaking.',
     faq_q2_h: 'What are lessons like?', faq_q2_p: 'Over video call (Zoom or Google Meet), one-on-one, focused on conversation and your specific situations.',
@@ -1161,8 +1325,12 @@ const translations = {
     recursos_a1_h: 'Losing the fear of speaking English (in Spanish)', recursos_a1_p: 'A practical guide with concrete exercises, not just theory.',
     recursos_a2_h: 'English for shy learners (in Polish)', recursos_a2_p: 'A guide on how to stop freezing up when speaking.',
     recursos_a3_h: 'Spanish for job interviews (in Spanish)', recursos_a3_p: 'How to really prepare without freezing up.',
-    recursos_blog_h: 'Blog', recursos_blog_p: 'Notes and student stories, written as they happen.', recursos_visit_blog: 'Visit the blog →',
-    youtube_eyebrow: 'On video', youtube_h2: 'Latest video', youtube_channel: '@frelseisme on YouTube', youtube_watch: 'Watch on YouTube →',
+    personal_eyebrow: 'Outside class', personal_h2: 'What I get up to when I\'m not teaching',
+    personal_p: 'My blog and my channel aren\'t about language learning — they\'re my personal projects and the other things I work on. Have a look if you\'re curious.',
+    personal_blog_kicker: 'The blog', personal_blog_h: 'What I write',
+    personal_blog_p: 'Ideas, projects, and whatever I\'m up to. Written by me, on no schedule and no fixed topic.',
+    personal_blog_go: 'Read the blog →',
+    youtube_channel: '@frelseisme on YouTube', youtube_watch: 'Watch on YouTube →',
     footer_h2: 'Let\'s talk', footer_sub: 'Message me and we\'ll start whenever you\'re ready.',
     footer_copyright: '© 2026 Paulo Crespo · Spanish lessons', footer_legal_link: 'Privacy & Terms',
     copy_copied: 'Copied!', copy_error: 'Error'
@@ -1260,13 +1428,15 @@ function copyAddress() {
         headers: { apikey: SUPABASE_ANON_KEY }
       });
       const { video } = await res.json();
-      if (!video) return; // section stays hidden — fails soft, no broken state shown
+      // Only the video card is hidden, not the whole section — the blog card
+      // beside it must still show when YouTube is unreachable.
+      if (!video) return;
 
       document.getElementById('youtube-thumb-img').src = video.thumbnail;
       document.getElementById('youtube-thumb-img').alt = video.title;
       document.getElementById('youtube-title').textContent = video.title;
       document.getElementById('youtube-card').href = video.url;
-      document.getElementById('youtube').style.display = '';
+      document.getElementById('youtube-card').style.display = '';
     } catch (err) {
       console.error('No se pudo cargar el último vídeo:', err);
     }
@@ -1284,6 +1454,27 @@ function copyAddress() {
     el.style.display = 'none';
   };
 })();
+</script>
+<script>
+  // Theme toggle. Shares the localStorage key with the pre-paint script in
+  // <head>, so a choice made here survives navigation to any other page.
+  function toggleTheme() {
+    var root = document.documentElement;
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('site_theme', next); } catch (e) {}
+    syncThemeToggle();
+  }
+  function syncThemeToggle() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('.theme-toggle').forEach(function (btn) {
+      btn.textContent = dark ? '\u2600' : '\u263E';
+      var label = dark ? 'Modo claro' : 'Modo oscuro';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+    });
+  }
+  syncThemeToggle();
 </script>
 </body>
 </html>

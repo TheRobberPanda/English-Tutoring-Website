@@ -9,13 +9,31 @@
 <link rel="canonical" href="https://inglesconpaulo.org/blog.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="color-scheme" content="light dark">
+<script>
+  // Stamp the theme before first paint, otherwise the light palette shows
+  // for a frame on every load. An explicit choice always beats the OS.
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('site_theme'); } catch (e) {}
+    var dark = saved ? saved === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  })();
+</script>
 <style>
   :root {
     /* Pairing 7a — pink ground, yellow accent. Values taken verbatim from
        the design doc so the site and the mock stay in sync. */
+    /* Unstyled UA widgets (bare <button>, scrollbars, form controls) pick
+       their colours from color-scheme. Without this it follows the OS, so a
+       light theme on a dark-mode OS rendered white button text on pale pink. */
+    color-scheme: light;
     --ground: oklch(0.42 0.11 350);        /* the pink card ground */
     --ground-deep: oklch(0.33 0.10 350);   /* one step down, for stacking */
     --ground-soft: oklch(0.94 0.02 350);   /* pale pink, light sections */
+    --on-ground-soft: oklch(0.42 0.11 350); /* text on --ground-soft */
+    --link: oklch(0.42 0.11 350);          /* brand pink as text on paper */
     --on-ground: oklch(0.97 0.01 350);     /* near-white text on pink */
     --accent: oklch(0.85 0.17 95);         /* the yellow */
     --accent-ink: oklch(0.18 0.02 95);     /* text sitting on yellow */
@@ -33,7 +51,70 @@
     --radius: 14px;
     --radius-lg: 20px;
     --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* Semantic colours are tokens so the dark theme can restate them once,
+       instead of every call site hardcoding a light-mode hex. */
+    --danger: #B3261E;
+    --danger-hover: #8C1D18;
+    --danger-bg: #FCE8E6;
+    --danger-line: #E7C3BF;
+    --success: #2F6B45;
+    --success-bg: #E7F4EC;
+    --success-line: #BFE0CC;
   }
+  /* ---- Dark theme ---------------------------------------------------
+     data-theme is stamped on <html> before first paint (see the script in
+     <head>), so this block is the single source of truth for dark and no
+     frame of the light palette ever shows. The yellow accent is left
+     unchanged on purpose: it already carries its contrast on a dark
+     ground, and holding it constant is what keeps both themes reading as
+     one identity rather than two skins. */
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: oklch(0.46 0.12 350);
+    --ground-deep: oklch(0.36 0.10 350);
+    --ground-soft: oklch(0.26 0.04 350);
+    --on-ground-soft: oklch(0.88 0.05 350);
+    --link: oklch(0.80 0.11 350);
+    --on-ground: oklch(0.97 0.01 350);
+    --accent: oklch(0.85 0.17 95);
+    --accent-ink: oklch(0.18 0.02 95);
+    --paper: oklch(0.16 0.018 350);
+    --paper-alt: oklch(0.21 0.025 350);
+    --ink: oklch(0.95 0.012 350);
+    --ink-soft: oklch(0.74 0.02 350);
+    --line: oklch(0.95 0.012 350 / 0.16);
+    --line-on-ground: oklch(0.97 0.01 350 / 0.18);
+    --surface: oklch(0.20 0.022 350);
+
+    --danger: oklch(0.68 0.17 25);
+    --danger-hover: oklch(0.60 0.17 25);
+    --danger-bg: oklch(0.26 0.05 25);
+    --danger-line: oklch(0.40 0.08 25);
+    --success: oklch(0.78 0.13 155);
+    --success-bg: oklch(0.24 0.04 155);
+    --success-line: oklch(0.38 0.06 155);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.44);
+    --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.34);
+    --shadow-lg: 0 18px 40px -12px rgba(0, 0, 0, 0.62), 0 4px 10px rgba(0, 0, 0, 0.38);
+  }
+
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; padding: 0; margin-left: 4px;
+    font-family: inherit; font-size: 0.95rem; line-height: 1;
+    background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--line); border-radius: 5px;
+    cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* On the pink header band the toggle sits on --on-ground, not --ink. */
+  header .theme-toggle { color: var(--on-ground); border-color: var(--line-on-ground); }
+  header .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .back-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
 
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -119,7 +200,7 @@
   }
   .post-card h2 { font-size: 1.35rem; margin-bottom: 8px; letter-spacing: -0.01em; }
   .post-excerpt { color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
-  .post-readmore { display: inline-block; margin-top: 12px; color: var(--ground); font-weight: 600; font-size: 0.88rem; }
+  .post-readmore { display: inline-block; margin-top: 12px; color: var(--link); font-weight: 600; font-size: 0.88rem; }
 
   .empty-note { color: var(--ink-soft); font-size: 0.95rem; padding: 40px 0; text-align: center; }
 
@@ -129,7 +210,7 @@
     display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
     color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 28px;
   }
-  .post-back:hover { color: var(--ground); }
+  .post-back:hover { color: var(--link); }
   #post-title {
     font-size: clamp(1.9rem, 4.2vw, 2.6rem);
     border-left: 3px solid var(--accent); padding-left: 20px; letter-spacing: -0.02em;
@@ -148,7 +229,7 @@
     padding: 56px 0 40px; text-align: center; margin-top: 40px;
   }
   footer a { color: var(--on-ground); text-decoration: underline; }
-  .copyright { font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; color: oklch(0.97 0.01 350 / 0.65); margin-top: 18px; }
+  .copyright { font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; color: oklch(0.97 0.01 350 / 0.78); margin-top: 18px; }
 
   /* ---- Under-development banner ---- */
   .dev-banner {
@@ -192,6 +273,7 @@
         <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
         <button onclick="setLang('en')" id="lang-btn-en" class="lang-btn">EN</button>
       </span>
+      <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
     </div>
     <nav>
       <a href="index.html" data-i18n="nav_home">Inicio</a>
@@ -208,8 +290,8 @@
   <div id="list-view">
     <div class="blog-hero">
       <span class="eyebrow" data-i18n="blog_eyebrow">Blog</span>
-      <h1 data-i18n="blog_h1">Notas sobre aprender a hablar</h1>
-      <p data-i18n="blog_p">Ideas, historias de alumnos y reflexiones sobre perder el miedo a hablar en otro idioma.</p>
+      <h1 data-i18n="blog_h1">Lo que escribo</h1>
+      <p data-i18n="blog_p">Mi blog personal: ideas, proyectos y las otras cosas en las que ando metido. No va de clases de idiomas.</p>
     </div>
     <div class="post-list" id="post-list"></div>
     <p class="empty-note" id="post-list-empty" style="display:none;" data-i18n="blog_empty">Todavía no hay artículos publicados. Vuelve pronto.</p>
@@ -243,8 +325,8 @@
     es: {
       dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
       nav_home: 'Inicio', nav_blog: 'Blog', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_account: 'Mi cuenta',
-      blog_eyebrow: 'Blog', blog_h1: 'Notas sobre aprender a hablar',
-      blog_p: 'Ideas, historias de alumnos y reflexiones sobre perder el miedo a hablar en otro idioma.',
+      blog_eyebrow: 'Blog personal', blog_h1: 'Lo que escribo',
+      blog_p: 'Mi blog personal: ideas, proyectos y las otras cosas en las que ando metido. No va de clases de idiomas.',
       blog_empty: 'Todavía no hay artículos publicados. Vuelve pronto.',
       blog_back: 'Volver al blog',
       footer_h2: 'Hablemos',
@@ -255,8 +337,8 @@
     pl: {
       dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
       nav_home: 'Strona główna', nav_blog: 'Blog', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_account: 'Moje konto',
-      blog_eyebrow: 'Blog', blog_h1: 'Notatki o nauce mówienia',
-      blog_p: 'Pomysły, historie uczniów i przemyślenia o pokonywaniu strachu przed mówieniem w innym języku.',
+      blog_eyebrow: 'Blog osobisty', blog_h1: 'To, co piszę',
+      blog_p: 'Mój osobisty blog: pomysły, projekty i inne rzeczy, którymi się zajmuję. Nie chodzi tu o lekcje językowe.',
       blog_empty: 'Nie ma jeszcze opublikowanych artykułów. Zajrzyj tu wkrótce.',
       blog_back: 'Wróć do bloga',
       footer_h2: 'Porozmawiajmy',
@@ -267,8 +349,8 @@
     en: {
       dev_banner_text: "🚧 We're improving the site right now. You might notice small changes from day to day.",
       nav_home: 'Home', nav_blog: 'Blog', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_account: 'My account',
-      blog_eyebrow: 'Blog', blog_h1: 'Notes on learning to speak',
-      blog_p: 'Ideas, student stories, and thoughts on losing the fear of speaking another language.',
+      blog_eyebrow: 'Personal blog', blog_h1: 'What I write',
+      blog_p: 'My personal blog: ideas, projects, and the other things I\'m working on. It isn\'t about language lessons.',
       blog_empty: 'No articles published yet. Check back soon.',
       blog_back: 'Back to the blog',
       footer_h2: "Let's talk",
@@ -417,5 +499,26 @@
 })();
 </script>
 
+<script>
+  // Theme toggle. Shares the localStorage key with the pre-paint script in
+  // <head>, so a choice made here survives navigation to any other page.
+  function toggleTheme() {
+    var root = document.documentElement;
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('site_theme', next); } catch (e) {}
+    syncThemeToggle();
+  }
+  function syncThemeToggle() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('.theme-toggle').forEach(function (btn) {
+      btn.textContent = dark ? '\u2600' : '\u263E';
+      var label = dark ? 'Modo claro' : 'Modo oscuro';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+    });
+  }
+  syncThemeToggle();
+</script>
 </body>
 </html>
