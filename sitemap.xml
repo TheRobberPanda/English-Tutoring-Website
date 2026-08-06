@@ -1,37 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://inglesconpaulo.org/index.html</loc>
+    <loc>https://www.inglesconpaulo.org/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+<url>
+    <loc>https://www.inglesconpaulo.org/pl/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+<url>
+    <loc>https://www.inglesconpaulo.org/en/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://inglesconpaulo.org/perder-verguenza-hablar-ingles.html</loc>
+    <loc>https://www.inglesconpaulo.org/perder-verguenza-hablar-ingles.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://inglesconpaulo.org/angielski-dla-niesmialych.html</loc>
+    <loc>https://www.inglesconpaulo.org/angielski-dla-niesmialych.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://inglesconpaulo.org/ingles-para-entrevistas-trabajo.html</loc>
+    <loc>https://www.inglesconpaulo.org/ingles-para-entrevistas-trabajo.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://inglesconpaulo.org/blog.html</loc>
+    <loc>https://www.inglesconpaulo.org/blog.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://inglesconpaulo.org/monero.html</loc>
+    <loc>https://www.inglesconpaulo.org/monero.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://inglesconpaulo.org/legal.html</loc>
+    <loc>https://www.inglesconpaulo.org/legal.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /cuenta.html
 Disallow: /admin.html
 
-Sitemap: https://inglesconpaulo.org/sitemap.xml
+Sitemap: https://www.inglesconpaulo.org/sitemap.xml

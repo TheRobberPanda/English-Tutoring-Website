@@ -202,6 +202,18 @@
   .week-day-btn:disabled { opacity: 0.4; cursor: default; }
 
   .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  /* Same wordmark as the homepage header, and it goes home. The account
+     page previously offered only a small text back-link. */
+  .logo-link { text-decoration: none; color: inherit; display: inline-block; }
+  .logo {
+    font-family: 'Archivo Black', system-ui, sans-serif;
+    font-weight: 400; font-size: 1.15rem; letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .logo span { color: var(--link); }
+  .logo-link:hover .logo span { color: var(--accent); }
+  .logo-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
   .logout-link { background: none; border: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 0.88rem; }
   .lang-btn {
     border: 1px solid var(--line); background: transparent; color: var(--ink-soft);
@@ -722,8 +734,8 @@
 </div>
 
 <div class="wrap">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <a class="back" href="index.html" data-i18n="back_link">&larr; Volver a la web</a>
+  <div style="display:flex; justify-content:space-between; align-items:center; gap: 12px;">
+    <a class="logo-link" href="index.html" aria-label="Paulo Crespo"><span class="logo">Paulo <span>Crespo</span></span></a>
     <span>
       <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
       <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
@@ -731,6 +743,7 @@
       <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
     </span>
   </div>
+  <a class="back" href="index.html" data-i18n="back_link">&larr; Volver a la web</a>
 
   <!-- LOGIN / SIGNUP VIEW -->
   <div id="auth-view">
@@ -836,6 +849,7 @@
 
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 4px;" data-i18n="upcoming_classes">Tus próximas clases</h3>
+        <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 12px;" data-i18n="cancel_policy">Puedes cancelar hasta 12 horas antes de que empiece la clase y el crédito vuelve a tu cuenta automáticamente. Dentro de esas últimas 12 horas la clase ya no se puede cancelar.</p>
         <ul class="slot-list" id="my-slots"></ul>
         <p class="empty-note" id="my-slots-empty" style="display:none;" data-i18n="no_bookings_yet">Aún no tienes clases reservadas.</p>
       </div>
@@ -1130,6 +1144,7 @@
       less_than_12h: '(menos de 12h)', not_cancelable_12h: '(no cancelable, faltan menos de 12h)',
       join_meet: '🔗 Unirse con Google Meet', meet_link_loading: 'Generando enlace de Google Meet…',
       confirm_cancel_booking: '¿Cancelar esta clase? Recuperarás el crédito.',
+      cancel_policy: 'Puedes cancelar hasta 12 horas antes de que empiece la clase y el crédito vuelve a tu cuenta automáticamente. Dentro de esas últimas 12 horas la clase ya no se puede cancelar.',
       confirm_unlink_telegram: '¿Desvincular tu cuenta de Telegram? Dejarás de recibir avisos ahí.',
       telegram_unlinked: 'Tu cuenta de Telegram ha sido desvinculada.',
       write_something: 'Escribe algo antes de enviar.',
@@ -1225,6 +1240,7 @@
       less_than_12h: '(mniej niż 12h)', not_cancelable_12h: '(nie można anulować, zostało mniej niż 12h)',
       join_meet: '🔗 Dołącz przez Google Meet', meet_link_loading: 'Generowanie linku do Google Meet…',
       confirm_cancel_booking: 'Anulować tę lekcję? Kredyt zostanie zwrócony.',
+      cancel_policy: 'Możesz odwołać lekcję najpóźniej 12 godzin przed jej rozpoczęciem — kredyt wraca wtedy automatycznie na Twoje konto. W ciągu tych ostatnich 12 godzin lekcji nie można już odwołać.',
       confirm_unlink_telegram: 'Odłączyć konto Telegram? Przestaniesz tam otrzymywać powiadomienia.',
       telegram_unlinked: 'Twoje konto Telegram zostało odłączone.',
       write_something: 'Napisz coś przed wysłaniem.',
@@ -1320,6 +1336,7 @@
       less_than_12h: '(less than 12h)', not_cancelable_12h: '(not cancellable, less than 12h left)',
       join_meet: '🔗 Join with Google Meet', meet_link_loading: 'Generating Google Meet link…',
       confirm_cancel_booking: 'Cancel this lesson? You\'ll get your credit back.',
+      cancel_policy: 'You can cancel up to 12 hours before the lesson starts and the credit returns to your account automatically. Inside those last 12 hours the lesson can no longer be cancelled.',
       confirm_unlink_telegram: 'Unlink your Telegram account? You\'ll stop getting notifications there.',
       telegram_unlinked: 'Your Telegram account has been unlinked.',
       write_something: 'Write something before sending.',
@@ -1634,7 +1651,7 @@
 
     const { data: slots, error } = await sb
       .from('schedule_slots')
-      .select('id, start_time, end_time')
+      .select('id, start_time, end_time, credit_cost')
       .eq('is_booked', false)
       .eq('is_blocked', false)
       .gte('start_time', new Date(Math.max(weekStart, new Date())).toISOString())
@@ -1722,7 +1739,10 @@
       const start = new Date(slot.start_time).toLocaleTimeString(t('locale'), { hour: '2-digit', minute: '2-digit', hour12: false });
       const end = new Date(slot.end_time).toLocaleTimeString(t('locale'), { hour: '2-digit', minute: '2-digit', hour12: false });
       const tooSoon = new Date(slot.start_time) < twelveHoursFromNow;
-      const disabled = currentCredits < 1 || tooSoon;
+      // Slots cost what they cost — the 75-minute lesson is 1.5 credits — so a
+      // flat "< 1" check offered a Book button that book_slot would then reject.
+      const cost = Number(slot.credit_cost ?? 1);
+      const disabled = currentCredits < cost || tooSoon;
       li.innerHTML = `<span>${start}–${end}${tooSoon ? ` <span style="color: var(--ink-soft); font-size: 0.78rem;">${t('less_than_12h')}</span>` : ''}</span>
         <button ${disabled ? 'disabled' : ''} onclick="bookSlot('${slot.id}')">${t('reserve_btn')}</button>`;
       list.appendChild(li);
