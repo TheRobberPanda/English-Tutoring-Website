@@ -85,29 +85,29 @@
      one identity rather than two skins. */
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --ground: oklch(0.46 0.12 350);
-    --ground-deep: oklch(0.36 0.10 350);
-    --ground-soft: oklch(0.26 0.04 350);
-    --on-ground-soft: oklch(0.88 0.05 350);
-    --link: oklch(0.80 0.11 350);
-    --on-ground: oklch(0.97 0.01 350);
+    --ground: oklch(0.40 0.085 350);
+    --ground-deep: oklch(0.31 0.070 350);
+    --ground-soft: oklch(0.24 0.018 350);
+    --on-ground-soft: oklch(0.85 0.030 350);
+    --link: oklch(0.76 0.070 350);
+    --on-ground: oklch(0.96 0.008 350);
     --accent: oklch(0.85 0.17 95);
     --accent-ink: oklch(0.18 0.02 95);
-    --paper: oklch(0.16 0.018 350);
-    --paper-alt: oklch(0.21 0.025 350);
-    --ink: oklch(0.95 0.012 350);
-    --ink-soft: oklch(0.74 0.02 350);
-    --line: oklch(0.95 0.012 350 / 0.16);
-    --line-on-ground: oklch(0.97 0.01 350 / 0.18);
-    --surface: oklch(0.20 0.022 350);
+    --paper: oklch(0.17 0.005 350);
+    --paper-alt: oklch(0.21 0.007 350);
+    --ink: oklch(0.94 0.004 350);
+    --ink-soft: oklch(0.72 0.008 350);
+    --line: oklch(0.94 0.004 350 / 0.14);
+    --line-on-ground: oklch(0.96 0.008 350 / 0.18);
+    --surface: oklch(0.20 0.006 350);
 
-    --danger: oklch(0.68 0.17 25);
-    --danger-hover: oklch(0.60 0.17 25);
-    --danger-bg: oklch(0.26 0.05 25);
-    --danger-line: oklch(0.40 0.08 25);
-    --success: oklch(0.78 0.13 155);
-    --success-bg: oklch(0.24 0.04 155);
-    --success-line: oklch(0.38 0.06 155);
+    --danger: oklch(0.70 0.150 25);
+    --danger-hover: oklch(0.62 0.150 25);
+    --danger-bg: oklch(0.25 0.040 25);
+    --danger-line: oklch(0.38 0.060 25);
+    --success: oklch(0.78 0.110 155);
+    --success-bg: oklch(0.23 0.030 155);
+    --success-line: oklch(0.36 0.050 155);
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.44);
     --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.34);
@@ -143,7 +143,7 @@
   /* ---- Header (matches index.html) ---- */
   header {
     position: sticky; top: 0; z-index: 10;
-    background: oklch(0.42 0.11 350 / 0.94);
+    background: var(--ground);
     color: var(--on-ground);
     backdrop-filter: saturate(180%) blur(12px);
     -webkit-backdrop-filter: saturate(180%) blur(12px);
@@ -291,9 +291,12 @@
     </div>
     <nav>
       <a href="index.html" data-i18n="nav_home">Inicio</a>
-      <a href="blog.html" class="current" data-i18n="nav_blog">Blog</a>
+      <a href="index.html#sobre-mi" data-i18n="nav_about">Sobre mí</a>
+      <a href="index.html#opiniones" data-i18n="nav_reviews">Opiniones</a>
+      <a href="index.html#disponibilidad" data-i18n="nav_availability">Disponibilidad</a>
       <a href="index.html#precios" data-i18n="nav_pricing">Precios</a>
       <a href="index.html#contacto" data-i18n="nav_contact">Contacto</a>
+      <a href="blog.html" class="current" data-i18n="nav_blog">Blog</a>
       <a href="cuenta.html" class="nav-account" data-i18n="nav_account">Mi cuenta</a>
     </nav>
   </div>
@@ -338,7 +341,8 @@
   const translations = {
     es: {
       dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
-      nav_home: 'Inicio', nav_blog: 'Blog', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_account: 'Mi cuenta',
+      nav_home: 'Inicio', nav_about: 'Sobre mí', nav_reviews: 'Opiniones', nav_availability: 'Disponibilidad',
+      nav_blog: 'Blog', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_account: 'Mi cuenta',
       blog_eyebrow: 'Blog personal', blog_h1: 'Lo que escribo',
       blog_p: 'Mi blog personal: ideas, proyectos y las otras cosas en las que ando metido. No va de clases de idiomas.',
       blog_empty: 'Todavía no hay artículos publicados. Vuelve pronto.',
@@ -350,7 +354,8 @@
     },
     pl: {
       dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
-      nav_home: 'Strona główna', nav_blog: 'Blog', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_account: 'Moje konto',
+      nav_home: 'Strona główna', nav_about: 'O mnie', nav_reviews: 'Opinie', nav_availability: 'Dostępność',
+      nav_blog: 'Blog', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_account: 'Moje konto',
       blog_eyebrow: 'Blog osobisty', blog_h1: 'To, co piszę',
       blog_p: 'Mój osobisty blog: pomysły, projekty i inne rzeczy, którymi się zajmuję. Nie chodzi tu o lekcje językowe.',
       blog_empty: 'Nie ma jeszcze opublikowanych artykułów. Zajrzyj tu wkrótce.',
@@ -362,7 +367,8 @@
     },
     en: {
       dev_banner_text: "🚧 We're improving the site right now. You might notice small changes from day to day.",
-      nav_home: 'Home', nav_blog: 'Blog', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_account: 'My account',
+      nav_home: 'Home', nav_about: 'About me', nav_reviews: 'Reviews', nav_availability: 'Availability',
+      nav_blog: 'Blog', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_account: 'My account',
       blog_eyebrow: 'Personal blog', blog_h1: 'What I write',
       blog_p: 'My personal blog: ideas, projects, and the other things I\'m working on. It isn\'t about language lessons.',
       blog_empty: 'No articles published yet. Check back soon.',

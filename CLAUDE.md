@@ -19,6 +19,7 @@ Files:
 - `index.html` — public homepage (hero, about, pricing, testimonials, FAQ, SEO resources section)
 - `cuenta.html` — student login/signup + dashboard (booking, credits, referrals, Telegram linking, testimonials, account deletion)
 - `admin.html` — Paulo's admin panel (calendar, slot creation, student credits, testimonial moderation, "Next Lessons" Meet-link view)
+- `precios.html` — full pricing page: both prices, how payment works, the cancellation rule, and the paused Monero card. The homepage only shows the headline price and links here.
 - `monero.html` — explainer page for paying with Monero
 - `legal.html` — trilingual Privacy Policy + Terms + 14-day EU withdrawal-right page
 - `perder-verguenza-hablar-ingles.html`, `angielski-dla-niesmialych.html`, `ingles-para-entrevistas-trabajo.html` — SEO landing pages targeting specific long-tail search queries
@@ -92,6 +93,13 @@ All pages are plain HTML/CSS/vanilla JS (no build step, no framework) styled wit
 35. **Cancellation policy stated** — the 12-hour rule `cancel_booking` already enforced is now written on the homepage FAQ and above the student's bookings list, in all three languages. Two real bugs fixed alongside it: `cancel_booking` declared `v_cost int` while `credit_cost` is `numeric`, so cancelling a 1.5-credit lesson **refunded 2 credits**; and the booking UI gated on `credits < 1` rather than the slot's actual cost, offering a Book button the server would reject.
 36. **Account page wordmark** — `cuenta.html` now carries the same clickable "Paulo Crespo" wordmark as the homepage header, linking home, alongside the existing back link.
 
+37. **Homepage decluttered (Aug 2026)** — four changes made together because they were all about getting to the point faster:
+    - The hero waveform SVG and its animation were **removed**. The homepage now has no orchestrated motion at all; the "exactly one motion moment" note below no longer applies.
+    - Section padding went 88px → 56px (mobile 60 → 40) and `.section-head` margin to 30px. The page was ~1000px taller than it needed to be.
+    - Pricing on the homepage is now a **single glanceable card** (`.price-simple`) showing 15€ and the trial price. The whole card links to `precios.html`. Monero, payment methods, the credit explanation and the cancellation rule all moved there. Nav still scrolls to `#precios`; the click-through is from the card.
+    - Nav gained **Disponibilidad** (`#disponibilidad`) and Blog is now `.nav-external` — a separator rule plus an ↗ arrow, because it is the only nav item that leaves the page. `blog.html` and `precios.html` carry the full nav too.
+38. **Dark palette retuned** — the first dark theme raised chroma *above* the light theme (`--ground` 0.11 → 0.12) and tinted every surface at 0.018–0.025 chroma, which reads as neon purple against near-black. Saturated hues intensify on dark grounds, so dark mode now uses **less** chroma than light: surfaces at 0.005–0.007 (near-neutral charcoal), `--ground` at 0.085, `--link` at 0.070. The yellow accent is unchanged — it stays the one saturated thing on the page. Also fixed the sticky header, which hardcoded the *light* ground and so stayed bright pink in dark mode until scrolled.
+
 ## Known open items / TODO
 
 - **Resend domain (SPF/DKIM/DMARC) for `inglesconpaulo.org` still needs verifying**, and Supabase Auth's SMTP "from" address updated to the new domain. This is the real fix for the degraded email deliverability inherited from the free `dpdns.org` subdomain.
@@ -114,7 +122,7 @@ All pages are plain HTML/CSS/vanilla JS (no build step, no framework) styled wit
   - `color-scheme` is set per theme in the token block. Without it, unstyled UA widgets (bare `<button>`, scrollbars) follow the OS and desync — this really did render white button text on a pale background.
   - Anything filled with `--accent` still needs `--accent-ink`; `.btn`'s text colour is tuned for the yellow fill, so a destructive button must use `.btn-danger` rather than only overriding the background.
   - Verify with contrast maths, not screenshots, and disable transitions first — Chrome reports in-flight interpolated colours (serialised as `oklab`) and will happily report a stale value.
-- **Motion is deliberately sparse.** The homepage has exactly one orchestrated moment (the hero waveform resolving from hesitant to confident) and it carries meaning. Do not add scroll-triggered reveals, gradient glows, or ambient shimmer — those were removed on purpose because they made the site read as generated. Anything permanently animating must stop completely under `prefers-reduced-motion`.
+- **Motion is deliberately sparse.** The hero waveform was removed at Paulo's request, so the homepage now has **no** orchestrated motion. Do not add scroll-triggered reveals, gradient glows, or ambient shimmer — those were removed on purpose because they made the site read as generated. Anything permanently animating must stop completely under `prefers-reduced-motion`.
 - Every user-facing page needs all three languages (ES/PL/EN) — the `translations` object pattern with `data-i18n`/`data-i18n-html` attributes is the established approach; don't hardcode English or Spanish strings on pages meant for all audiences.
 - Any new Supabase secret should go in **Vault**, referenced via `vault.decrypted_secrets` at call time — never hardcode a secret directly into a `pg_cron` job body or a trigger function definition (this exact mistake caused a real incident this project already recovered from).
 - **Vault and Edge Function secrets are two separate stores.** Anything the *database* sends (trigger/cron via `net.http_post`) reads from Vault; anything an *Edge Function* validates reads from `Deno.env`. A shared secret like `webhook_shared_secret` / `WEBHOOK_SHARED_SECRET` exists in **both** and rotating only one silently breaks the integration — the sender keeps using the old value and the receiver 401s. Always rotate both together, then trigger a real booking to confirm.

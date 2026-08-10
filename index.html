@@ -196,29 +196,29 @@
      one identity rather than two skins. */
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --ground: oklch(0.46 0.12 350);
-    --ground-deep: oklch(0.36 0.10 350);
-    --ground-soft: oklch(0.26 0.04 350);
-    --on-ground-soft: oklch(0.88 0.05 350);
-    --link: oklch(0.80 0.11 350);
-    --on-ground: oklch(0.97 0.01 350);
+    --ground: oklch(0.40 0.085 350);
+    --ground-deep: oklch(0.31 0.070 350);
+    --ground-soft: oklch(0.24 0.018 350);
+    --on-ground-soft: oklch(0.85 0.030 350);
+    --link: oklch(0.76 0.070 350);
+    --on-ground: oklch(0.96 0.008 350);
     --accent: oklch(0.85 0.17 95);
     --accent-ink: oklch(0.18 0.02 95);
-    --paper: oklch(0.16 0.018 350);
-    --paper-alt: oklch(0.21 0.025 350);
-    --ink: oklch(0.95 0.012 350);
-    --ink-soft: oklch(0.74 0.02 350);
-    --line: oklch(0.95 0.012 350 / 0.16);
-    --line-on-ground: oklch(0.97 0.01 350 / 0.18);
-    --surface: oklch(0.20 0.022 350);
+    --paper: oklch(0.17 0.005 350);
+    --paper-alt: oklch(0.21 0.007 350);
+    --ink: oklch(0.94 0.004 350);
+    --ink-soft: oklch(0.72 0.008 350);
+    --line: oklch(0.94 0.004 350 / 0.14);
+    --line-on-ground: oklch(0.96 0.008 350 / 0.18);
+    --surface: oklch(0.20 0.006 350);
 
-    --danger: oklch(0.68 0.17 25);
-    --danger-hover: oklch(0.60 0.17 25);
-    --danger-bg: oklch(0.26 0.05 25);
-    --danger-line: oklch(0.40 0.08 25);
-    --success: oklch(0.78 0.13 155);
-    --success-bg: oklch(0.24 0.04 155);
-    --success-line: oklch(0.38 0.06 155);
+    --danger: oklch(0.70 0.150 25);
+    --danger-hover: oklch(0.62 0.150 25);
+    --danger-bg: oklch(0.25 0.040 25);
+    --danger-line: oklch(0.38 0.060 25);
+    --success: oklch(0.78 0.110 155);
+    --success-bg: oklch(0.23 0.030 155);
+    --success-line: oklch(0.36 0.050 155);
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.44);
     --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.34);
@@ -278,7 +278,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: oklch(0.42 0.11 350 / 0.94);
+    background: var(--ground);
     color: var(--on-ground);
     backdrop-filter: saturate(180%) blur(12px);
     -webkit-backdrop-filter: saturate(180%) blur(12px);
@@ -338,6 +338,19 @@
   }
 
   nav a:hover { color: var(--accent); }
+  /* Every other nav item is an in-page anchor; Blog leaves the homepage.
+     The rule before it and the arrow say so before you click. */
+  .nav-external {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding-left: 18px;
+    border-left: 1px solid var(--line-on-ground);
+  }
+  .nav-external .nav-arrow { font-size: 0.82em; opacity: 0.8; }
+  .nav-external:hover .nav-arrow { opacity: 1; }
+  .nav-external::after { left: 18px; width: calc(100% - 18px); }
+
   .nav-account {
     background: var(--accent);
     color: var(--accent-ink) !important;
@@ -371,7 +384,7 @@
   /* ---- Hero ---- */
   .hero {
     position: relative;
-    padding: 96px 0 76px;
+    padding: 72px 0 52px;
     text-align: left;
     background: var(--ground);
     color: var(--on-ground);
@@ -426,26 +439,6 @@
     font-size: 1.04rem;
   }
 
-  /* ---- Signature: a voice finding itself ----
-     Bars start short, uneven and broken on the left (including three near-
-     silent pauses) and resolve into full, even speech on the right. It draws
-     itself once on load, left to right, so the mark performs the promise in
-     the headline rather than decorating it. */
-  .wave-holder { margin: 46px auto 4px; max-width: 620px; }
-  .wave { width: 100%; height: auto; display: block; overflow: visible; }
-
-  .wb {
-    fill: oklch(0.97 0.01 350 / 0.45);
-    transform: scaleY(0);
-    transform-origin: 50% 48px;
-    transform-box: fill-box;
-    animation: wb-rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
-    animation-delay: calc(0.5s + var(--i) * 26ms);
-  }
-  /* The last third is where the voice is steady — mark it in ochre. */
-  .wb:nth-child(n+32) { fill: var(--accent); }
-
-  @keyframes wb-rise { to { transform: scaleY(1); } }
 
   .cta-row {
     display: flex;
@@ -496,9 +489,9 @@
   .btn:active { transform: translateY(0); }
 
   /* ---- Section shared ---- */
-  section { padding: 88px 0; }
+  section { padding: 56px 0; }
 
-  .section-head { max-width: 640px; margin-bottom: 48px; }
+  .section-head { max-width: 640px; margin-bottom: 30px; }
 
   .section-head .eyebrow { margin-bottom: 16px; }
 
@@ -644,44 +637,9 @@
 
   .price-card.std:hover { box-shadow: var(--shadow-lg); }
 
-  .price-card.xmr {
-    background: var(--ground);
-    color: var(--on-ground);
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-  }
 
-  .price-card.xmr::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 96px;
-    height: 96px;
-    background: var(--accent);
-  }
 
-  .price-card.xmr > * { position: relative; }
 
-  .price-label {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    opacity: 0.7;
-    margin-bottom: 14px;
-  }
-
-  .price-card.xmr .price-label { color: var(--on-ground); opacity: 0.88; }
-
-  .price-amount {
-    font-family: 'Archivo Black', system-ui, sans-serif;
-    font-weight: 400;
-    font-size: 3.2rem;
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
 
   .price-amount span {
     font-family: 'Inter', system-ui, sans-serif;
@@ -690,50 +648,7 @@
     opacity: 0.65;
   }
 
-  .badge-discount {
-    display: inline-block;
-    margin-top: 14px;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.8rem;
-    background: var(--accent);
-    color: var(--accent-ink);
-    padding: 5px 13px;
-    border-radius: 100px;
-    width: fit-content;
-    box-shadow: 0 3px 10px -2px oklch(0.85 0.17 95 /  0.35);
-  }
 
-  /* Monero is paused, not withdrawn. The card stays visible so returning
-     students can see it's a real method coming back, but the pink ground is
-     desaturated to a neutral, the price is struck through, and nothing in it
-     is clickable — so it can't be mistaken for a live option. */
-  .price-card.xmr.unavailable { background: oklch(0.44 0.006 350); box-shadow: var(--shadow-sm); }
-  :root[data-theme="dark"] .price-card.xmr.unavailable { background: oklch(0.33 0.006 350); }
-  .price-card.xmr.unavailable .price-amount {
-    text-decoration: line-through;
-    text-decoration-thickness: 2px;
-    opacity: 0.75;
-  }
-  .price-card.xmr.unavailable .badge-discount {
-    background: transparent; color: var(--on-ground);
-    border: 1px solid var(--line-on-ground); box-shadow: none;
-    text-decoration: line-through;
-  }
-  .price-card.xmr.unavailable .copy-btn { pointer-events: none; opacity: 0.45; }
-  .price-card.xmr.unavailable .xmr-address { opacity: 0.6; }
-  .price-unavailable {
-    display: inline-block;
-    margin-bottom: 14px;
-    background: var(--accent);
-    color: var(--accent-ink);
-    padding: 6px 13px;
-    border-radius: 5px;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.74rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
 
   .price-card p.desc {
     margin-top: 18px;
@@ -741,61 +656,11 @@
     color: var(--ink-soft);
   }
 
-  .price-card.xmr p.desc { color: #C9D2E8; }
 
-  .xmr-address-box {
-    margin-top: auto;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255,255,255,0.15);
-  }
 
-  .xmr-address-label {
-    font-size: 0.78rem;
-    color: var(--on-ground);
-    margin-bottom: 8px;
-    font-family: 'Inter', system-ui, sans-serif;
-    letter-spacing: 0.03em;
-  }
 
-  .xmr-address-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 11px 13px;
-  }
 
-  .xmr-address {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.7rem;
-    word-break: break-all;
-    line-height: 1.4;
-    color: #EFEEE9;
-    flex: 1;
-  }
 
-  .copy-btn {
-    flex-shrink: 0;
-    background: var(--accent);
-    color: var(--accent-ink);
-    border: none;
-    border-radius: 7px;
-    padding: 8px 13px;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.7rem;
-    cursor: pointer;
-    transition: background 0.2s var(--ease), transform 0.15s var(--ease);
-  }
-
-  .copy-btn:hover { background: var(--ground); transform: translateY(-1px); }
-
-  .avail-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
-  .avail-day {
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 16px 18px;
-  }
   .avail-date {
     font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft);
@@ -809,6 +674,46 @@
   }
   .avail-foot { margin-top: 24px; text-align: center; }
   .avail-note { color: var(--ink-soft); font-size: 0.85rem; margin: 12px 0 0; }
+
+  .price-simple {
+    display: block;
+    max-width: 460px;
+    margin: 0 auto;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    background: var(--ground);
+    border-radius: var(--radius-lg);
+    padding: 34px 30px 28px;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+  .price-simple:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .price-simple:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .price-simple-figure { display: flex; align-items: baseline; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .price-simple-amount {
+    font-family: 'Archivo Black', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: clamp(2.6rem, 7vw, 3.4rem);
+    line-height: 1;
+    color: var(--accent);
+  }
+  .price-simple-per { color: var(--on-ground); font-size: 0.98rem; }
+  .price-simple-trial {
+    margin-top: 14px;
+    color: oklch(0.97 0.01 350 / 0.82);
+    font-size: 0.92rem;
+  }
+  .price-simple-go {
+    display: inline-block;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-on-ground);
+    width: 100%;
+    color: var(--accent);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
 
   .payment-note {
     margin-top: 24px;
@@ -936,14 +841,14 @@
     nav a::after { display: none; }
     .lang-btn { padding: 6px 10px; font-size: 0.82rem; }
     .wrap { padding: 0 20px; }
-    .hero { padding: 60px 0 44px; }
+    .hero { padding: 48px 0 36px; }
     .hero::after { display: none; }
     .about-grid { grid-template-columns: 1fr; gap: 28px; }
     .avatar { margin: 0 auto; width: 150px; height: 150px; }
     .card-grid { grid-template-columns: 1fr; }
     .price-grid { grid-template-columns: 1fr; }
     .price-card { padding: 28px; }
-    section { padding: 60px 0; }
+    section { padding: 40px 0; }
   }
 
   :focus-visible {
@@ -953,7 +858,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .wb { animation: none; transform: none; }
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
@@ -1011,9 +915,10 @@
     <nav>
       <a href="#sobre-mi" data-i18n="nav_about">Sobre mí</a>
       <a href="#opiniones" data-i18n="nav_reviews">Opiniones</a>
+      <a href="#disponibilidad" data-i18n="nav_availability">Disponibilidad</a>
       <a href="#precios" data-i18n="nav_pricing">Precios</a>
       <a href="#contacto" data-i18n="nav_contact">Contacto</a>
-      <a href="blog.html" data-i18n="nav_blog">Blog</a>
+      <a href="blog.html" class="nav-external"><span data-i18n="nav_blog">Blog</span><span class="nav-arrow" aria-hidden="true">↗</span></a>
       <a href="cuenta.html" class="nav-account" data-i18n="nav_account">Mi cuenta</a>
     </nav>
   </div>
@@ -1025,56 +930,6 @@
     <h1 data-i18n-html="hero_h1">Encuentra tu voz <em>en inglés</em></h1>
     <p data-i18n="hero_p">Clases pensadas para personas tímidas o inseguras que quieren dejar de traducir en su cabeza y empezar a comunicarse de verdad. No es una academia más: es acompañamiento cercano, centrado en que te expreses con naturalidad.</p>
 
-    <div class="wave-holder">
-      <svg class="wave" viewBox="0 0 620 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Una voz que pasa de entrecortada a segura">
-        <rect class="wb" x="2.4" y="46.9" width="6.7" height="2.2" rx="2.0" style="--i:0"/>
-        <rect class="wb" x="15.9" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:1"/>
-        <rect class="wb" x="29.4" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:2"/>
-        <rect class="wb" x="42.9" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:3"/>
-        <rect class="wb" x="56.3" y="46.8" width="6.7" height="2.3" rx="2.0" style="--i:4"/>
-        <rect class="wb" x="69.8" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:5"/>
-        <rect class="wb" x="83.3" y="46.2" width="6.7" height="3.6" rx="2.0" style="--i:6"/>
-        <rect class="wb" x="96.8" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:7"/>
-        <rect class="wb" x="110.3" y="46.3" width="6.7" height="3.4" rx="2.0" style="--i:8"/>
-        <rect class="wb" x="123.7" y="46.6" width="6.7" height="2.8" rx="2.0" style="--i:9"/>
-        <rect class="wb" x="137.2" y="45.3" width="6.7" height="5.3" rx="2.0" style="--i:10"/>
-        <rect class="wb" x="150.7" y="46.6" width="6.7" height="2.8" rx="2.0" style="--i:11"/>
-        <rect class="wb" x="164.2" y="47.2" width="6.7" height="1.6" rx="2.0" style="--i:12"/>
-        <rect class="wb" x="177.6" y="44.1" width="6.7" height="7.9" rx="2.0" style="--i:13"/>
-        <rect class="wb" x="191.1" y="45.6" width="6.7" height="4.8" rx="2.0" style="--i:14"/>
-        <rect class="wb" x="204.6" y="43.8" width="6.7" height="8.4" rx="2.0" style="--i:15"/>
-        <rect class="wb" x="218.1" y="44.2" width="6.7" height="7.5" rx="2.0" style="--i:16"/>
-        <rect class="wb" x="231.6" y="41.8" width="6.7" height="12.5" rx="2.0" style="--i:17"/>
-        <rect class="wb" x="245.0" y="44.5" width="6.7" height="7.0" rx="2.0" style="--i:18"/>
-        <rect class="wb" x="258.5" y="41.7" width="6.7" height="12.7" rx="2.0" style="--i:19"/>
-        <rect class="wb" x="272.0" y="42.8" width="6.7" height="10.4" rx="2.0" style="--i:20"/>
-        <rect class="wb" x="285.5" y="41.1" width="6.7" height="13.9" rx="2.0" style="--i:21"/>
-        <rect class="wb" x="298.9" y="41.0" width="6.7" height="14.0" rx="2.0" style="--i:22"/>
-        <rect class="wb" x="312.4" y="38.9" width="6.7" height="18.1" rx="2.0" style="--i:23"/>
-        <rect class="wb" x="325.9" y="40.3" width="6.7" height="15.5" rx="2.0" style="--i:24"/>
-        <rect class="wb" x="339.4" y="38.9" width="6.7" height="18.1" rx="2.0" style="--i:25"/>
-        <rect class="wb" x="352.9" y="37.6" width="6.7" height="20.7" rx="2.0" style="--i:26"/>
-        <rect class="wb" x="366.3" y="38.1" width="6.7" height="19.8" rx="2.0" style="--i:27"/>
-        <rect class="wb" x="379.8" y="36.8" width="6.7" height="22.3" rx="2.0" style="--i:28"/>
-        <rect class="wb" x="393.3" y="36.6" width="6.7" height="22.8" rx="2.0" style="--i:29"/>
-        <rect class="wb" x="406.8" y="35.4" width="6.7" height="25.2" rx="2.0" style="--i:30"/>
-        <rect class="wb" x="420.3" y="35.1" width="6.7" height="25.7" rx="2.0" style="--i:31"/>
-        <rect class="wb" x="433.7" y="34.4" width="6.7" height="27.2" rx="2.0" style="--i:32"/>
-        <rect class="wb" x="447.2" y="34.1" width="6.7" height="27.9" rx="2.0" style="--i:33"/>
-        <rect class="wb" x="460.7" y="33.3" width="6.7" height="29.4" rx="2.0" style="--i:34"/>
-        <rect class="wb" x="474.2" y="32.9" width="6.7" height="30.3" rx="2.0" style="--i:35"/>
-        <rect class="wb" x="487.6" y="32.2" width="6.7" height="31.6" rx="2.0" style="--i:36"/>
-        <rect class="wb" x="501.1" y="31.8" width="6.7" height="32.4" rx="2.0" style="--i:37"/>
-        <rect class="wb" x="514.6" y="31.3" width="6.7" height="33.3" rx="2.0" style="--i:38"/>
-        <rect class="wb" x="528.1" y="31.0" width="6.7" height="34.1" rx="2.0" style="--i:39"/>
-        <rect class="wb" x="541.6" y="30.6" width="6.7" height="34.8" rx="2.0" style="--i:40"/>
-        <rect class="wb" x="555.0" y="30.3" width="6.7" height="35.4" rx="2.0" style="--i:41"/>
-        <rect class="wb" x="568.5" y="30.1" width="6.7" height="35.9" rx="2.0" style="--i:42"/>
-        <rect class="wb" x="582.0" y="29.9" width="6.7" height="36.2" rx="2.0" style="--i:43"/>
-        <rect class="wb" x="595.5" y="29.8" width="6.7" height="36.4" rx="2.0" style="--i:44"/>
-        <rect class="wb" x="608.9" y="29.8" width="6.7" height="36.5" rx="2.0" style="--i:45"/>
-      </svg>
-    </div>
 
     <div class="cta-row">
       <a class="btn btn-solid" href="mailto:yankxwtic@mozmail.com" data-i18n="hero_cta_email">Escríbeme por email</a>
@@ -1178,40 +1033,19 @@
     <div class="section-head">
       <span class="eyebrow" data-i18n="precios_eyebrow">Precios y pago</span>
       <h2 data-i18n="precios_h2">Una clase, un precio claro</h2>
-      <p data-i18n="precios_p">Pagando con Monero, tienes un 20% de descuento.</p>
     </div>
 
-    <div class="payment-note" style="margin-bottom: 20px;" data-i18n-html="precios_trial_note">
-      <strong>¿Primera vez?</strong> Tu primera clase de prueba cuesta 10€ (7€ pagando con Monero), para que veas cómo trabajamos antes de comprometerte.
-    </div>
-
-    <div class="price-grid">
-      <div class="price-card std">
-        <div class="price-label" data-i18n="precios_std_label">Pago estándar</div>
-        <div class="price-amount">15€ <span data-i18n="precios_per_class">/ clase</span></div>
-        <p class="desc" data-i18n="precios_std_desc">Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.</p>
+    <!-- Deliberately just the number at a glance. Methods, the trial, the
+         cancellation rule and the paused Monero option all live on
+         precios.html; the whole card is the way through to them. -->
+    <a class="price-simple" href="precios.html">
+      <div class="price-simple-figure">
+        <span class="price-simple-amount">15€</span>
+        <span class="price-simple-per" data-i18n="precios_per_class_long">por clase de 50 minutos</span>
       </div>
-
-      <div class="price-card xmr unavailable">
-        <span class="price-unavailable" data-i18n="precios_xmr_unavailable">Temporalmente no disponible</span>
-        <div class="price-label" data-i18n="precios_xmr_label">Pagando con Monero (XMR)</div>
-        <div class="price-amount">12€ <span data-i18n="precios_per_class">/ clase</span></div>
-        <span class="badge-discount" data-i18n="precios_discount_badge">−20% de descuento</span>
-        <p class="desc" data-i18n="precios_xmr_desc">El pago con Monero está pausado ahora mismo. Escríbeme y te digo cómo pagar mientras tanto.</p>
-        <div class="xmr-address-box">
-          <div class="xmr-address-label" data-i18n="precios_xmr_address_label">Dirección Monero (XMR)</div>
-          <div class="xmr-address-row">
-            <span class="xmr-address" id="xmr-addr">8A51usuuiVnTZsaM2g1dYG2wvfe3VWwaMJyMQg2kjbiHYb2gKDWPWrARUx5e4yaZzs1rPEdkQAivwJ6TEVRG8osbRkTUWkd</span>
-            <button class="copy-btn" onclick="copyAddress()" id="copy-btn" data-i18n="precios_copy_btn">Copiar</button>
-          </div>
-        </div>
-        <a href="monero.html" style="display:inline-block; margin-top: 12px; font-size: 0.78rem; color: #C9D2E8; text-decoration: underline;" data-i18n="precios_monero_link">¿Qué es Monero y cómo se usa?</a>
-      </div>
-    </div>
-
-    <div class="payment-note" data-i18n-html="precios_booking_note">
-      <strong>¿Cómo reservar tu clase?</strong> Escríbeme por email o Telegram para cuadrar horarios. Si vas a pagar con un método distinto a Monero, cuéntamelo en el mensaje y te explico cómo hacerlo.
-    </div>
+      <div class="price-simple-trial" data-i18n="precios_trial_short">Primera clase de prueba: 10€</div>
+      <span class="price-simple-go" data-i18n="precios_see_details">Ver métodos de pago y condiciones →</span>
+    </a>
   </div>
 </section>
 
@@ -1341,7 +1175,7 @@
 const translations = {
   es: {
     dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
-    nav_about: 'Sobre mí', nav_reviews: 'Opiniones', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_blog: 'Blog', nav_account: 'Mi cuenta',
+    nav_about: 'Sobre mí', nav_reviews: 'Opiniones', nav_availability: 'Disponibilidad', nav_pricing: 'Precios', nav_contact: 'Contacto', nav_blog: 'Blog', nav_account: 'Mi cuenta',
     hero_eyebrow: 'Inglés para comunicar, no solo para aprobar',
     hero_h1: 'Habla inglés como si hablaras con un <em>amigo</em>.',
     hero_p: 'Clases 1 a 1 por videollamada, notas personalizadas y un chat siempre abierto.',
@@ -1365,16 +1199,9 @@ const translations = {
     opiniones_eyebrow: 'Opiniones', opiniones_h2: 'Lo que dicen quienes ya han probado las clases',
     opiniones_note: 'Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.',
     opiniones_note_real: 'Opiniones reales de alumnos.',
-    precios_eyebrow: 'Precios y pago', precios_h2: 'Una clase, un precio claro', precios_p: 'Una clase, un precio. El pago con Monero está pausado temporalmente.',
-    precios_trial_note: '<strong>¿Primera vez?</strong> Tu primera clase de prueba cuesta 10€, para que veas cómo trabajamos antes de comprometerte.',
-    precios_std_label: 'Pago estándar', precios_per_class: '/ clase',
-    precios_std_desc: 'Transferencia, PayPal u otros métodos. Escríbeme para confirmar cómo prefieres pagar.',
-    precios_xmr_label: 'Pagando con Monero (XMR)', precios_discount_badge: '−20% de descuento',
-    precios_xmr_desc: 'El pago con Monero está pausado ahora mismo. Escríbeme y te digo cómo pagar mientras tanto.',
-    precios_xmr_unavailable: 'Temporalmente no disponible',
-    precios_xmr_address_label: 'Dirección Monero (XMR)', precios_copy_btn: 'Copiar',
-    precios_monero_link: '¿Qué es Monero y cómo se usa?',
-    precios_booking_note: '<strong>¿Cómo reservar tu clase?</strong> Escríbeme por email o Telegram para cuadrar horarios y te explico cómo hacer el pago.',
+    precios_eyebrow: 'Precios y pago', precios_h2: 'Una clase, un precio claro',
+    precios_per_class_long: 'por clase de 50 minutos', precios_trial_short: 'Primera clase de prueba: 10€',
+    precios_see_details: 'Ver métodos de pago y condiciones →',
     faq_eyebrow: 'Preguntas frecuentes', faq_h2: 'Antes de escribirme',
     faq_q1_h: '¿Necesito ya un buen nivel de inglés?', faq_q1_p: 'No. Adaptamos las clases a tu nivel real, desde quien tiene una base y quiere soltarse, hasta quien ya se defiende pero se bloquea al hablar.',
     faq_q2_h: '¿Cómo son las clases?', faq_q2_p: 'Por videollamada (Zoom o Google Meet), individuales, centradas en conversación y en tus situaciones concretas.',
@@ -1398,12 +1225,11 @@ const translations = {
     personal_blog_go: 'Leer el blog →',
     youtube_channel: '@frelseisme en YouTube', youtube_watch: 'Ver en YouTube →',
     footer_h2: 'Hablemos', footer_sub: 'Escríbeme y empezamos cuando quieras.',
-    footer_copyright: '© 2026 Paulo Crespo · Clases de inglés', footer_legal_link: 'Privacidad y Términos',
-    copy_copied: '¡Copiado!', copy_error: 'Error'
+    footer_copyright: '© 2026 Paulo Crespo · Clases de inglés', footer_legal_link: 'Privacidad y Términos', copy_error: 'Error'
   },
   pl: {
     dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
-    nav_about: 'O mnie', nav_reviews: 'Opinie', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_blog: 'Blog', nav_account: 'Moje konto',
+    nav_about: 'O mnie', nav_reviews: 'Opinie', nav_availability: 'Dostępność', nav_pricing: 'Cennik', nav_contact: 'Kontakt', nav_blog: 'Blog', nav_account: 'Moje konto',
     hero_eyebrow: 'Angielski i hiszpański, by się komunikować, nie tylko zdać egzamin',
     hero_h1: 'Mów, jakbyś rozmawiał z <em>przyjacielem</em>.',
     hero_p: 'Lekcje 1 na 1 przez wideorozmowę, spersonalizowane notatki i czat, który jest zawsze otwarty.',
@@ -1427,16 +1253,9 @@ const translations = {
     opiniones_eyebrow: 'Opinie', opiniones_h2: 'Co mówią ci, którzy już wypróbowali lekcje',
     opiniones_note: 'Przykładowe opinie — zostaną zaktualizowane prawdziwymi opiniami uczniów.',
     opiniones_note_real: 'Prawdziwe opinie uczniów.',
-    precios_eyebrow: 'Cennik i płatność', precios_h2: 'Jedna lekcja, jasna cena', precios_p: 'Jedna lekcja, jedna cena. Płatność Monero jest tymczasowo wstrzymana. Cena jest taka sama niezależnie od tego, czy uczysz się angielskiego czy hiszpańskiego.',
-    precios_trial_note: '<strong>Pierwszy raz?</strong> Twoja pierwsza lekcja próbna kosztuje 10€, byś zobaczył, jak pracujemy, zanim się zdecydujesz.',
-    precios_std_label: 'Płatność standardowa', precios_per_class: '/ lekcja',
-    precios_std_desc: 'Przelew, PayPal lub inne metody. Napisz do mnie, by ustalić sposób płatności.',
-    precios_xmr_label: 'Płacąc Monero (XMR)', precios_discount_badge: '−20% zniżki',
-    precios_xmr_desc: 'Płatność Monero jest w tej chwili wstrzymana. Napisz do mnie, a powiem Ci, jak zapłacić w międzyczasie.',
-    precios_xmr_unavailable: 'Tymczasowo niedostępne',
-    precios_xmr_address_label: 'Adres Monero (XMR)', precios_copy_btn: 'Kopiuj',
-    precios_monero_link: 'Czym jest Monero i jak go używać?',
-    precios_booking_note: '<strong>Jak zarezerwować lekcję?</strong> Napisz do mnie e-mail lub na Telegramie, by ustalić termin — nie zapomnij wspomnieć, czy chcesz uczyć się angielskiego czy hiszpańskiego. Wytłumaczę Ci też, jak dokonać płatności.',
+    precios_eyebrow: 'Cennik i płatność', precios_h2: 'Jedna lekcja, jasna cena',
+    precios_per_class_long: 'za lekcję 50 minut', precios_trial_short: 'Pierwsza lekcja próbna: 10€',
+    precios_see_details: 'Zobacz metody płatności i warunki →',
     faq_eyebrow: 'Najczęstsze pytania', faq_h2: 'Zanim napiszesz',
     faq_q1_h: 'Czy muszę już dobrze znać ten język?', faq_q1_p: 'Nie. Dostosowujemy lekcje do twojego rzeczywistego poziomu — od osób z podstawami, które chcą się otworzyć, po te, które radzą sobie, ale blokują się mówiąc. Dotyczy to zarówno angielskiego, jak i hiszpańskiego.',
     faq_q2_h: 'Jak wyglądają lekcje?', faq_q2_p: 'Przez wideorozmowę (Zoom lub Google Meet), indywidualnie, skupione na konwersacji i twoich konkretnych sytuacjach.',
@@ -1460,12 +1279,11 @@ const translations = {
     personal_blog_go: 'Czytaj blog →',
     youtube_channel: '@frelseisme na YouTube', youtube_watch: 'Zobacz na YouTube →',
     footer_h2: 'Porozmawiajmy', footer_sub: 'Napisz do mnie i zaczynamy, kiedy chcesz — po angielsku czy po hiszpańsku.',
-    footer_copyright: '© 2026 Paulo Crespo · Lekcje angielskiego i hiszpańskiego', footer_legal_link: 'Prywatność i regulamin',
-    copy_copied: 'Skopiowano!', copy_error: 'Błąd'
+    footer_copyright: '© 2026 Paulo Crespo · Lekcje angielskiego i hiszpańskiego', footer_legal_link: 'Prywatność i regulamin', copy_error: 'Błąd'
   },
   en: {
     dev_banner_text: '🚧 We\'re improving the site right now. You might notice small changes from day to day.',
-    nav_about: 'About me', nav_reviews: 'Reviews', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_blog: 'Blog', nav_account: 'My account',
+    nav_about: 'About me', nav_reviews: 'Reviews', nav_availability: 'Availability', nav_pricing: 'Pricing', nav_contact: 'Contact', nav_blog: 'Blog', nav_account: 'My account',
     hero_eyebrow: 'Spanish to communicate, not just to pass a test',
     hero_h1: 'Speak Spanish like you\'re talking to a <em>friend</em>.',
     hero_p: '1-on-1 video lessons, personalized notes, and a chat that\'s always open.',
@@ -1489,16 +1307,9 @@ const translations = {
     opiniones_eyebrow: 'Reviews', opiniones_h2: 'What people who\'ve tried the lessons say',
     opiniones_note: 'Illustrative example reviews — these will be updated with real student reviews.',
     opiniones_note_real: 'Real reviews from students.',
-    precios_eyebrow: 'Pricing and payment', precios_h2: 'One lesson, one clear price', precios_p: 'One lesson, one price. Monero payments are temporarily paused.',
-    precios_trial_note: '<strong>First time?</strong> Your first trial lesson costs €10, so you can see how we work before committing.',
-    precios_std_label: 'Standard payment', precios_per_class: '/ lesson',
-    precios_std_desc: 'Bank transfer, PayPal, or other methods. Message me to confirm how you\'d like to pay.',
-    precios_xmr_label: 'Paying with Monero (XMR)', precios_discount_badge: '−20% discount',
-    precios_xmr_desc: 'Monero payments are paused right now. Message me and I\'ll tell you how to pay in the meantime.',
-    precios_xmr_unavailable: 'Temporarily unavailable',
-    precios_xmr_address_label: 'Monero address (XMR)', precios_copy_btn: 'Copy',
-    precios_monero_link: 'What is Monero and how do I use it?',
-    precios_booking_note: '<strong>How do I book a lesson?</strong> Message me by email or Telegram to arrange a time and I\'ll explain how to pay.',
+    precios_eyebrow: 'Pricing and payment', precios_h2: 'One lesson, one clear price',
+    precios_per_class_long: 'for a 50-minute lesson', precios_trial_short: 'First trial lesson: €10',
+    precios_see_details: 'See payment methods and terms →',
     faq_eyebrow: 'Frequently asked questions', faq_h2: 'Before you write to me',
     faq_q1_h: 'Do I need to already speak good Spanish?', faq_q1_p: 'No. We adapt lessons to your real level, from people with some basics who want to open up, to those who get by but freeze up when speaking.',
     faq_q2_h: 'What are lessons like?', faq_q2_p: 'Over video call (Zoom or Google Meet), one-on-one, focused on conversation and your specific situations.',
@@ -1522,8 +1333,7 @@ const translations = {
     personal_blog_go: 'Read the blog →',
     youtube_channel: '@frelseisme on YouTube', youtube_watch: 'Watch on YouTube →',
     footer_h2: 'Let\'s talk', footer_sub: 'Message me and we\'ll start whenever you\'re ready.',
-    footer_copyright: '© 2026 Paulo Crespo · Spanish lessons', footer_legal_link: 'Privacy & Terms',
-    copy_copied: 'Copied!', copy_error: 'Error'
+    footer_copyright: '© 2026 Paulo Crespo · Spanish lessons', footer_legal_link: 'Privacy & Terms', copy_error: 'Error'
   }
 };
 
@@ -1562,19 +1372,6 @@ function setLang(lang) {
 }
 
 applyTranslations();
-
-function copyAddress() {
-  const text = document.getElementById('xmr-addr').innerText;
-  const btn = document.getElementById('copy-btn');
-  const original = translations[currentLang].precios_copy_btn;
-  navigator.clipboard.writeText(text).then(() => {
-    btn.innerText = translations[currentLang].copy_copied;
-    setTimeout(() => { btn.innerText = original; }, 1800);
-  }).catch(() => {
-    btn.innerText = translations[currentLang].copy_error;
-    setTimeout(() => { btn.innerText = original; }, 1800);
-  });
-}
 
 // The header only grows its border once scrolled. The hero mark is the page's
 // single orchestrated moment and runs in CSS, so there is nothing else here.
