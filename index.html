@@ -289,16 +289,22 @@
   header { border-bottom: 1px solid var(--line-on-ground); }
   header.scrolled { background: var(--ground-deep); }
 
+  /* Three parts: wordmark left, nav centred in the space between, language
+     and theme controls right. The switcher and toggle used to sit next to
+     the wordmark, which squeezed the nav against the right edge and left it
+     looking off-centre once it grew past a few items. */
   .header-inner {
     display: flex;
     flex-wrap: wrap;
     row-gap: 10px;
+    column-gap: 18px;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 32px;
-    max-width: 1040px;
+    padding: 14px 28px;
+    max-width: 1140px;
     margin: 0 auto;
   }
+  .header-utils { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
   .lang-switcher { display: inline-flex; gap: 4px; }
 
@@ -312,12 +318,25 @@
   .logo span { color: var(--accent); }
   header .logo { color: var(--on-ground); }
 
-  nav { display: flex; gap: 28px; align-items: center; }
+  nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex: 1 1 auto;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Below this the three parts can't share a row without crowding, so the
+     nav drops to its own full-width centred line instead of wrapping raggedly. */
+  @media (max-width: 980px) {
+    nav { flex: 1 0 100%; order: 3; justify-content: center; gap: 16px; }
+  }
 
   nav a {
     position: relative;
     text-decoration: none;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 500;
     color: oklch(0.97 0.01 350 / 0.72);
     transition: color 0.2s var(--ease);
@@ -661,6 +680,13 @@
 
 
 
+  .avail-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+  .avail-day {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px;
+  }
+  /* Reads as "and more beyond these", not as another bookable time. */
+  .avail-more { background: transparent; border: 1px dashed var(--line); color: var(--ink-soft); }
   .avail-date {
     font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft);
@@ -903,8 +929,16 @@
 
 <header>
   <div class="header-inner">
-    <div style="display:flex; align-items:center; gap:10px;">
-      <div class="logo">Paulo <span>Crespo</span></div>
+    <div class="logo">Paulo <span>Crespo</span></div>
+    <nav>
+      <a href="#sobre-mi" data-i18n="nav_about">Sobre mí</a>
+      <a href="#opiniones" data-i18n="nav_reviews">Opiniones</a>
+      <a href="#disponibilidad" data-i18n="nav_availability">Disponibilidad</a>
+      <a href="#precios" data-i18n="nav_pricing">Precios</a>
+      <a href="blog.html" class="nav-external"><span data-i18n="nav_blog">Blog</span><span class="nav-arrow" aria-hidden="true">↗</span></a>
+      <a href="cuenta.html" class="nav-account" data-i18n="nav_account">Mi cuenta</a>
+    </nav>
+    <div class="header-utils">
       <span class="lang-switcher">
         <button onclick="goLang('es', '/')" id="lang-btn-es" class="lang-btn">ES</button>
         <button onclick="goLang('pl', '/pl/')" id="lang-btn-pl" class="lang-btn">PL</button>
@@ -912,15 +946,6 @@
       </span>
       <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
     </div>
-    <nav>
-      <a href="#sobre-mi" data-i18n="nav_about">Sobre mí</a>
-      <a href="#opiniones" data-i18n="nav_reviews">Opiniones</a>
-      <a href="#disponibilidad" data-i18n="nav_availability">Disponibilidad</a>
-      <a href="#precios" data-i18n="nav_pricing">Precios</a>
-      <a href="#contacto" data-i18n="nav_contact">Contacto</a>
-      <a href="blog.html" class="nav-external"><span data-i18n="nav_blog">Blog</span><span class="nav-arrow" aria-hidden="true">↗</span></a>
-      <a href="cuenta.html" class="nav-account" data-i18n="nav_account">Mi cuenta</a>
-    </nav>
   </div>
 </header>
 
@@ -1437,9 +1462,11 @@ applyTranslations();
 
       const grid = document.getElementById('avail-grid');
       grid.innerHTML = '';
-      // Four days is enough to read as "he has time" without turning the
-      // homepage into a calendar.
-      [...byDay.entries()].slice(0, 4).forEach(([day, times]) => {
+      // Show a fortnight rather than a token sample: with ~120 open slots,
+      // showing four days made a genuinely open calendar look nearly full,
+      // which is the opposite of what this section is for.
+      const MAX_DAYS = 8, MAX_TIMES = 8;
+      [...byDay.entries()].slice(0, MAX_DAYS).forEach(([day, times]) => {
         const card = document.createElement('div');
         card.className = 'avail-day';
         const label = document.createElement('div');
@@ -1447,12 +1474,18 @@ applyTranslations();
         label.textContent = day;
         const row = document.createElement('div');
         row.className = 'avail-times';
-        times.slice(0, 6).forEach(tm => {
+        times.slice(0, MAX_TIMES).forEach(tm => {
           const chip = document.createElement('span');
           chip.className = 'avail-time';
           chip.textContent = tm;
           row.appendChild(chip);
         });
+        if (times.length > MAX_TIMES) {
+          const more = document.createElement('span');
+          more.className = 'avail-time avail-more';
+          more.textContent = '+' + (times.length - MAX_TIMES);
+          row.appendChild(more);
+        }
         card.appendChild(label);
         card.appendChild(row);
         grid.appendChild(card);
