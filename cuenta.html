@@ -768,6 +768,15 @@
       <div id="spam-warning" style="display:none; margin: 16px 0 4px; padding: 14px 16px; background: var(--danger-bg); border: 1.5px solid var(--ground); border-radius: 10px; font-size: 0.85rem; color: var(--link); line-height: 1.55;" data-i18n-html="spam_warning">
         ⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.
       </div>
+      <div id="post-signup" style="display:none; margin: 16px 0 4px; padding: 16px 18px; background: var(--ground-soft); border: 1.5px solid var(--accent); border-radius: 10px; font-size: 0.88rem; color: var(--on-ground-soft); line-height: 1.6;">
+        <div data-i18n-html="post_signup_body">
+          ✅ <strong>Cuenta creada.</strong> Te he enviado un email de confirmación.<br><br>
+          📬 <strong>Míralo en spam o correo no deseado</strong> — es donde suele acabar. Busca «Paulo» o «inglesconpaulo».<br><br>
+          Cuando lo encuentres, márcalo como <strong>«No es spam»</strong>. Así los avisos de tus clases te llegarán a la bandeja normal.
+        </div>
+        <button class="btn-link" style="margin-top: 10px;" onclick="resendConfirmation()" data-i18n="resend_confirmation_link">Reenviar email de confirmación</button>
+      </div>
+
       <div id="terms-field" style="display:none; margin-top: 14px;">
         <label class="checkbox-label" style="align-items:flex-start;">
           <input type="checkbox" id="terms-checkbox" style="margin-top:3px;">
@@ -845,6 +854,7 @@
           <a class="btn-cancel" href="https://t.me/frelseisme" target="_blank" rel="noopener" style="text-decoration: none; display: inline-block;" data-i18n="contact_telegram_link">Telegram</a>
           <button class="btn-refer" onclick="showTab('referidos')" data-i18n="refer_a_friend_btn">Invitar a un amigo</button>
         </div>
+        <p style="color: var(--ink-soft); font-size: 0.82rem; margin: 12px 0 0; line-height: 1.55;" data-i18n-html="pay_with_wise">Para pagar desde otro país o en otra moneda, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> es lo más rápido y barato — con mi enlace de invitación tu primera transferencia de hasta 500€ va sin comisión. Es un enlace de invitación: a mí me da una recompensa de Wise.</p>
       </div>
 
       <div class="card">
@@ -1068,6 +1078,7 @@
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
       label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre', label_referral_code: 'Código de referido (opcional)',
       email_note: 'Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
+      post_signup_body: '✅ <strong>Cuenta creada.</strong> Te he enviado un email de confirmación.<br><br>📬 <strong>Míralo en spam o correo no deseado</strong> — es donde suele acabar. Busca «Paulo» o «inglesconpaulo».<br><br>Cuando lo encuentres, márcalo como <strong>«No es spam»</strong>. Así los avisos de tus clases te llegarán a la bandeja normal.',
       spam_warning: '⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.',
       forgot_password_link: '¿Olvidaste tu contraseña?',
       reset_password_title: 'Nueva contraseña', reset_password_hint: 'Escribe tu nueva contraseña.', reset_password_btn: 'Guardar contraseña',
@@ -1080,7 +1091,8 @@
       link_to_signup: '¿No tienes cuenta? Regístrate', link_to_login: '¿Ya tienes cuenta? Inicia sesión',
       hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
       your_credits: 'Tus créditos', credits_available: 'clases disponibles',
-      need_more_credits: '¿Necesitas más créditos? Contáctame o invita a un amigo:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
+      need_more_credits: '¿Necesitas más créditos? Contáctame o invita a un amigo:',
+      pay_with_wise: 'Para pagar desde otro país o en otra moneda, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> es lo más rápido y barato — con mi enlace de invitación tu primera transferencia de hasta 500€ va sin comisión. Es un enlace de invitación: a mí me da una recompensa de Wise.', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Invita a un amigo', referral_badge: '3 clases gratis', referral_hint: 'Comparte tu código. Cuando un amigo se registre con él y compre sus primeras clases, tú ganas 3 clases gratis.',
       copy_link_btn: 'Copiar enlace', copy_link_copied: '¡Enlace copiado!',
       referral_stats_template: (n, r) => `Has invitado a ${n} ${n === 1 ? 'persona' : 'personas'} · ${r} ${r === 1 ? 'clase gratis ganada' : 'clases gratis ganadas'}`,
@@ -1164,6 +1176,7 @@
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
       label_email: 'Email', label_password: 'Hasło', label_name: 'Imię', label_referral_code: 'Kod polecający (opcjonalnie)',
       email_note: 'Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
+      post_signup_body: '✅ <strong>Konto utworzone.</strong> Wysłałem Ci e-mail potwierdzający.<br><br>📬 <strong>Sprawdź folder spam lub niechciana poczta</strong> — zwykle tam trafia. Szukaj „Paulo” lub „inglesconpaulo”.<br><br>Gdy go znajdziesz, oznacz go jako <strong>„To nie jest spam”</strong>. Dzięki temu powiadomienia o lekcjach trafią do zwykłej skrzynki.',
       spam_warning: '⚠️ <strong>Ważne:</strong> email z potwierdzeniem zwykle trafia do folderu spam lub niechciana poczta, a nie do głównej skrzynki odbiorczej. Sprawdź ten folder, jeśli nie widzisz wiadomości w ciągu kilku minut, i oznacz ją jako "to nie spam", by nie przegapić powiadomień o swoich lekcjach.',
       forgot_password_link: 'Zapomniałeś hasła?',
       reset_password_title: 'Nowe hasło', reset_password_hint: 'Wpisz swoje nowe hasło.', reset_password_btn: 'Zapisz hasło',
@@ -1176,7 +1189,8 @@
       link_to_signup: 'Nie masz konta? Zarejestruj się', link_to_login: 'Masz już konto? Zaloguj się',
       hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
       your_credits: 'Twoje kredyty', credits_available: 'dostępnych lekcji',
-      need_more_credits: 'Potrzebujesz więcej kredytów? Napisz do mnie lub zaproś znajomego:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
+      need_more_credits: 'Potrzebujesz więcej kredytów? Napisz do mnie lub zaproś znajomego:',
+      pay_with_wise: 'Jeśli płacisz z zagranicy lub w innej walucie, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> jest najszybszy i najtańszy — z moim linkiem z zaproszeniem Twój pierwszy przelew do 500 € jest bez prowizji. To link z zaproszeniem: Wise nagradza za niego mnie.', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Zaproś znajomego', referral_badge: '3 darmowe lekcje', referral_hint: 'Udostępnij swój kod. Gdy znajomy zarejestruje się z jego pomocą i kupi swoje pierwsze lekcje, ty otrzymasz 3 darmowe lekcje.',
       copy_link_btn: 'Kopiuj link', copy_link_copied: 'Link skopiowany!',
       referral_stats_template: (n, r) => `Zaprosiłeś ${n} ${n === 1 ? 'osobę' : 'osób'} · ${r} ${r === 1 ? 'darmowa lekcja zdobyta' : 'darmowych lekcji zdobytych'}`,
@@ -1260,6 +1274,7 @@
       login_title: 'Log in', signup_title: 'Create account',
       label_email: 'Email', label_password: 'Password', label_name: 'Name', label_referral_code: 'Referral code (optional)',
       email_note: 'Use the same email you use on Google Meet, since that\'s the one that will receive your class invitations.',
+      post_signup_body: '✅ <strong>Account created.</strong> I\'ve sent you a confirmation email.<br><br>📬 <strong>Look in your spam or junk folder</strong> — that\'s usually where it lands. Search for "Paulo" or "inglesconpaulo".<br><br>When you find it, mark it as <strong>"Not spam"</strong>. That way your lesson notifications will reach your normal inbox.',
       spam_warning: '⚠️ <strong>Important:</strong> the verification email usually lands in your spam or junk folder, not your main inbox. Check there if you don\'t see it within a few minutes, and mark it as "not spam" so you don\'t miss notifications about your lessons.',
       forgot_password_link: 'Forgot your password?',
       reset_password_title: 'New password', reset_password_hint: 'Enter your new password.', reset_password_btn: 'Save password',
@@ -1272,7 +1287,8 @@
       link_to_signup: 'Don\'t have an account? Sign up', link_to_login: 'Already have an account? Log in',
       hello_prefix: 'Hi,', admin_panel_link: 'Admin panel', logout_link: 'Log out',
       your_credits: 'Your credits', credits_available: 'lessons available',
-      need_more_credits: 'Need more credits? Contact me or refer a friend:', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
+      need_more_credits: 'Need more credits? Contact me or refer a friend:',
+      pay_with_wise: 'To pay from another country or in another currency, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> is the fastest and cheapest option — with my invite link your first transfer of up to €500 has no fee. This is an invite link: Wise rewards me for it.', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Refer a friend', referral_badge: '3 free lessons', referral_hint: 'Share your code. When a friend signs up with it and buys their first lessons, you get 3 free lessons.',
       copy_link_btn: 'Copy link', copy_link_copied: 'Link copied!',
       referral_stats_template: (n, r) => `You've referred ${n} ${n === 1 ? 'person' : 'people'} · ${r} free ${r === 1 ? 'lesson' : 'lessons'} earned`,
@@ -1484,8 +1500,11 @@
       if (data.session) {
         await loadDashboard();
       } else {
-        showMsg(t('confirm_email_sent'), 'ok');
         toggleMode();
+        // After toggleMode, because that switches to login mode and hides the
+        // signup-only warning — this panel has to outlive it.
+        document.getElementById('post-signup').style.display = 'block';
+        document.getElementById('auth-msg').innerHTML = '';
       }
       btn.disabled = false;
     } else {

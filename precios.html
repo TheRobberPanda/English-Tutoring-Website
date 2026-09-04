@@ -429,6 +429,27 @@
 
   /* This page uses .btn-outline on paper, not on the pink hero ground it was
      designed for, so it needs ink-coloured text and a paper-side border. */
+  .wise-card {
+    margin-top: 26px;
+    border-left: 4px solid var(--accent);
+  }
+  .wise-perk {
+    display: inline-block;
+    background: var(--accent); color: var(--accent-ink);
+    border-radius: 5px; padding: 5px 11px; margin-bottom: 12px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.74rem; font-weight: 700; letter-spacing: 0.03em;
+  }
+  /* Set apart from the body copy: this is a disclosure, not a selling point. */
+  .wise-disclosure {
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
   .cta-on-paper .btn-outline { color: var(--ink); border-color: var(--line); }
   .cta-on-paper .btn-outline:hover { color: var(--accent-ink); border-color: var(--accent); background: var(--accent); }
 
@@ -1021,7 +1042,7 @@
       <div class="price-card std">
         <div class="price-label" data-i18n="pp_std_label">Clase individual</div>
         <div class="price-amount">15€ <span data-i18n="pp_per_class">/ clase</span></div>
-        <p class="desc" data-i18n="pp_std_desc">50 minutos, 1 a 1 por videollamada. Transferencia, PayPal u otros métodos: escríbeme y confirmamos cuál te viene mejor.</p>
+        <p class="desc" data-i18n="pp_std_desc">50 minutos, 1 a 1 por videollamada. Wise, transferencia, PayPal u otros métodos: escríbeme y confirmamos cuál te viene mejor.</p>
       </div>
 
       <div class="price-card std">
@@ -1031,7 +1052,16 @@
       </div>
     </div>
 
-    <div class="card" style="margin-top: 26px;">
+    <div class="card wise-card">
+      <span class="wise-perk" data-i18n="pp_wise_perk">Sin comisión hasta 500€</span>
+      <h3 style="font-size: 1.05rem; margin-bottom: 8px;" data-i18n="pp_wise_h">Pagar con Wise (lo más cómodo)</h3>
+      <p style="color: var(--ink-soft); font-size: 0.94rem; margin: 0 0 10px;" data-i18n="pp_wise_p">Si pagas desde otro país o en otra moneda, Wise es la forma más rápida y barata: el cambio se hace al tipo real, sin el margen que suelen aplicar los bancos, y el dinero suele llegar en horas en vez de días.</p>
+      <p style="color: var(--ink-soft); font-size: 0.94rem; margin: 0 0 14px;" data-i18n="pp_wise_p2">Si abres tu cuenta con mi enlace de invitación, tu primera transferencia de hasta 500€ va sin comisión.</p>
+      <a class="btn btn-solid" href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" data-i18n="pp_wise_cta">Abrir cuenta en Wise</a>
+      <p class="wise-disclosure" data-i18n="pp_wise_disclosure">Es un enlace de invitación: a ti te quita la comisión de esa primera transferencia, y a mí Wise me da una recompensa si varias personas lo usan. Puedes pagarme igual por transferencia normal si lo prefieres — dímelo y te paso los datos.</p>
+    </div>
+
+    <div class="card" style="margin-top: 18px;">
       <h3 style="font-size: 1.05rem; margin-bottom: 8px;" data-i18n="pp_how_h">Cómo se paga</h3>
       <p style="color: var(--ink-soft); font-size: 0.94rem; margin: 0 0 10px;" data-i18n="pp_how_p">Escríbeme por email o Telegram para cuadrar horario y te explico cómo hacer el pago. Cuando el pago está confirmado te añado los créditos a la cuenta y ya puedes reservar tú mismo desde la web.</p>
       <p style="color: var(--ink-soft); font-size: 0.94rem; margin: 0;" data-i18n="pp_how_credits">Cada clase que reservas descuenta un crédito. Una clase larga de 75 minutos descuenta 1,5.</p>
@@ -1099,9 +1129,15 @@
       pp_eyebrow: 'Precios y pago', pp_h2: 'Todo lo que cuesta una clase',
       pp_p: 'Un solo precio, sin cuotas ni permanencia. Pagas las clases que das.',
       pp_std_label: 'Clase individual', pp_per_class: '/ clase',
-      pp_std_desc: '50 minutos, 1 a 1 por videollamada. Transferencia, PayPal u otros métodos: escríbeme y confirmamos cuál te viene mejor.',
+      pp_std_desc: '50 minutos, 1 a 1 por videollamada. Wise, transferencia, PayPal u otros métodos: escríbeme y confirmamos cuál te viene mejor.',
       pp_trial_label: 'Clase de prueba',
       pp_trial_desc: 'La primera clase, más barata, para que veas cómo trabajo antes de comprometerte a nada.',
+      pp_wise_perk: 'Sin comisión hasta 500€',
+      pp_wise_h: 'Pagar con Wise (lo más cómodo)',
+      pp_wise_p: 'Si pagas desde otro país o en otra moneda, Wise es la forma más rápida y barata: el cambio se hace al tipo real, sin el margen que suelen aplicar los bancos, y el dinero suele llegar en horas en vez de días.',
+      pp_wise_p2: 'Si abres tu cuenta con mi enlace de invitación, tu primera transferencia de hasta 500€ va sin comisión.',
+      pp_wise_cta: 'Abrir cuenta en Wise',
+      pp_wise_disclosure: 'Es un enlace de invitación: a ti te quita la comisión de esa primera transferencia, y a mí Wise me da una recompensa si varias personas lo usan. Puedes pagarme igual por transferencia normal si lo prefieres — dímelo y te paso los datos.',
       pp_how_h: 'Cómo se paga',
       pp_how_p: 'Escríbeme por email o Telegram para cuadrar horario y te explico cómo hacer el pago. Cuando el pago está confirmado te añado los créditos a la cuenta y ya puedes reservar tú mismo desde la web.',
       pp_how_credits: 'Cada clase que reservas descuenta un crédito. Una clase larga de 75 minutos descuenta 1,5.',
@@ -1127,9 +1163,15 @@
       pp_eyebrow: 'Cennik i płatność', pp_h2: 'Ile kosztuje lekcja',
       pp_p: 'Jedna cena, bez abonamentu i bez zobowiązań. Płacisz za lekcje, które odbywasz.',
       pp_std_label: 'Lekcja indywidualna', pp_per_class: '/ lekcja',
-      pp_std_desc: '50 minut, 1 na 1 przez wideorozmowę. Przelew, PayPal lub inne metody — napisz, a ustalimy, co jest dla Ciebie najwygodniejsze.',
+      pp_std_desc: '50 minut, 1 na 1 przez wideorozmowę. Wise, przelew, PayPal lub inne metody — napisz, a ustalimy, co jest dla Ciebie najwygodniejsze.',
       pp_trial_label: 'Lekcja próbna',
       pp_trial_desc: 'Pierwsza lekcja, taniej, żebyś zobaczył, jak pracuję, zanim się do czegokolwiek zobowiążesz.',
+      pp_wise_perk: 'Bez prowizji do 500 €',
+      pp_wise_h: 'Płatność przez Wise (najwygodniej)',
+      pp_wise_p: 'Jeśli płacisz z zagranicy lub w innej walucie, Wise jest najszybszy i najtańszy: przewalutowanie po prawdziwym kursie, bez marży, którą zwykle doliczają banki, a pieniądze docierają zwykle w kilka godzin, a nie dni.',
+      pp_wise_p2: 'Jeśli założysz konto z mojego linku z zaproszeniem, Twój pierwszy przelew do 500 € będzie bez prowizji.',
+      pp_wise_cta: 'Załóż konto w Wise',
+      pp_wise_disclosure: 'To link z zaproszeniem: Tobie znosi prowizję za ten pierwszy przelew, a mnie Wise nagradza, jeśli skorzysta z niego kilka osób. Możesz też zapłacić zwykłym przelewem, jeśli wolisz — napisz, a podam dane.',
       pp_how_h: 'Jak zapłacić',
       pp_how_p: 'Napisz do mnie e-mail lub na Telegramie, żeby ustalić termin, a wytłumaczę Ci, jak dokonać płatności. Po potwierdzeniu wpłaty dodaję kredyty do Twojego konta i możesz już sam rezerwować lekcje na stronie.',
       pp_how_credits: 'Każda zarezerwowana lekcja odejmuje jeden kredyt. Dłuższa lekcja (75 minut) odejmuje 1,5.',
@@ -1155,9 +1197,15 @@
       pp_eyebrow: 'Pricing and payment', pp_h2: 'What a lesson costs',
       pp_p: 'One price, no subscription and no commitment. You pay for the lessons you take.',
       pp_std_label: 'One-to-one lesson', pp_per_class: '/ lesson',
-      pp_std_desc: '50 minutes, one to one over video. Bank transfer, PayPal or other methods — message me and we\'ll confirm what suits you.',
+      pp_std_desc: '50 minutes, one to one over video. Wise, bank transfer, PayPal or other methods — message me and we\'ll confirm what suits you.',
       pp_trial_label: 'Trial lesson',
       pp_trial_desc: 'The first lesson, cheaper, so you can see how I work before committing to anything.',
+      pp_wise_perk: 'No fee up to €500',
+      pp_wise_h: 'Paying with Wise (the easiest way)',
+      pp_wise_p: 'If you\'re paying from another country or in another currency, Wise is the fastest and cheapest option: it converts at the real exchange rate, without the margin banks usually add, and the money normally arrives in hours rather than days.',
+      pp_wise_p2: 'If you open your account with my invite link, your first transfer of up to €500 has no fee.',
+      pp_wise_cta: 'Open a Wise account',
+      pp_wise_disclosure: 'This is an invite link: it waives the fee on that first transfer for you, and Wise rewards me if a few people use it. You can still pay by ordinary bank transfer if you prefer — just tell me and I\'ll send the details.',
       pp_how_h: 'How payment works',
       pp_how_p: 'Message me by email or Telegram to arrange a time and I\'ll explain how to pay. Once the payment is confirmed I add the credits to your account and you can book lessons yourself from the site.',
       pp_how_credits: 'Every lesson you book uses one credit. A longer 75-minute lesson uses 1.5.',
