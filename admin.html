@@ -1673,7 +1673,7 @@
   const SCHED_COL = {
     ground: '#772F55', onGround: '#FBF2F6', accent: '#F1CB1C',
     paper: '#FDF6F9', ink: '#301423', inkSoft: '#6D525E', line: '#E6DADF',
-    always: '#4EB068', sometimes: '#F8D14F', never: '#F68443'
+    always: '#4EB068', sometimes: '#F8D14F', never: '#F68443', none: '#DCD2D6'
   };
   // The image goes to students, so it's trilingual even though the admin
   // panel itself is Spanish-only.
@@ -1685,6 +1685,7 @@
       days: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
       always: 'Siempre disponible', sometimes: 'A veces disponible', never: 'Nunca disponible',
       alwaysSub: 'libre casi todas las semanas', sometimesSub: 'libre algunas semanas', neverSub: 'normalmente sin hueco',
+      none: 'Sin datos', noneSub: 'ese día ya pasó este mes',
       basis: 'Según mi calendario de {m}', tz: 'Hora de Polonia', weeks: 'sem.',
       cta: 'Huecos exactos y reservas: inglesconpaulo.org'
     },
@@ -1695,6 +1696,7 @@
       days: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'],
       always: 'Zawsze dostępny', sometimes: 'Czasem dostępny', never: 'Niedostępny',
       alwaysSub: 'wolne prawie co tydzień', sometimesSub: 'wolne w niektóre tygodnie', neverSub: 'zwykle brak terminu',
+      none: 'Brak danych', noneSub: 'ten dzień w tym miesiącu już minął',
       basis: 'Na podstawie mojego kalendarza: {m}', tz: 'Czas polski', weeks: 'tyg.',
       cta: 'Dokładne terminy i rezerwacje: inglesconpaulo.org'
     },
@@ -1705,13 +1707,13 @@
       days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       always: 'Always available', sometimes: 'Sometimes available', never: 'Never available',
       alwaysSub: 'free almost every week', sometimesSub: 'free some weeks', neverSub: 'usually no slot',
+      none: 'No data', noneSub: 'that day has passed this month',
       basis: 'Based on my {m} calendar', tz: 'Polish time', weeks: 'wks',
       cta: 'Exact slots & booking: inglesconpaulo.org'
     }
   };
 
   let schedView = 'summary';
-  let schedCache = { month: null, slots: [] };
   let schedLast = null;   // { canvas-ready meta } for download filenames
 
   const schedFmt = new Intl.DateTimeFormat('en-GB', {
@@ -1733,7 +1735,6 @@
   }
 
   async function loadScheduleMonth(ym) {
-    if (schedCache.month === ym) return schedCache.slots;
     const [y, m] = ym.split('-').map(Number);
     // Pad by a day either side and filter on the Warsaw-local month below,
     // instead of doing timezone arithmetic on the boundaries.
@@ -1744,17 +1745,24 @@
       .gte('start_time', from).lt('start_time', to)
       .order('start_time').limit(2000);
     if (error) throw error;
-    const slots = (data || []).filter(s => schedParts(s.start_time).ym === ym);
-    // Don't cache an empty result: it's usually a session that hadn't
-    // restored yet, and caching it would pin the month as blank.
-    if (slots.length) schedCache = { month: ym, slots };
-    return slots;
+    // Deliberately not cached: a slot deleted in the Clases tab has to
+    // disappear from this image without reloading the page. It's one small
+    // query per redraw.
+    return (data || []).filter(s => schedParts(s.start_time).ym === ym);
   }
 
-  function computeSchedule(slots, ym, view, countBooked) {
+  function computeSchedule(slots, ym, view, countBooked, nowIso) {
+    // Only the part of the month still ahead counts. A lesson that already
+    // happened (or a slot deleted after its date passed) says nothing about
+    // what a student can book now, and leaving past weeks in would keep
+    // showing times that have since been removed from the calendar.
+    const nowMs = Date.parse(nowIso || new Date().toISOString());
+    const now = schedParts(new Date(nowMs).toISOString());
     const avail = new Set();
-    let offered = 0;
+    let offered = 0, future = 0;
     slots.forEach(s => {
+      if (Date.parse(s.start_time) <= nowMs) return;
+      future++;
       if (s.is_blocked) return;                       // Google Calendar conflict
       if (!countBooked && (s.is_booked || s.reserved_for)) return;
       const p = schedParts(s.start_time);
@@ -1780,17 +1788,22 @@
     }
 
     const grid = rows.map(r => datesByWd.map(dates => {
-      let hit = 0;
+      let hit = 0, of = 0;
       dates.forEach(ds => {
+        // A window that has already ended can't count either way.
+        if (ds < now.date || (ds === now.date && r.to <= now.hour)) return;
+        of++;
         for (let h = r.from; h < r.to; h++) if (avail.has(ds + '|' + h)) { hit++; break; }
       });
-      const ratio = dates.length ? hit / dates.length : 0;
+      if (!of) return { hit: 0, of: 0, level: 'none' };
+      const ratio = hit / of;
       const level = ratio >= SCHED_ALWAYS ? 'always' : ratio >= SCHED_SOMETIMES ? 'sometimes' : 'never';
-      return { hit, of: dates.length, level };
+      return { hit, of, level };
     }));
 
-    const occ = datesByWd.map(d => d.length);
-    return { rows, grid, offered, total: slots.length, minOcc: Math.min(...occ), maxOcc: Math.max(...occ) };
+    const occ = datesByWd.map(dates => dates.filter(ds => ds >= now.date).length);
+    return { rows, grid, offered, total: future, minOcc: Math.min(...occ), maxOcc: Math.max(...occ),
+             hasNone: grid.some(row => row.some(c => c.level === 'none')) };
   }
 
   function schedMonthLabel(ym, locale) {
@@ -1831,6 +1844,8 @@
       ctx.moveTo(cx - s * 0.48, cy + s * 0.06);
       ctx.bezierCurveTo(cx - s * 0.24, cy - s * 0.34, cx - s * 0.02, cy - s * 0.1, cx, cy + s * 0.02);
       ctx.bezierCurveTo(cx + s * 0.02, cy + s * 0.14, cx + s * 0.24, cy + s * 0.38, cx + s * 0.48, cy - s * 0.06);
+    } else if (level === 'none') {
+      ctx.moveTo(cx - s * 0.3, cy); ctx.lineTo(cx + s * 0.3, cy);
     } else {
       ctx.moveTo(cx - s * 0.36, cy - s * 0.36); ctx.lineTo(cx + s * 0.36, cy + s * 0.36);
       ctx.moveTo(cx + s * 0.36, cy - s * 0.36); ctx.lineTo(cx - s * 0.36, cy + s * 0.36);
@@ -1906,23 +1921,25 @@
         ctx.textAlign = 'center';
         ctx.fillStyle = SCHED_COL.ink;
         ctx.font = (hourly ? '600 13px' : '600 16px') + ' Inter, system-ui, sans-serif';
-        ctx.fillText(c.hit + '/' + c.of + ' ' + t.weeks, x + colW / 2, y + cellH - (hourly ? 10 : 18));
+        ctx.fillText(c.level === 'none' ? '—' : c.hit + '/' + c.of + ' ' + t.weeks, x + colW / 2, y + cellH - (hourly ? 10 : 18));
       });
     });
 
     // Legend
     const items = [['always', t.always, t.alwaysSub], ['sometimes', t.sometimes, t.sometimesSub], ['never', t.never, t.neverSub]];
-    const itemW = (W - 2 * P) / 3;
+    if (res.hasNone) items.push(['none', t.none, t.noneSub]);
+    const itemW = (W - 2 * P) / items.length;
     items.forEach(([lvl, label, sub], i) => {
       const x = P + i * itemW, y = legendTop;
       ctx.fillStyle = SCHED_COL[lvl];
       schedRoundRect(ctx, x, y + 6, 46, 46, 10); ctx.fill();
       schedIcon(ctx, lvl, x + 23, y + 29, 24);
       ctx.textAlign = 'left';
-      ctx.fillStyle = SCHED_COL.ink; ctx.font = '700 19px Inter, system-ui, sans-serif';
-      ctx.fillText(label, x + 60, y + 26);
-      ctx.fillStyle = SCHED_COL.inkSoft; ctx.font = '500 15px Inter, system-ui, sans-serif';
-      ctx.fillText(sub, x + 60, y + 50);
+      const narrow = items.length > 3;
+      ctx.fillStyle = SCHED_COL.ink; ctx.font = (narrow ? '700 16px' : '700 19px') + ' Inter, system-ui, sans-serif';
+      ctx.fillText(label, x + 60, y + 26, itemW - 70);
+      ctx.fillStyle = SCHED_COL.inkSoft; ctx.font = (narrow ? '500 13px' : '500 15px') + ' Inter, system-ui, sans-serif';
+      ctx.fillText(sub, x + 60, y + 50, itemW - 70);
     });
 
     // Footer
@@ -1964,11 +1981,17 @@
 
       const monthName = schedMonthLabel(ym, 'es-ES');
       stats.innerHTML = '';
-      stats.append(`${res.total} clases creadas en ${monthName}, ${res.offered} de ellas contadas como libres. ` +
-        `Cada día de la semana cuenta ${res.minOcc === res.maxOcc ? res.minOcc : res.minOcc + '–' + res.maxOcc} semanas.`);
-      // An under-planned month reads as mostly orange, which would undersell
-      // the real schedule to whoever receives the image.
-      if (res.total < 60) {
+      stats.append(`Solo cuenta lo que queda del mes desde ahora: ${res.total} clases futuras en ${monthName}, ` +
+        `${res.offered} de ellas libres. Cada día de la semana cuenta ` +
+        `${res.minOcc === res.maxOcc ? res.minOcc : res.minOcc + '–' + res.maxOcc} semanas.`);
+      if (res.maxOcc === 0) {
+        const w = document.createElement('span');
+        w.className = 'sched-warn';
+        w.textContent = ' Ese mes ya ha pasado entero: elige el mes actual o el siguiente.';
+        stats.append(w);
+      } else if (res.total < 60) {
+        // An under-planned month reads as mostly orange, which would undersell
+        // the real schedule to whoever receives the image.
         const w = document.createElement('span');
         w.className = 'sched-warn';
         w.textContent = ' Este mes todavía tiene pocas clases creadas, así que la imagen saldrá más naranja que tu horario real.';
