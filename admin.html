@@ -396,6 +396,35 @@
     content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
     height: 2.5px; background: var(--accent); border-radius: 2px;
   }
+  /* ---- Horario (shareable weekly-availability image) ---- */
+  .sched-controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: flex-end; margin: 18px 0 10px; }
+  .sched-controls label { margin: 0; }
+  .sched-controls select {
+    display: block; margin-top: 5px; padding: 9px 12px; border-radius: 8px;
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem;
+  }
+  .sched-controls input[type="month"] { display: block; margin-top: 5px; color: var(--ink); }
+  .seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button {
+    border: none; background: transparent; color: var(--ink-soft); cursor: pointer;
+    padding: 9px 14px; font-family: 'Inter', system-ui, sans-serif; font-size: 0.86rem; font-weight: 600;
+  }
+  .seg button + button { border-left: 1.5px solid var(--line); }
+  .seg button.active { background: var(--accent); color: var(--accent-ink); }
+  .sched-check { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--ink-soft); }
+  .sched-check input { width: auto; }
+  .sched-stats { font-size: 0.84rem; color: var(--ink-soft); margin: 4px 0 14px; line-height: 1.55; }
+  .sched-warn { color: var(--danger); font-weight: 600; }
+  /* The image itself is always drawn in the light palette — it's sent to
+     students, so it must not inherit the admin's dark mode. */
+  .sched-preview canvas {
+    display: block; width: 100%; max-width: 560px; height: auto;
+    border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--shadow-md);
+  }
+  .sched-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
+  .sched-actions .btn { margin-top: 0; }
+
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
   @media (max-width: 560px) { .tab { padding: 9px 11px; font-size: 0.85rem; } }
@@ -497,6 +526,7 @@
       <button class="tab" data-tab="mensajes" role="tab" onclick="showAdminTab('mensajes')">Mensajes <span id="tab-msg-badge"></span></button>
       <button class="tab" data-tab="opiniones" role="tab" onclick="showAdminTab('opiniones')">Opiniones</button>
       <button class="tab" data-tab="blog" role="tab" onclick="showAdminTab('blog')">Blog</button>
+      <button class="tab" data-tab="horario" role="tab" onclick="showAdminTab('horario')">Horario</button>
     </nav>
 
     <section class="tab-panel" id="apanel-clases" role="tabpanel">
@@ -724,6 +754,52 @@
         <h3>Artículos</h3>
         <div id="blog-list"></div>
         <p class="empty-note" id="blog-list-empty" style="display:none;">Todavía no has escrito nada.</p>
+      </div>
+    </section>
+
+    <!-- ============ HORARIO ============ -->
+    <section class="tab-panel" id="apanel-horario" role="tabpanel">
+      <div class="card">
+        <h3>Imagen de mi horario</h3>
+        <p class="sched-stats" style="margin-top:6px;">
+          Resume cómo sueles estar disponible durante un mes, para mandársela a alguien que todavía no tiene cuenta.
+          Cada casilla mira todas las veces que ese día de la semana aparece en el mes:
+          <strong>verde</strong> si estás libre en al menos el 75&nbsp;% de esas semanas,
+          <strong>amarillo</strong> entre el 25 y el 75&nbsp;%, <strong>naranja</strong> por debajo del 25&nbsp;%.
+        </p>
+
+        <div class="sched-controls">
+          <label>Mes
+            <input type="month" id="sched-month" onchange="renderSchedule()">
+          </label>
+          <div>
+            <label>Franja</label>
+            <div class="seg" role="group" aria-label="Franja del día">
+              <button type="button" data-view="summary" class="active" onclick="setSchedView('summary')">Semana completa</button>
+              <button type="button" data-view="morning" onclick="setSchedView('morning')">Mañanas</button>
+              <button type="button" data-view="afternoon" onclick="setSchedView('afternoon')">Tardes</button>
+            </div>
+          </div>
+          <label>Idioma de la imagen
+            <select id="sched-lang" onchange="renderSchedule()">
+              <option value="es">Español</option>
+              <option value="pl">Polski</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <label class="sched-check">
+            <input type="checkbox" id="sched-count-booked" onchange="renderSchedule()">
+            Contar como libres las clases ya reservadas
+          </label>
+        </div>
+
+        <p class="sched-stats" id="sched-stats"></p>
+        <div class="sched-preview"><canvas id="sched-canvas" aria-label="Vista previa del horario"></canvas></div>
+        <div class="sched-actions">
+          <button type="button" class="btn" onclick="downloadSchedule()">Descargar imagen</button>
+          <button type="button" class="btn btn-outline" onclick="copySchedule()">Copiar imagen</button>
+          <span id="sched-msg" class="sched-stats" style="margin:0;"></span>
+        </div>
       </div>
     </section>
   </div>
@@ -1585,7 +1661,356 @@
   }
 
   // ---- SUBPAGE TABS ----
-  const ADMIN_TABS = ['clases', 'alumnos', 'notas', 'mensajes', 'opiniones', 'blog'];
+
+  // ---- Horario: shareable weekly-availability image ------------------------
+  // Answers "when are you usually free?" for someone without an account,
+  // without exposing exact bookings. Everything is bucketed in Polish time
+  // explicitly rather than the browser's zone, so the image stays correct even
+  // if it's generated while travelling.
+  const SCHED_TZ = 'Europe/Warsaw';
+  const SCHED_HALVES = { morning: [8, 14], afternoon: [14, 22] };   // [from, to) hours
+  const SCHED_ALWAYS = 0.75, SCHED_SOMETIMES = 0.25;
+  const SCHED_COL = {
+    ground: '#772F55', onGround: '#FBF2F6', accent: '#F1CB1C',
+    paper: '#FDF6F9', ink: '#301423', inkSoft: '#6D525E', line: '#E6DADF',
+    always: '#4EB068', sometimes: '#F8D14F', never: '#F68443'
+  };
+  // The image goes to students, so it's trilingual even though the admin
+  // panel itself is Spanish-only.
+  const SCHED_TEXT = {
+    es: {
+      title: 'Mi horario habitual', locale: 'es-ES',
+      views: { summary: 'Semana completa', morning: 'Mañanas', afternoon: 'Tardes' },
+      morning: 'Mañana', afternoon: 'Tarde',
+      days: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+      always: 'Siempre disponible', sometimes: 'A veces disponible', never: 'Nunca disponible',
+      alwaysSub: 'libre casi todas las semanas', sometimesSub: 'libre algunas semanas', neverSub: 'normalmente sin hueco',
+      basis: 'Según mi calendario de {m}', tz: 'Hora de Polonia', weeks: 'sem.',
+      cta: 'Huecos exactos y reservas: inglesconpaulo.org'
+    },
+    pl: {
+      title: 'Mój typowy grafik', locale: 'pl-PL',
+      views: { summary: 'Cały tydzień', morning: 'Rano', afternoon: 'Popołudnia' },
+      morning: 'Rano', afternoon: 'Popołudnie',
+      days: ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'],
+      always: 'Zawsze dostępny', sometimes: 'Czasem dostępny', never: 'Niedostępny',
+      alwaysSub: 'wolne prawie co tydzień', sometimesSub: 'wolne w niektóre tygodnie', neverSub: 'zwykle brak terminu',
+      basis: 'Na podstawie mojego kalendarza: {m}', tz: 'Czas polski', weeks: 'tyg.',
+      cta: 'Dokładne terminy i rezerwacje: inglesconpaulo.org'
+    },
+    en: {
+      title: 'My usual schedule', locale: 'en-GB',
+      views: { summary: 'Full week', morning: 'Mornings', afternoon: 'Afternoons' },
+      morning: 'Morning', afternoon: 'Afternoon',
+      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      always: 'Always available', sometimes: 'Sometimes available', never: 'Never available',
+      alwaysSub: 'free almost every week', sometimesSub: 'free some weeks', neverSub: 'usually no slot',
+      basis: 'Based on my {m} calendar', tz: 'Polish time', weeks: 'wks',
+      cta: 'Exact slots & booking: inglesconpaulo.org'
+    }
+  };
+
+  let schedView = 'summary';
+  let schedCache = { month: null, slots: [] };
+  let schedLast = null;   // { canvas-ready meta } for download filenames
+
+  const schedFmt = new Intl.DateTimeFormat('en-GB', {
+    timeZone: SCHED_TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23'
+  });
+  function schedParts(iso) {
+    const p = {};
+    schedFmt.formatToParts(new Date(iso)).forEach(x => { p[x.type] = x.value; });
+    return { ym: p.year + '-' + p.month, date: p.year + '-' + p.month + '-' + p.day, hour: Number(p.hour) };
+  }
+  function schedCurrentMonth() {
+    const p = schedParts(new Date().toISOString());
+    return p.ym;
+  }
+  // Monday = 0. Computed on the calendar date itself, so it's timezone-free.
+  function schedWeekday(dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7;
+  }
+
+  async function loadScheduleMonth(ym) {
+    if (schedCache.month === ym) return schedCache.slots;
+    const [y, m] = ym.split('-').map(Number);
+    // Pad by a day either side and filter on the Warsaw-local month below,
+    // instead of doing timezone arithmetic on the boundaries.
+    const from = new Date(Date.UTC(y, m - 1, 1) - 86400000).toISOString();
+    const to = new Date(Date.UTC(y, m, 1) + 86400000).toISOString();
+    const { data, error } = await sb.from('schedule_slots')
+      .select('start_time, is_booked, is_blocked, reserved_for')
+      .gte('start_time', from).lt('start_time', to)
+      .order('start_time').limit(2000);
+    if (error) throw error;
+    const slots = (data || []).filter(s => schedParts(s.start_time).ym === ym);
+    // Don't cache an empty result: it's usually a session that hadn't
+    // restored yet, and caching it would pin the month as blank.
+    if (slots.length) schedCache = { month: ym, slots };
+    return slots;
+  }
+
+  function computeSchedule(slots, ym, view, countBooked) {
+    const avail = new Set();
+    let offered = 0;
+    slots.forEach(s => {
+      if (s.is_blocked) return;                       // Google Calendar conflict
+      if (!countBooked && (s.is_booked || s.reserved_for)) return;
+      const p = schedParts(s.start_time);
+      avail.add(p.date + '|' + p.hour);
+      offered++;
+    });
+
+    const [y, m] = ym.split('-').map(Number);
+    const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const datesByWd = [[], [], [], [], [], [], []];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = ym + '-' + String(d).padStart(2, '0');
+      datesByWd[schedWeekday(ds)].push(ds);
+    }
+
+    const rows = [];
+    if (view === 'summary') {
+      rows.push({ kind: 'half', key: 'morning', from: SCHED_HALVES.morning[0], to: SCHED_HALVES.morning[1] });
+      rows.push({ kind: 'half', key: 'afternoon', from: SCHED_HALVES.afternoon[0], to: SCHED_HALVES.afternoon[1] });
+    } else {
+      const [a, b] = SCHED_HALVES[view];
+      for (let h = a; h < b; h++) rows.push({ kind: 'hour', from: h, to: h + 1 });
+    }
+
+    const grid = rows.map(r => datesByWd.map(dates => {
+      let hit = 0;
+      dates.forEach(ds => {
+        for (let h = r.from; h < r.to; h++) if (avail.has(ds + '|' + h)) { hit++; break; }
+      });
+      const ratio = dates.length ? hit / dates.length : 0;
+      const level = ratio >= SCHED_ALWAYS ? 'always' : ratio >= SCHED_SOMETIMES ? 'sometimes' : 'never';
+      return { hit, of: dates.length, level };
+    }));
+
+    const occ = datesByWd.map(d => d.length);
+    return { rows, grid, offered, total: slots.length, minOcc: Math.min(...occ), maxOcc: Math.max(...occ) };
+  }
+
+  function schedMonthLabel(ym, locale) {
+    const [y, m] = ym.split('-').map(Number);
+    return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' })
+      .format(new Date(Date.UTC(y, m - 1, 15)));
+  }
+  function schedTzAbbr(ym) {
+    const [y, m] = ym.split('-').map(Number);
+    const p = new Intl.DateTimeFormat('en-GB', { timeZone: SCHED_TZ, timeZoneName: 'short' })
+      .formatToParts(new Date(Date.UTC(y, m - 1, 15, 12)));
+    const n = p.find(x => x.type === 'timeZoneName');
+    return n ? n.value : '';
+  }
+  const schedCap = str => str.charAt(0).toLocaleUpperCase() + str.slice(1);
+  const schedHH = h => String(h).padStart(2, '0') + ':00';
+
+  function schedRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); return; }
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  // Drawn as paths rather than ✓/✕ glyphs, which Inter doesn't have and would
+  // fall back to whatever font the machine happens to own. The shape carries
+  // the meaning too, so green and orange stay distinguishable for colour-blind
+  // readers.
+  function schedIcon(ctx, level, cx, cy, s) {
+    ctx.save();
+    ctx.strokeStyle = SCHED_COL.ink; ctx.lineWidth = Math.max(3, s * 0.16);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    if (level === 'always') {
+      ctx.moveTo(cx - s * 0.45, cy + s * 0.02);
+      ctx.lineTo(cx - s * 0.12, cy + s * 0.33);
+      ctx.lineTo(cx + s * 0.48, cy - s * 0.35);
+    } else if (level === 'sometimes') {
+      ctx.moveTo(cx - s * 0.48, cy + s * 0.06);
+      ctx.bezierCurveTo(cx - s * 0.24, cy - s * 0.34, cx - s * 0.02, cy - s * 0.1, cx, cy + s * 0.02);
+      ctx.bezierCurveTo(cx + s * 0.02, cy + s * 0.14, cx + s * 0.24, cy + s * 0.38, cx + s * 0.48, cy - s * 0.06);
+    } else {
+      ctx.moveTo(cx - s * 0.36, cy - s * 0.36); ctx.lineTo(cx + s * 0.36, cy + s * 0.36);
+      ctx.moveTo(cx + s * 0.36, cy - s * 0.36); ctx.lineTo(cx - s * 0.36, cy + s * 0.36);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawSchedule(canvas, res, ym, view, lang) {
+    const t = SCHED_TEXT[lang];
+    const hourly = view !== 'summary';
+    const W = 1080, P = 56, gap = 10;
+    const labelW = hourly ? 108 : 172;
+    const colW = (W - 2 * P - labelW - gap * 7) / 7;
+    const headerH = 206, dayRowH = 52;
+    const cellH = hourly ? 76 : 164;
+    const gridTop = headerH + 40;
+    const gridH = dayRowH + res.rows.length * (cellH + gap);
+    const legendTop = gridTop + gridH + 26;
+    const legendH = 92;
+    const footerTop = legendTop + legendH + 18;
+    const H = footerTop + 104;
+
+    const S = 2;   // draw at 2x so it stays sharp on phone screens
+    canvas.width = W * S; canvas.height = H * S;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(S, 0, 0, S, 0, 0);
+    ctx.textBaseline = 'alphabetic';
+
+    ctx.fillStyle = SCHED_COL.paper; ctx.fillRect(0, 0, W, H);
+
+    // Header: 7a's ground with the yellow rule beside the name.
+    ctx.fillStyle = SCHED_COL.ground; ctx.fillRect(0, 0, W, headerH);
+    ctx.fillStyle = SCHED_COL.accent; ctx.fillRect(P, 50, 6, 108);
+    ctx.fillStyle = SCHED_COL.onGround;
+    ctx.font = '46px "Archivo Black", system-ui, sans-serif';
+    ctx.fillText('Paulo Crespo', P + 28, 94);
+    ctx.font = '600 28px Inter, system-ui, sans-serif';
+    ctx.fillText(t.title, P + 28, 134);
+    ctx.fillStyle = SCHED_COL.accent;
+    ctx.font = '600 23px Inter, system-ui, sans-serif';
+    ctx.fillText(schedCap(schedMonthLabel(ym, t.locale)) + '  ·  ' + t.views[view], P + 28, 170);
+
+    // Day headers
+    ctx.textAlign = 'center';
+    ctx.font = '700 21px Inter, system-ui, sans-serif';
+    t.days.forEach((d, i) => {
+      const x = P + labelW + gap + i * (colW + gap) + colW / 2;
+      ctx.fillStyle = i >= 5 ? SCHED_COL.inkSoft : SCHED_COL.ink;
+      ctx.fillText(d, x, gridTop + 32);
+    });
+
+    // Rows
+    res.rows.forEach((r, ri) => {
+      const y = gridTop + dayRowH + ri * (cellH + gap);
+      ctx.textAlign = 'left';
+      if (r.kind === 'half') {
+        ctx.fillStyle = SCHED_COL.ink; ctx.font = '700 24px Inter, system-ui, sans-serif';
+        ctx.fillText(t[r.key], P, y + cellH / 2 - 4);
+        ctx.fillStyle = SCHED_COL.inkSoft; ctx.font = '500 17px Inter, system-ui, sans-serif';
+        ctx.fillText(schedHH(r.from) + '–' + schedHH(r.to), P, y + cellH / 2 + 22);
+      } else {
+        ctx.fillStyle = SCHED_COL.ink; ctx.font = '600 20px Inter, system-ui, sans-serif';
+        ctx.fillText(schedHH(r.from), P, y + cellH / 2 + 7);
+      }
+      res.grid[ri].forEach((c, di) => {
+        const x = P + labelW + gap + di * (colW + gap);
+        ctx.fillStyle = SCHED_COL[c.level];
+        schedRoundRect(ctx, x, y, colW, cellH, hourly ? 10 : 14); ctx.fill();
+        const iconS = hourly ? 22 : 38;
+        const iconY = y + cellH / 2 - (hourly ? 9 : 14);
+        schedIcon(ctx, c.level, x + colW / 2, iconY, iconS);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = SCHED_COL.ink;
+        ctx.font = (hourly ? '600 13px' : '600 16px') + ' Inter, system-ui, sans-serif';
+        ctx.fillText(c.hit + '/' + c.of + ' ' + t.weeks, x + colW / 2, y + cellH - (hourly ? 10 : 18));
+      });
+    });
+
+    // Legend
+    const items = [['always', t.always, t.alwaysSub], ['sometimes', t.sometimes, t.sometimesSub], ['never', t.never, t.neverSub]];
+    const itemW = (W - 2 * P) / 3;
+    items.forEach(([lvl, label, sub], i) => {
+      const x = P + i * itemW, y = legendTop;
+      ctx.fillStyle = SCHED_COL[lvl];
+      schedRoundRect(ctx, x, y + 6, 46, 46, 10); ctx.fill();
+      schedIcon(ctx, lvl, x + 23, y + 29, 24);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = SCHED_COL.ink; ctx.font = '700 19px Inter, system-ui, sans-serif';
+      ctx.fillText(label, x + 60, y + 26);
+      ctx.fillStyle = SCHED_COL.inkSoft; ctx.font = '500 15px Inter, system-ui, sans-serif';
+      ctx.fillText(sub, x + 60, y + 50);
+    });
+
+    // Footer
+    ctx.fillStyle = SCHED_COL.line; ctx.fillRect(P, footerTop, W - 2 * P, 1.5);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = SCHED_COL.inkSoft; ctx.font = '500 17px Inter, system-ui, sans-serif';
+    const tz = schedTzAbbr(ym);
+    ctx.fillText(t.basis.replace('{m}', schedMonthLabel(ym, t.locale)) + '  ·  ' + t.tz + (tz ? ' (' + tz + ')' : ''), P, footerTop + 38);
+    ctx.fillStyle = SCHED_COL.ground; ctx.font = '700 21px Inter, system-ui, sans-serif';
+    ctx.fillText(t.cta, P, footerTop + 74);
+  }
+
+  function setSchedView(v) {
+    schedView = v;
+    document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+    renderSchedule();
+  }
+
+  async function renderSchedule() {
+    const monthEl = document.getElementById('sched-month');
+    if (!monthEl.value) monthEl.value = schedCurrentMonth();
+    const ym = monthEl.value;
+    const lang = document.getElementById('sched-lang').value;
+    const countBooked = document.getElementById('sched-count-booked').checked;
+    const stats = document.getElementById('sched-stats');
+    stats.textContent = 'Cargando…';
+    try {
+      // Canvas only uses a web font that has actually finished loading.
+      try {
+        await Promise.all([
+          document.fonts.load('46px "Archivo Black"'),
+          document.fonts.load('700 20px Inter'), document.fonts.load('600 20px Inter'), document.fonts.load('500 20px Inter')
+        ]);
+      } catch (e) {}
+      const slots = await loadScheduleMonth(ym);
+      const res = computeSchedule(slots, ym, schedView, countBooked);
+      drawSchedule(document.getElementById('sched-canvas'), res, ym, schedView, lang);
+      schedLast = { ym, view: schedView, lang };
+
+      const monthName = schedMonthLabel(ym, 'es-ES');
+      stats.innerHTML = '';
+      stats.append(`${res.total} clases creadas en ${monthName}, ${res.offered} de ellas contadas como libres. ` +
+        `Cada día de la semana cuenta ${res.minOcc === res.maxOcc ? res.minOcc : res.minOcc + '–' + res.maxOcc} semanas.`);
+      // An under-planned month reads as mostly orange, which would undersell
+      // the real schedule to whoever receives the image.
+      if (res.total < 60) {
+        const w = document.createElement('span');
+        w.className = 'sched-warn';
+        w.textContent = ' Este mes todavía tiene pocas clases creadas, así que la imagen saldrá más naranja que tu horario real.';
+        stats.append(w);
+      }
+    } catch (err) {
+      console.error('No se pudo generar el horario:', err);
+      stats.textContent = 'No se pudo cargar el horario de ese mes.';
+    }
+  }
+
+  function schedFilename() {
+    const v = { summary: 'semana', morning: 'mananas', afternoon: 'tardes' }[schedLast?.view || 'summary'];
+    return `horario-paulo-${schedLast?.ym || 'mes'}-${v}-${schedLast?.lang || 'es'}.png`;
+  }
+  function schedBlob() {
+    return new Promise(res => document.getElementById('sched-canvas').toBlob(res, 'image/png'));
+  }
+  async function downloadSchedule() {
+    const blob = await schedBlob();
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = schedFilename();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  // Straight to the clipboard, so it can be pasted into Telegram or WhatsApp
+  // Web without saving a file first.
+  async function copySchedule() {
+    const msg = document.getElementById('sched-msg');
+    try {
+      const blob = await schedBlob();
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      msg.textContent = 'Copiada. Pégala en el chat.';
+    } catch (e) {
+      msg.textContent = 'Este navegador no deja copiar imágenes; usa «Descargar imagen».';
+    }
+    setTimeout(() => { msg.textContent = ''; }, 3500);
+  }
+
+  const ADMIN_TABS = ['clases', 'alumnos', 'notas', 'mensajes', 'opiniones', 'blog', 'horario'];
 
   function showAdminTab(name) {
     if (!ADMIN_TABS.includes(name)) name = 'clases';
@@ -1599,6 +2024,8 @@
       }
     });
     if (window.location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+    // Built lazily: it queries a whole month of slots, which nothing else needs.
+    if (name === 'horario') renderSchedule();
   }
 
   window.addEventListener('hashchange', () => {
