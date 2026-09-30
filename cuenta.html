@@ -1873,6 +1873,8 @@
   async function bookSlot(slotId) {
     const { error } = await sb.rpc('book_slot', { slot_id: slotId });
     if (error) {
+      // The failed call rolled itself back, so report it for the admin's log.
+      sb.rpc('log_booking_failure', { _slot_id: slotId, _message: error.message }).then(() => {}, () => {});
       alert(error.message);
       return;
     }

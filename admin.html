@@ -623,6 +623,14 @@
         </div>
         <div id="bulk-slot-msg"></div>
       </div>
+
+      <!-- FAILED BOOKING ATTEMPTS -->
+      <div class="card">
+        <h3>Reservas fallidas (últimos 14 días)</h3>
+        <p class="hint">Cuando un alumno intenta reservar y falla, queda aquí con el motivo que vio en pantalla.</p>
+        <div id="booking-failures"></div>
+        <p class="empty-note" id="booking-failures-empty" style="display:none;">Ninguna reserva ha fallado.</p>
+      </div>
     </section>
 
     <section class="tab-panel" id="apanel-alumnos" role="tabpanel">
@@ -870,6 +878,7 @@
     await loadStudents();
     await loadCalendar();
     await loadPendingTestimonials();
+    loadBookingFailures();
     await loadChatThreads();
     subscribeAdminChat();
     await loadBlogPosts();
@@ -1297,6 +1306,36 @@
       return;
     }
     await loadStudents();
+  }
+
+  // ---- FAILED BOOKING ATTEMPTS ----
+  async function loadBookingFailures() {
+    const since = new Date(Date.now() - 14 * 864e5).toISOString();
+    const { data, error } = await sb
+      .from('booking_failures')
+      .select('id, student_id, slot_start, message, created_at')
+      .gte('created_at', since)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    const box = document.getElementById('booking-failures');
+    const empty = document.getElementById('booking-failures-empty');
+    if (!box) return;
+    if (error) {
+      box.innerHTML = `<p class="empty-note">No se pudo cargar: ${escapeHtml(error.message)}</p>`;
+      empty.style.display = 'none';
+      return;
+    }
+    empty.style.display = data.length ? 'none' : '';
+    const fmt = iso => iso
+      ? new Date(iso).toLocaleString('es-ES', { timeZone: 'Europe/Warsaw', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+      : '—';
+    box.innerHTML = data.map(f => {
+      const who = (allStudents.find(s => s.id === f.student_id) || {}).full_name || 'Alumno/a';
+      return `<div style="padding:8px 0; border-bottom:1px solid var(--line);">
+        <strong>${escapeHtml(who)}</strong> · intentó reservar ${fmt(f.slot_start)}
+        <div class="hint">${escapeHtml(f.message)} — ${fmt(f.created_at)}</div>
+      </div>`;
+    }).join('');
   }
 
   // ---- TESTIMONIAL MODERATION ----
