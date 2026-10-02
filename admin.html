@@ -629,15 +629,28 @@
       <!-- STUDENT CREDITS -->
       <div class="card">
         <h3>Créditos de alumnos</h3>
-        <p class="hint">Cambia el número y pulsa Guardar para actualizar el saldo de un alumno.</p>
+        <p class="hint">Cambia el número y pulsa Guardar para actualizar el saldo de un alumno. El precio (€ por crédito) es el que se usa al acreditar automáticamente sus pagos de Wise; la referencia es el código que el alumno pone en la transferencia.</p>
         <input type="text" id="student-search" placeholder="Buscar por nombre o email..." oninput="renderStudents()">
         <table>
           <thead>
-            <tr><th>Nombre</th><th>Email</th><th>Créditos</th><th></th></tr>
+            <tr><th>Nombre</th><th>Email</th><th>Referencia</th><th>€/crédito</th><th>Créditos</th><th></th></tr>
           </thead>
           <tbody id="students-tbody"></tbody>
         </table>
         <p class="empty-note" id="students-empty" style="display:none;">No se encontraron alumnos.</p>
+      </div>
+
+      <!-- WISE PAYMENTS -->
+      <div class="card">
+        <h3>Pagos de Wise</h3>
+        <p class="hint">Se leen de los emails de Wise cada 10 minutos y se convierten en créditos al precio de cada alumno (se acreditan fracciones: 40€ a 15€ = 2,66). Si un pago no trae referencia ni un nombre que coincida, queda aquí sin asignar.</p>
+        <table>
+          <thead>
+            <tr><th>Fecha</th><th>Importe</th><th>Remitente / referencia</th><th>Alumno</th><th>Créditos</th><th></th></tr>
+          </thead>
+          <tbody id="payments-tbody"></tbody>
+        </table>
+        <p class="empty-note" id="payments-empty" style="display:none;">Todavía no hay pagos.</p>
       </div>
 
       <!-- ESTIMATED EARNINGS -->
@@ -1232,7 +1245,7 @@
   async function loadStudents() {
     const { data, error } = await sb
       .from('profiles')
-      .select('id, full_name, email, credits, is_admin, language')
+      .select('id, full_name, email, credits, is_admin, language, referral_code, price_per_credit')
       .order('full_name');
 
     if (error) {
@@ -1243,6 +1256,7 @@
     }
     renderStudents();
     fillFocusStudents();
+    loadPayments();
   }
 
   function renderStudents() {
@@ -1267,7 +1281,9 @@
       tr.innerHTML = `
         <td>${escapeHtml(s.full_name || '—')}</td>
         <td>${escapeHtml(s.email || '—')}</td>
-        <td><input type="number" min="0" step="0.5" value="${fmtCredits(s.credits)}" id="credit-input-${s.id}"></td>
+        <td><code>${escapeHtml(s.referral_code || '—')}</code></td>
+        <td><input type="number" min="0.01" step="0.01" value="${fmtCredits(s.price_per_credit)}" id="price-input-${s.id}" style="max-width: 80px;"></td>
+        <td><input type="number" min="0" step="0.01" value="${fmtCredits(s.credits)}" id="credit-input-${s.id}"></td>
         <td><button class="btn btn-small btn-outline" onclick="saveCredits('${s.id}')">Guardar</button></td>
       `;
       tbody.appendChild(tr);
@@ -1291,11 +1307,74 @@
     // Uses admin_grant_credits instead of a raw update so that a genuine
     // top-up (not a refund — those go through separate RPCs) correctly
     // triggers the referral reward the first time it happens.
-    const { error } = await sb.rpc('admin_grant_credits', { _student_id: studentId, _new_credits: newCredits });
-    if (error) {
-      alert(error.message);
+    const price = parseFloat(document.getElementById(`price-input-${studentId}`).value);
+    if (isNaN(price) || price <= 0) {
+      alert('Introduce un precio válido.');
       return;
     }
+    const student = allStudents.find(s => s.id === studentId);
+    if (student && Number(student.price_per_credit) !== price) {
+      const { error: priceError } = await sb.rpc('admin_set_price', { _student_id: studentId, _price: price });
+      if (priceError) { alert(priceError.message); return; }
+    }
+    if (!student || Number(student.credits) !== newCredits) {
+      const { error } = await sb.rpc('admin_grant_credits', { _student_id: studentId, _new_credits: newCredits });
+      if (error) { alert(error.message); return; }
+    }
+    await loadStudents();
+  }
+
+  // ---- WISE PAYMENTS ----
+  async function loadPayments() {
+    const { data, error } = await sb
+      .from('payments')
+      .select('id, received_at, amount_eur, sender_name, reference, student_id, price_per_credit, credits_granted, status')
+      .order('received_at', { ascending: false })
+      .limit(50);
+    const tbody = document.getElementById('payments-tbody');
+    const empty = document.getElementById('payments-empty');
+    tbody.innerHTML = '';
+    if (error) { console.error('Error cargando pagos:', error); return; }
+    empty.style.display = (data || []).length ? 'none' : 'block';
+
+    const nameOf = id => (allStudents.find(s => s.id === id) || {}).full_name || '—';
+    const options = allStudents
+      .map(s => `<option value="${s.id}">${escapeHtml(s.full_name || s.email || s.id)} (${fmtCredits(s.price_per_credit)}€)</option>`)
+      .join('');
+
+    (data || []).forEach(p => {
+      const tr = document.createElement('tr');
+      const when = new Date(p.received_at).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const who = [p.sender_name, p.reference].filter(Boolean).map(escapeHtml).join(' · ') || '—';
+      let student, credits, action;
+      if (p.status === 'unmatched') {
+        student = `<select id="pay-assign-${p.id}"><option value="">Elegir alumno…</option>${options}</select>`;
+        credits = '—';
+        action = `<button class="btn btn-small" onclick="assignPayment('${p.id}')">Asignar</button>`;
+      } else {
+        student = escapeHtml(nameOf(p.student_id));
+        credits = `${fmtCredits(p.credits_granted)} <span class="hint">(a ${fmtCredits(p.price_per_credit)}€)</span>`;
+        action = p.status === 'credited'
+          ? `<button class="btn btn-small btn-outline" onclick="revertPayment('${p.id}')">Deshacer</button>`
+          : '<span class="hint">Deshecho</span>';
+      }
+      tr.innerHTML = `<td>${when}</td><td>${Number(p.amount_eur).toFixed(2)}€</td><td>${who}</td><td>${student}</td><td>${credits}</td><td>${action}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function assignPayment(paymentId) {
+    const studentId = document.getElementById(`pay-assign-${paymentId}`).value;
+    if (!studentId) { alert('Elige un alumno.'); return; }
+    const { error } = await sb.rpc('admin_assign_payment', { _payment_id: paymentId, _student_id: studentId });
+    if (error) { alert(error.message); return; }
+    await loadStudents();
+  }
+
+  async function revertPayment(paymentId) {
+    if (!confirm('¿Deshacer este pago? Se quitarán los créditos que se añadieron.')) return;
+    const { error } = await sb.rpc('admin_revert_payment', { _payment_id: paymentId });
+    if (error) { alert(error.message); return; }
     await loadStudents();
   }
 

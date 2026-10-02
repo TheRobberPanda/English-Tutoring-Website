@@ -855,6 +855,11 @@
           <button class="btn-refer" onclick="showTab('referidos')" data-i18n="refer_a_friend_btn">Invitar a un amigo</button>
         </div>
         <p style="color: var(--ink-soft); font-size: 0.82rem; margin: 12px 0 0; line-height: 1.55;" data-i18n-html="pay_with_wise">Para pagar desde otro país o en otra moneda, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> es lo más rápido y barato — con mi enlace de invitación tu primera transferencia de hasta 500€ va sin comisión. Es un enlace de invitación: a mí me da una recompensa de Wise.</p>
+        <p id="wise-auto" style="display:none; color: var(--ink-soft); font-size: 0.82rem; margin: 10px 0 0; line-height: 1.55;">
+          <span data-i18n="wise_auto_ref">Si pagas por Wise en euros, escribe este código en la referencia de la transferencia y los créditos se añaden solos en unos minutos:</span>
+          <code id="wise-ref" style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--ink);"></code><br>
+          <span data-i18n="wise_auto_price">Tu precio por clase:</span> <b id="wise-price" style="color: var(--ink);"></b>
+        </p>
       </div>
 
       <div class="card">
@@ -875,6 +880,11 @@
         <div class="week-days" id="week-days"></div>
         <div id="week-day-slots" style="margin-top: 16px;"></div>
         <p class="empty-note" id="open-slots-empty" style="display:none;" data-i18n="no_classes_this_week">No hay clases disponibles esta semana.</p>
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);">
+          <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 0 0 10px;" data-i18n="req_times_hint">¿Ninguna hora te viene bien? Dime y añado más horarios para tu zona horaria.</p>
+          <button class="btn-cancel" id="req-times-btn" onclick="requestMoreTimes()" data-i18n="req_times_btn">Pedir otros horarios</button>
+          <div id="req-times-msg"></div>
+        </div>
       </div>
     </section>
 
@@ -1092,12 +1102,17 @@
       hello_prefix: 'Hola,', admin_panel_link: 'Panel admin', logout_link: 'Cerrar sesión',
       your_credits: 'Tus créditos', credits_available: 'clases disponibles',
       need_more_credits: '¿Necesitas más créditos? Contáctame o invita a un amigo:',
+      wise_auto_ref: 'Si pagas por Wise en euros, escribe este código en la referencia de la transferencia y los créditos se añaden solos en unos minutos:', wise_auto_price: 'Tu precio por clase:',
       pay_with_wise: 'Para pagar desde otro país o en otra moneda, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> es lo más rápido y barato — con mi enlace de invitación tu primera transferencia de hasta 500€ va sin comisión. Es un enlace de invitación: a mí me da una recompensa de Wise.', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Invita a un amigo', referral_badge: '3 clases gratis', referral_hint: 'Comparte tu código. Cuando un amigo se registre con él y compre sus primeras clases, tú ganas 3 clases gratis.',
       copy_link_btn: 'Copiar enlace', copy_link_copied: '¡Enlace copiado!',
       referral_stats_template: (n, r) => `Has invitado a ${n} ${n === 1 ? 'persona' : 'personas'} · ${r} ${r === 1 ? 'clase gratis ganada' : 'clases gratis ganadas'}`,
       available_classes: 'Clases disponibles', available_classes_hint: 'Elige un día y reserva una franja horaria. Se descontará un crédito.',
       prev_week: '← Semana anterior', next_week: 'Semana siguiente →', no_classes_this_week: 'No hay clases disponibles esta semana.',
+      req_times_hint: '¿Ninguna hora te viene bien? Dime y añado más horarios para tu zona horaria.',
+      req_times_btn: 'Pedir otros horarios',
+      req_times_sent: 'Enviado. Paulo recibe el aviso y añadirá horarios pronto.',
+      req_times_wait: 'Ya pediste horarios hace poco. Paulo ya tiene tu aviso; puedes volver a pedir pasadas 24 horas.',
       upcoming_classes: 'Tus próximas clases', no_bookings_yet: 'Aún no tienes clases reservadas.',
       link_telegram_title: 'Vincular Telegram', link_telegram_hint: 'Vincula tu cuenta para reservar clases y recibir avisos por Telegram.',
       telegram_benefit_1: 'Reserva y cancela clases directamente desde el chat, sin abrir la web',
@@ -1190,12 +1205,17 @@
       hello_prefix: 'Cześć,', admin_panel_link: 'Panel admina', logout_link: 'Wyloguj się',
       your_credits: 'Twoje kredyty', credits_available: 'dostępnych lekcji',
       need_more_credits: 'Potrzebujesz więcej kredytów? Napisz do mnie lub zaproś znajomego:',
+      wise_auto_ref: 'Jeśli płacisz przez Wise w euro, wpisz ten kod w tytule przelewu, a kredyty dodadzą się same w ciągu kilku minut:', wise_auto_price: 'Twoja cena za lekcję:',
       pay_with_wise: 'Jeśli płacisz z zagranicy lub w innej walucie, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> jest najszybszy i najtańszy — z moim linkiem z zaproszeniem Twój pierwszy przelew do 500 € jest bez prowizji. To link z zaproszeniem: Wise nagradza za niego mnie.', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Zaproś znajomego', referral_badge: '3 darmowe lekcje', referral_hint: 'Udostępnij swój kod. Gdy znajomy zarejestruje się z jego pomocą i kupi swoje pierwsze lekcje, ty otrzymasz 3 darmowe lekcje.',
       copy_link_btn: 'Kopiuj link', copy_link_copied: 'Link skopiowany!',
       referral_stats_template: (n, r) => `Zaprosiłeś ${n} ${n === 1 ? 'osobę' : 'osób'} · ${r} ${r === 1 ? 'darmowa lekcja zdobyta' : 'darmowych lekcji zdobytych'}`,
       available_classes: 'Dostępne lekcje', available_classes_hint: 'Wybierz dzień i zarezerwuj termin. Zostanie odjęty jeden kredyt.',
       prev_week: '← Poprzedni tydzień', next_week: 'Następny tydzień →', no_classes_this_week: 'Brak dostępnych lekcji w tym tygodniu.',
+      req_times_hint: 'Żadna godzina Ci nie pasuje? Daj znać, a dodam terminy dla Twojej strefy czasowej.',
+      req_times_btn: 'Poproś o inne terminy',
+      req_times_sent: 'Wysłano. Paulo dostał powiadomienie i wkrótce doda terminy.',
+      req_times_wait: 'Prośba została już niedawno wysłana. Paulo ją ma; możesz poprosić ponownie po 24 godzinach.',
       upcoming_classes: 'Twoje nadchodzące lekcje', no_bookings_yet: 'Nie masz jeszcze zarezerwowanych lekcji.',
       link_telegram_title: 'Połącz Telegram', link_telegram_hint: 'Połącz swoje konto, by rezerwować lekcje i otrzymywać powiadomienia na Telegramie.',
       telegram_benefit_1: 'Rezerwuj i anuluj lekcje bezpośrednio na czacie, bez otwierania strony',
@@ -1288,12 +1308,17 @@
       hello_prefix: 'Hi,', admin_panel_link: 'Admin panel', logout_link: 'Log out',
       your_credits: 'Your credits', credits_available: 'lessons available',
       need_more_credits: 'Need more credits? Contact me or refer a friend:',
+      wise_auto_ref: 'If you pay by Wise in euros, put this code in the transfer reference and the credits are added automatically within a few minutes:', wise_auto_price: 'Your price per lesson:',
       pay_with_wise: 'To pay from another country or in another currency, <a href="https://wise.com/invite/diw/paulocesarc167" target="_blank" rel="noopener sponsored" style="color: var(--link); font-weight: 600;">Wise</a> is the fastest and cheapest option — with my invite link your first transfer of up to €500 has no fee. This is an invite link: Wise rewards me for it.', contact_email_link: 'Email', contact_telegram_link: 'Telegram',
       referral_title: 'Refer a friend', referral_badge: '3 free lessons', referral_hint: 'Share your code. When a friend signs up with it and buys their first lessons, you get 3 free lessons.',
       copy_link_btn: 'Copy link', copy_link_copied: 'Link copied!',
       referral_stats_template: (n, r) => `You've referred ${n} ${n === 1 ? 'person' : 'people'} · ${r} free ${r === 1 ? 'lesson' : 'lessons'} earned`,
       available_classes: 'Available lessons', available_classes_hint: 'Choose a day and book a time slot. One credit will be deducted.',
       prev_week: '← Previous week', next_week: 'Next week →', no_classes_this_week: 'No lessons available this week.',
+      req_times_hint: "None of these times work? Let me know and I'll add more for your time zone.",
+      req_times_btn: 'Request other times',
+      req_times_sent: 'Sent. Paulo has been notified and will add times soon.',
+      req_times_wait: "You asked recently, and Paulo already has your request. You can ask again after 24 hours.",
       upcoming_classes: 'Your upcoming lessons', no_bookings_yet: 'You don\'t have any lessons booked yet.',
       link_telegram_title: 'Link Telegram', link_telegram_hint: 'Link your account to book lessons and get notified on Telegram.',
       telegram_benefit_1: 'Book and cancel lessons directly from the chat, no need to open the site',
@@ -1485,7 +1510,7 @@
       const { data, error } = await sb.auth.signUp({
         email, password,
         options: {
-          data: { full_name, language: currentLang, referral_code, waive_withdrawal: true },
+          data: { full_name, language: currentLang, referral_code, waive_withdrawal: true, terms_accepted: true },
           emailRedirectTo: window.location.origin + window.location.pathname
         }
       });
@@ -1582,7 +1607,7 @@
 
     const { data: profile, error: profileError } = await sb
       .from('profiles')
-      .select('full_name, credits, is_admin, language, telegram_chat_id')
+      .select('full_name, credits, is_admin, language, telegram_chat_id, referral_code, price_per_credit')
       .eq('id', user.id)
       .single();
 
@@ -1620,6 +1645,13 @@
     document.getElementById('credit-count').innerText = creditsText;
     document.getElementById('credits-pill-num').innerText = creditsText;
     document.getElementById('credits-pill').style.display = 'flex';
+
+    // Wise payments are credited automatically by matching this code.
+    if (profile?.referral_code && profile?.price_per_credit) {
+      document.getElementById('wise-ref').innerText = profile.referral_code;
+      document.getElementById('wise-price').innerText = `${parseFloat(Number(profile.price_per_credit).toFixed(2))}€`;
+      document.getElementById('wise-auto').style.display = 'block';
+    }
 
     await loadOpenSlots(profile?.credits ?? 0);
     await loadMyBookings();
@@ -1868,6 +1900,26 @@
       return;
     }
     await loadDashboard();
+  }
+
+  // Tells Paulo (via Telegram) that this student can't find a time that fits.
+  // The browser's time zone rides along so he can see how far off they are.
+  async function requestMoreTimes() {
+    const btn = document.getElementById('req-times-btn');
+    const box = document.getElementById('req-times-msg');
+    let tz = null;
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+    btn.disabled = true;
+    const { data, error } = await sb.rpc('request_more_times', { p_timezone: tz });
+    btn.disabled = false;
+    if (error) {
+      box.innerHTML = '<div class="msg error"></div>';
+      box.firstChild.textContent = error.message;
+      return;
+    }
+    const ok = data && data.ok;
+    box.innerHTML = `<div class="msg ${ok ? 'ok' : 'error'}"></div>`;
+    box.firstChild.textContent = t(ok ? 'req_times_sent' : 'req_times_wait');
   }
 
   async function bookSlot(slotId) {
