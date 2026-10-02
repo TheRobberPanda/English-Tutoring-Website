@@ -673,6 +673,17 @@
     font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem; font-weight: 600;
     letter-spacing: 0.01em; white-space: nowrap;
   }
+  /* Welcome offer in the credits card. Filled by renderIntroOffer(). */
+  .intro-offer {
+    margin: 16px 0 4px; padding: 14px 16px; border-left: 3px solid var(--accent);
+    background: var(--ground-soft); color: var(--on-ground-soft); border-radius: 0 10px 10px 0;
+    font-size: 0.88rem; line-height: 1.55;
+  }
+  .intro-offer h4 { font-size: 0.98rem; margin: 0 0 6px; color: var(--on-ground-soft); }
+  .intro-offer p { margin: 0; }
+  .intro-offer .btn { margin-top: 12px; text-decoration: none; }
+  .intro-offer .intro-offer-note { margin-top: 10px; font-size: 0.8rem; }
+
   .btn-refer {
     background: var(--ground-soft); color: var(--on-ground-soft);
     border: 1.5px solid var(--line); border-radius: 8px;
@@ -735,7 +746,7 @@
 
 <div class="wrap">
   <div style="display:flex; justify-content:space-between; align-items:center; gap: 12px;">
-    <a class="logo-link" href="index.html" aria-label="Paulo Crespo"><span class="logo">Paulo <span>Crespo</span></span></a>
+    <a class="logo-link" href="/" aria-label="Paulo Crespo"><span class="logo">Paulo <span>Crespo</span></span></a>
     <span>
       <button onclick="setLang('es')" id="lang-btn-es" class="lang-btn">ES</button>
       <button onclick="setLang('pl')" id="lang-btn-pl" class="lang-btn">PL</button>
@@ -743,13 +754,18 @@
       <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
     </span>
   </div>
-  <a class="back" href="index.html" data-i18n="back_link">&larr; Volver a la web</a>
+  <a class="back" href="/" data-i18n="back_link">&larr; Volver a la web</a>
 
   <!-- LOGIN / SIGNUP VIEW -->
   <div id="auth-view">
     <h1 style="font-size: 1.8rem; margin-bottom: 26px;" data-i18n="my_account">Mi cuenta</h1>
     <div class="card">
       <h3 id="auth-title" style="font-size: 1.1rem;" data-i18n="login_title">Iniciar sesión</h3>
+      <!-- Mirrors the signup gift advertised on the homepage. The amount itself
+           is set server-side in handle_new_user(); keep the two in step. -->
+      <p id="signup-bonus-note" style="display:none; margin: 0 0 14px; padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--ground-soft); color: var(--on-ground-soft); font-size: 0.88rem; line-height: 1.5;" data-i18n-html="signup_bonus_note">
+        🎁 Al crear tu cuenta te regalo <strong>media clase (0,5 créditos)</strong>.
+      </p>
       <label for="email" data-i18n="label_email">Email</label>
       <input type="email" id="email" placeholder="tu@email.com">
       <p id="email-note" style="display:none; font-size: 0.8rem; color: var(--ink-soft); margin: 6px 0 0; line-height: 1.5;" data-i18n-html="email_note">
@@ -758,8 +774,12 @@
       <label for="password" data-i18n="label_password">Contraseña</label>
       <input type="password" id="password" placeholder="••••••••">
       <div id="name-field" style="display:none;">
-        <label for="full_name" data-i18n="label_name">Nombre</label>
-        <input type="text" id="full_name" placeholder="Tu nombre">
+        <label for="full_name" data-i18n="label_name">Nombre y apellidos</label>
+        <input type="text" id="full_name" placeholder="Nombre Apellido" data-i18n-placeholder="name_placeholder" autocomplete="name">
+        <!-- Wise payments are matched to accounts by this name. -->
+        <p style="margin: 8px 0 0; padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--ground-soft); color: var(--on-ground-soft); font-size: 0.8rem; line-height: 1.5;" data-i18n-html="name_note">
+          ⚠️ Escribe tu nombre <strong>tal como aparece en tu banco o en Wise</strong>. Los pagos se asignan a tu cuenta por ese nombre: si no coincide, puede que los créditos no se añadan bien y tendrás que escribirme para que los asigne yo.
+        </p>
       </div>
       <div id="referral-field" style="display:none;">
         <label for="referral_code_input" data-i18n="label_referral_code">Código de referido (opcional)</label>
@@ -848,6 +868,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px;" data-i18n="your_credits">Tus créditos</h3>
         <div class="credit-badge"><b id="credit-count">0</b> <span data-i18n="credits_available">clases disponibles</span></div>
+        <div id="intro-offer" class="intro-offer" style="display:none;"></div>
         <p style="color: var(--ink-soft); font-size: 0.85rem; margin: 12px 0 8px;" data-i18n="need_more_credits">¿Necesitas más créditos? Contáctame o invita a un amigo:</p>
         <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
           <a class="btn-cancel" href="mailto:yankxwtic@mozmail.com" style="text-decoration: none; display: inline-block;" data-i18n="contact_email_link">Email</a>
@@ -1086,7 +1107,15 @@
     dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
       back_link: 'Volver a la web', my_account: 'Mi cuenta',
       login_title: 'Iniciar sesión', signup_title: 'Crear cuenta',
-      label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre', label_referral_code: 'Código de referido (opcional)',
+      label_email: 'Email', label_password: 'Contraseña', label_name: 'Nombre y apellidos', name_placeholder: 'Nombre Apellido', label_referral_code: 'Código de referido (opcional)',
+      name_note: '⚠️ Escribe tu nombre <strong>tal como aparece en tu banco o en Wise</strong>. Los pagos se asignan a tu cuenta por ese nombre: si no coincide, puede que los créditos no se añadan bien y tendrás que escribirme para que los asigne yo.',
+      offer_title: '🎉 Oferta de bienvenida: tus {credits} primeras clases a {per}€',
+      offer_body: '{amount}€ en vez de {full}€ — <strong>ahorras {save}€</strong>. Se paga una vez desde la página de Wise, con cuenta de Wise o por transferencia bancaria.',
+      offer_cta: 'Pagar {amount}€ con Wise',
+      offer_name: 'Los {credits} créditos se añaden a tu cuenta cuando llega el pago, buscando el nombre del titular. Tu cuenta está a nombre de <strong>{name}</strong>: si pagas desde una cuenta a otro nombre, escríbeme después de pagar y los asigno yo.',
+      offer_no_link: 'Ahora mismo estoy preparando un enlace de pago nuevo. Escríbeme y te lo paso.',
+      offer_ask_cta: 'Pedir el enlace por Telegram',
+      signup_bonus_note: '🎁 Al crear tu cuenta te regalo <strong>media clase (0,5 créditos)</strong>.',
       email_note: 'Usa el mismo email que utilices en Google Meet, ya que será el que reciba la invitación a tus clases.',
       post_signup_body: '✅ <strong>Cuenta creada.</strong> Te he enviado un email de confirmación.<br><br>📬 <strong>Míralo en spam o correo no deseado</strong> — es donde suele acabar. Busca «Paulo» o «inglesconpaulo».<br><br>Cuando lo encuentres, márcalo como <strong>«No es spam»</strong>. Así los avisos de tus clases te llegarán a la bandeja normal.',
       spam_warning: '⚠️ <strong>Importante:</strong> el email de verificación suele llegar a la carpeta de spam o correo no deseado, no a la bandeja de entrada principal. Revisa esa carpeta si no lo ves en unos minutos, y márcalo como "no es spam" para no perderte los avisos de tus clases.',
@@ -1189,7 +1218,15 @@
     dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
       back_link: 'Wróć do strony', my_account: 'Moje konto',
       login_title: 'Zaloguj się', signup_title: 'Utwórz konto',
-      label_email: 'Email', label_password: 'Hasło', label_name: 'Imię', label_referral_code: 'Kod polecający (opcjonalnie)',
+      label_email: 'Email', label_password: 'Hasło', label_name: 'Imię i nazwisko', name_placeholder: 'Imię Nazwisko', label_referral_code: 'Kod polecający (opcjonalnie)',
+      name_note: '⚠️ Wpisz imię i nazwisko <strong>dokładnie tak, jak w swoim banku lub w Wise</strong>. Płatności są przypisywane do konta po tym nazwisku: jeśli się nie zgadza, kredyty mogą nie zostać dodane poprawnie i trzeba będzie do mnie napisać, żebym przypisał je ręcznie.',
+      offer_title: '🎉 Oferta powitalna: pierwsze {credits} lekcje po {per}€',
+      offer_body: '{amount}€ zamiast {full}€ — <strong>oszczędzasz {save}€</strong>. Płacisz raz na stronie Wise, z konta Wise albo zwykłym przelewem bankowym.',
+      offer_cta: 'Zapłać {amount}€ przez Wise',
+      offer_name: '{credits} kredyty dodadzą się do Twojego konta, gdy dotrze płatność — po nazwisku właściciela rachunku. Twoje konto jest na nazwisko <strong>{name}</strong>: jeśli płacisz z rachunku na inne nazwisko, napisz do mnie po zapłacie, a przypiszę je ręcznie.',
+      offer_no_link: 'Właśnie przygotowuję nowy link do płatności. Napisz do mnie, a go wyślę.',
+      offer_ask_cta: 'Poproś o link na Telegramie',
+      signup_bonus_note: '🎁 Po założeniu konta dostajesz ode mnie w prezencie <strong>pół lekcji (0,5 kredytu)</strong>.',
       email_note: 'Użyj tego samego adresu, którego używasz w Google Meet, ponieważ to on otrzyma zaproszenia na twoje lekcje.',
       post_signup_body: '✅ <strong>Konto utworzone.</strong> Wysłałem Ci e-mail potwierdzający.<br><br>📬 <strong>Sprawdź folder spam lub niechciana poczta</strong> — zwykle tam trafia. Szukaj „Paulo” lub „inglesconpaulo”.<br><br>Gdy go znajdziesz, oznacz go jako <strong>„To nie jest spam”</strong>. Dzięki temu powiadomienia o lekcjach trafią do zwykłej skrzynki.',
       spam_warning: '⚠️ <strong>Ważne:</strong> email z potwierdzeniem zwykle trafia do folderu spam lub niechciana poczta, a nie do głównej skrzynki odbiorczej. Sprawdź ten folder, jeśli nie widzisz wiadomości w ciągu kilku minut, i oznacz ją jako "to nie spam", by nie przegapić powiadomień o swoich lekcjach.',
@@ -1292,7 +1329,15 @@
     dev_banner_text: '🚧 We\'re improving the site right now. You might notice small changes from day to day.',
       back_link: 'Back to the site', my_account: 'My account',
       login_title: 'Log in', signup_title: 'Create account',
-      label_email: 'Email', label_password: 'Password', label_name: 'Name', label_referral_code: 'Referral code (optional)',
+      label_email: 'Email', label_password: 'Password', label_name: 'Full name', name_placeholder: 'First Last', label_referral_code: 'Referral code (optional)',
+      name_note: '⚠️ Enter your name <strong>exactly as it appears at your bank or on Wise</strong>. Payments are matched to your account by that name: if it doesn\'t match, the credits may not be added correctly and you\'ll need to message me so I can assign them.',
+      offer_title: '🎉 Welcome offer: your first {credits} lessons at €{per}',
+      offer_body: '€{amount} instead of €{full} — <strong>you save €{save}</strong>. Paid once on the Wise page, with a Wise account or by ordinary bank transfer.',
+      offer_cta: 'Pay €{amount} with Wise',
+      offer_name: 'The {credits} credits are added to your account when the payment arrives, matched by the account holder\'s name. Your account is under <strong>{name}</strong>: if you pay from an account in a different name, message me after paying and I\'ll assign them.',
+      offer_no_link: 'I\'m setting up a new payment link right now. Message me and I\'ll send it to you.',
+      offer_ask_cta: 'Ask for the link on Telegram',
+      signup_bonus_note: '🎁 Create your account and I\'ll give you <strong>half a lesson (0.5 credits)</strong> as a gift.',
       email_note: 'Use the same email you use on Google Meet, since that\'s the one that will receive your class invitations.',
       post_signup_body: '✅ <strong>Account created.</strong> I\'ve sent you a confirmation email.<br><br>📬 <strong>Look in your spam or junk folder</strong> — that\'s usually where it lands. Search for "Paulo" or "inglesconpaulo".<br><br>When you find it, mark it as <strong>"Not spam"</strong>. That way your lesson notifications will reach your normal inbox.',
       spam_warning: '⚠️ <strong>Important:</strong> the verification email usually lands in your spam or junk folder, not your main inbox. Check there if you don\'t see it within a few minutes, and mark it as "not spam" so you don\'t miss notifications about your lessons.',
@@ -1453,11 +1498,15 @@
   // pre-fills the code and jumps straight to the signup form — zero typing
   // for the friend being referred.
   (function prefillReferralFromUrl() {
-    const refCode = new URLSearchParams(window.location.search).get('ref');
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
     if (refCode) {
       document.getElementById('referral_code_input').value = refCode.toUpperCase();
       if (mode === 'login') toggleMode();
     }
+    // The homepage's signup-gift link lands here with ?signup=1, so the
+    // visitor sees the signup form (and the gift note) rather than a login.
+    if (params.get('signup') === '1' && mode === 'login') toggleMode();
   })();
 
   function toggleMode() {
@@ -1467,6 +1516,7 @@
     document.getElementById('toggle-mode').innerText = mode === 'login' ? t('link_to_signup') : t('link_to_login');
     document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('referral-field').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('signup-bonus-note').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('email-note').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('spam-warning').style.display = mode === 'signup' ? 'block' : 'none';
     document.getElementById('terms-field').style.display = mode === 'signup' ? 'block' : 'none';
@@ -1653,6 +1703,8 @@
       document.getElementById('wise-auto').style.display = 'block';
     }
 
+    await renderIntroOffer(profile);
+
     await loadOpenSlots(profile?.credits ?? 0);
     await loadMyBookings();
     await loadReferralInfo();
@@ -1660,6 +1712,47 @@
     // Honour a #hash so a reload keeps you on the same subpage.
     showTab((window.location.hash || '#clases').slice(1));
     maybeShowTelegramNudge(!!profile?.telegram_chat_id);
+  }
+
+  // Welcome offer: first N credits at a lower price, paid through a Wise
+  // payment-request link. Shown until the student has used it. The link is
+  // single-use, so between links the card asks them to message Paulo instead.
+  async function renderIntroOffer(profile) {
+    const box = document.getElementById('intro-offer');
+    box.style.display = 'none';
+    const { data, error } = await sb.rpc('my_intro_offer');
+    const offer = data?.[0];
+    if (error || !offer?.eligible) return;
+
+    const fmt = n => String(parseFloat(Number(n).toFixed(2)));
+    const amount = Number(offer.amount_eur), credits = Number(offer.credits);
+    const full = Number(profile?.price_per_credit ?? 15) * credits;
+    // Only advertise it as a discount if it is one at this student's price.
+    if (!(full > amount)) return;
+    const fill = s => s.replace(/\{credits\}/g, fmt(credits)).replace(/\{per\}/g, fmt(amount / credits))
+      .replace(/\{amount\}/g, fmt(amount)).replace(/\{full\}/g, fmt(full)).replace(/\{save\}/g, fmt(full - amount));
+
+    const h = document.createElement('h4');
+    h.textContent = fill(t('offer_title'));
+    const p = document.createElement('p');
+    p.innerHTML = fill(t('offer_body'));
+    const a = document.createElement('a');
+    a.className = 'btn';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    const note = document.createElement('p');
+    note.className = 'intro-offer-note';
+    if (offer.url) {
+      a.href = offer.url;
+      a.textContent = fill(t('offer_cta'));
+      note.innerHTML = fill(t('offer_name')).replace('{name}', () => escapeChat(profile?.full_name || '—'));
+    } else {
+      a.href = 'https://t.me/frelseisme';
+      a.textContent = t('offer_ask_cta');
+      note.textContent = t('offer_no_link');
+    }
+    box.replaceChildren(h, p, a, note);
+    box.style.display = 'block';
   }
 
   function formatSlot(start, end) {
@@ -2298,7 +2391,7 @@
 
       await sb.auth.signOut();
       alert(t('account_deleted'));
-      window.location.href = 'index.html';
+      window.location.href = '/';
     } catch (err) {
       msgBox.innerHTML = `<div class="msg error">${t('connection_error')}</div>`;
     }

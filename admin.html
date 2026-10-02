@@ -188,6 +188,36 @@
   .slot-row .status { font-size: 0.78rem; padding: 2px 9px; border-radius: 100px; margin-left: 8px; }
   .slot-row .status.open { background: var(--ground-soft); color: var(--on-ground-soft); }
   .slot-row .status.booked { background: var(--ink); color: var(--paper); }
+  .slot-row.skipped { border-style: dashed; color: var(--ink-soft); }
+  .slot-row.skipped .status { background: var(--paper-alt); color: var(--ink-soft); }
+
+  /* Weekly template grid */
+  .wk-grid {
+    display: grid; grid-template-columns: 46px repeat(7, minmax(0, 1fr)); gap: 3px;
+    user-select: none; -webkit-user-select: none; touch-action: pan-y;
+  }
+  .wk-corner { }
+  .wk-day {
+    border: none; background: none; padding: 4px 0 6px; cursor: pointer;
+    font-family: inherit; font-size: 0.74rem; font-weight: 600; color: var(--ink-soft);
+  }
+  .wk-day:hover { color: var(--link); }
+  .wk-time { font-size: 0.72rem; color: var(--ink-soft); align-self: center; font-variant-numeric: tabular-nums; }
+  .wk-cell {
+    height: 26px; padding: 0; border-radius: 5px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--paper);
+  }
+  .wk-cell:hover { border-color: var(--accent); }
+  .wk-cell.on { background: var(--accent); border-color: var(--accent); }
+  /* Unsaved change: a ring in the ink colour, readable on both fills. */
+  .wk-cell.dirty { box-shadow: inset 0 0 0 2px var(--ink); }
+  .wk-cell:focus-visible { outline: 2px solid var(--link); outline-offset: 1px; }
+  .wk-summary { font-size: 0.85rem; color: var(--ink-soft); margin: 14px 0 10px; }
+  .wk-pending { color: var(--link); font-weight: 600; }
+  .wk-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn:disabled { opacity: 0.45; cursor: default; }
+  .btn:disabled:hover { background: var(--accent); }
+  .btn-outline:disabled:hover { background: none; border-color: var(--line); }
 
   /* Next lessons */
   .lesson-row {
@@ -558,10 +588,48 @@
         </div>
       </div>
 
+      <!-- WEEKLY TEMPLATE -->
+      <div class="card" id="week-card">
+        <h3>Semana tipo</h3>
+        <p class="hint">Marca las horas en las que das clase normalmente. Se repite todas las semanas: las clases se publican 12 semanas por delante y se renuevan solas cada noche. Hora de Polonia, clases de 50 min. Haz clic o arrastra para abrir o cerrar horas; clic en un día para todo el día.</p>
+        <div class="wk-grid" id="wk-grid" role="group" aria-label="Semana tipo"></div>
+        <p class="wk-summary" id="wk-summary"></p>
+        <div class="wk-actions">
+          <button class="btn" id="wk-save" onclick="saveWeekTemplate()" disabled>Guardar semana tipo</button>
+          <button class="btn btn-outline" id="wk-reset" onclick="resetWeekTemplate()" disabled>Descartar cambios</button>
+        </div>
+        <div id="wk-msg"></div>
+      </div>
+
+      <!-- CLOSURES -->
+      <div class="card">
+        <h3>Vacaciones y días libres</h3>
+        <p class="hint">Cierra un rango de fechas sin tocar tu semana tipo. Se quitan las clases libres de esos días; las ya reservadas no se tocan (te las enseño para que decidas). Si borras el cierre, las clases vuelven.</p>
+        <div class="form-row">
+          <div>
+            <label for="closure-from">Desde</label>
+            <input type="date" id="closure-from">
+          </div>
+          <div>
+            <label for="closure-to">Hasta (incluido)</label>
+            <input type="date" id="closure-to">
+          </div>
+          <div>
+            <label for="closure-note">Motivo (opcional)</label>
+            <input type="text" id="closure-note" maxlength="80" placeholder="Vacaciones">
+          </div>
+          <div style="flex: 0 0 auto;">
+            <button class="btn" onclick="addClosure()">Cerrar fechas</button>
+          </div>
+        </div>
+        <div id="closure-msg"></div>
+        <div id="closure-list" style="margin-top: 16px;"></div>
+      </div>
+
       <!-- CREATE SLOT -->
       <div class="card">
-        <h3>Crear clase disponible</h3>
-        <p class="hint">Se publicará para que cualquier alumno con créditos pueda reservarla.</p>
+        <h3>Clase suelta</h3>
+        <p class="hint">Una clase extra fuera de tu semana tipo. Se publicará para que cualquier alumno con créditos pueda reservarla.</p>
         <div class="form-row">
           <div>
             <label for="slot-date">Fecha</label>
@@ -581,48 +649,6 @@
         </div>
         <div id="create-slot-msg"></div>
       </div>
-
-      <!-- BULK CREATE -->
-      <div class="card">
-        <h3>Crear clases en bloque</h3>
-        <p class="hint">Genera automáticamente clases de 50 minutos en punto (ej. 9:00–9:50, 10:00–10:50...), dejando siempre 10 minutos de margen entre una y la siguiente.</p>
-        <div class="form-row">
-          <div>
-            <label for="bulk-start-date">Desde</label>
-            <input type="date" id="bulk-start-date">
-          </div>
-          <div>
-            <label for="bulk-end-date">Hasta</label>
-            <input type="date" id="bulk-end-date">
-          </div>
-        </div>
-        <div style="margin: 14px 0;">
-          <label>Días de la semana</label>
-          <div style="display:flex; gap: 14px; flex-wrap: wrap; margin-top: 6px;">
-            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="1" checked> Lun</label>
-            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="2" checked> Mar</label>
-            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="3" checked> Mié</label>
-            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="4" checked> Jue</label>
-            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="5" checked> Vie</label>
-            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="6"> Sáb</label>
-            <label style="font-weight:400;"><input type="checkbox" class="bulk-day" value="0"> Dom</label>
-          </div>
-        </div>
-        <div class="form-row">
-          <div>
-            <label for="bulk-start-hour">Desde qué hora</label>
-            <input type="time" id="bulk-start-hour" step="900" value="09:00">
-          </div>
-          <div>
-            <label for="bulk-end-hour">Hasta qué hora (última clase empieza antes de esta hora)</label>
-            <input type="time" id="bulk-end-hour" step="900" value="14:00">
-          </div>
-          <div style="flex: 0 0 auto;">
-            <button class="btn" onclick="createBulkSlots()">Generar clases</button>
-          </div>
-        </div>
-        <div id="bulk-slot-msg"></div>
-      </div>
     </section>
 
     <section class="tab-panel" id="apanel-alumnos" role="tabpanel">
@@ -633,11 +659,28 @@
         <input type="text" id="student-search" placeholder="Buscar por nombre o email..." oninput="renderStudents()">
         <table>
           <thead>
-            <tr><th>Nombre</th><th>Email</th><th>Referencia</th><th>€/crédito</th><th>Créditos</th><th></th></tr>
+            <tr><th>Nombre</th><th>Email</th><th>Referencia</th><th>€/crédito</th><th>Créditos</th><th title="Marcado = ya no se le muestra la oferta de bienvenida">Oferta usada</th><th></th></tr>
           </thead>
           <tbody id="students-tbody"></tbody>
         </table>
         <p class="empty-note" id="students-empty" style="display:none;">No se encontraron alumnos.</p>
+      </div>
+
+      <!-- WELCOME OFFER LINK -->
+      <div class="card">
+        <h3>Enlace de la oferta</h3>
+        <p class="hint">Las 3 primeras clases por 30€. El enlace es una solicitud de pago de Wise de un solo uso: cuando alguien la paga o caduca, te aviso por Telegram para que crees otra (30€, un solo uso) y la pegues aquí. Mientras no haya enlace activo, la oferta pide a los alumnos que te escriban.</p>
+        <div id="offer-link-status" style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 14px;">Cargando…</div>
+        <div class="form-row">
+          <div>
+            <label for="offer-link-input">Nuevo enlace de Wise</label>
+            <input type="url" id="offer-link-input" placeholder="https://wise.com/pay/r/…" style="width: 100%;">
+          </div>
+          <div style="flex: 0 0 auto;">
+            <button class="btn" onclick="saveOfferLink()">Guardar enlace</button>
+          </div>
+        </div>
+        <div id="offer-link-msg"></div>
       </div>
 
       <!-- WISE PAYMENTS -->
@@ -882,6 +925,8 @@
     await loadNextLessons();
     await loadStudents();
     await loadCalendar();
+    await loadWeekTemplate();
+    await loadClosures();
     await loadPendingTestimonials();
     await loadChatThreads();
     subscribeAdminChat();
@@ -987,87 +1032,202 @@
     await loadCalendar();
   }
 
-  // ---- BULK CREATE ----
-  async function createBulkSlots() {
-    const startDateStr = document.getElementById('bulk-start-date').value;
-    const endDateStr = document.getElementById('bulk-end-date').value;
-    const startHourStr = document.getElementById('bulk-start-hour').value;
-    const endHourStr = document.getElementById('bulk-end-hour').value;
-    const msgBox = document.getElementById('bulk-slot-msg');
+  // ---- WEEKLY TEMPLATE ----
+  // The server owns the repetition (weekly_template + a nightly generator);
+  // this grid only edits the template. Cells are keyed "weekday|HH:MM",
+  // weekday ISO (1 = Monday), times in Europe/Warsaw.
+  const WK_DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  let wkSaved = new Set();
+  let wkState = new Set();
+  let wkPaint = null;  // true/false while dragging, null otherwise
 
-    const selectedDays = Array.from(document.querySelectorAll('.bulk-day:checked')).map(cb => parseInt(cb.value, 10));
-
-    if (!startDateStr || !endDateStr || !startHourStr || !endHourStr) {
-      msgBox.innerHTML = '<div class="msg error">Rellena fechas y horas.</div>';
-      return;
-    }
-    if (selectedDays.length === 0) {
-      msgBox.innerHTML = '<div class="msg error">Selecciona al menos un día de la semana.</div>';
-      return;
-    }
-
-    const startHour = parseInt(startHourStr.split(':')[0], 10);
-    const startMinute = parseInt(startHourStr.split(':')[1] || '0', 10);
-    const endHour = parseInt(endHourStr.split(':')[0], 10);
-    const endMinute = parseInt(endHourStr.split(':')[1] || '0', 10);
-    const startMinutesOfDay = startHour * 60 + startMinute;
-    const endMinutesOfDay = endHour * 60 + endMinute;
-    if (endMinutesOfDay <= startMinutesOfDay) {
-      msgBox.innerHTML = '<div class="msg error">La hora de fin debe ser posterior a la de inicio.</div>';
-      return;
-    }
-
-    const rangeStart = new Date(`${startDateStr}T00:00:00`);
-    const rangeEnd = new Date(`${endDateStr}T23:59:59`);
-    if (rangeEnd < rangeStart) {
-      msgBox.innerHTML = '<div class="msg error">La fecha "Hasta" debe ser posterior a "Desde".</div>';
-      return;
-    }
-
-    // Build candidate slots: one per selected weekday, starting at the
-    // chosen time and repeating every 60 minutes (50-minute lesson +
-    // 10-minute gap built in automatically) until the end time.
-    const candidates = [];
-    for (let d = new Date(rangeStart); d <= rangeEnd; d.setDate(d.getDate() + 1)) {
-      if (!selectedDays.includes(d.getDay())) continue;
-      for (let m = startMinutesOfDay; m < endMinutesOfDay; m += 60) {
-        const hour = Math.floor(m / 60);
-        const minute = m % 60;
-        const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, minute, 0);
-        const end = new Date(start.getTime() + 50 * 60 * 1000);
-        candidates.push({ start_time: start.toISOString(), end_time: end.toISOString() });
-      }
-    }
-
-    if (candidates.length === 0) {
-      msgBox.innerHTML = '<div class="msg error">No se generó ninguna clase con esos filtros.</div>';
-      return;
-    }
-
-    // Avoid creating duplicates for slots that already exist in that range.
-    const { data: existing } = await sb
-      .from('schedule_slots')
-      .select('start_time')
-      .gte('start_time', rangeStart.toISOString())
-      .lte('start_time', rangeEnd.toISOString());
-
-    const existingSet = new Set((existing || []).map(s => new Date(s.start_time).getTime()));
-    const toInsert = candidates.filter(c => !existingSet.has(new Date(c.start_time).getTime()));
-
-    if (toInsert.length === 0) {
-      msgBox.innerHTML = '<div class="msg ok">Todas esas clases ya existían — no se creó ninguna nueva.</div>';
-      return;
-    }
-
-    const { error } = await sb.from('schedule_slots').insert(toInsert);
+  async function loadWeekTemplate() {
+    const { data, error } = await sb.from('weekly_template').select('weekday, start_local');
     if (error) {
-      msgBox.innerHTML = `<div class="msg error">${error.message}</div>`;
+      document.getElementById('wk-msg').innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`;
       return;
     }
+    wkSaved = new Set((data || []).map(r => `${r.weekday}|${r.start_local.slice(0, 5)}`));
+    wkState = new Set(wkSaved);
+    renderWeekTemplate();
+  }
 
-    const skipped = candidates.length - toInsert.length;
-    msgBox.innerHTML = `<div class="msg ok">${toInsert.length} clases creadas${skipped > 0 ? ` (${skipped} ya existían y se omitieron)` : ''}.</div>`;
+  function wkTimes() {
+    // 07:00–21:00 on the hour, plus any off-the-hour time already in the template.
+    const times = new Set();
+    for (let h = 7; h <= 21; h++) times.add(`${String(h).padStart(2, '0')}:00`);
+    wkSaved.forEach(k => times.add(k.split('|')[1]));
+    return [...times].sort();
+  }
+
+  function renderWeekTemplate() {
+    const grid = document.getElementById('wk-grid');
+    let html = '<div class="wk-corner"></div>';
+    WK_DAYS.forEach((d, i) => {
+      html += `<button type="button" class="wk-day" onclick="toggleWeekDay(${i + 1})" title="Abrir o cerrar todo el ${d}">${d}</button>`;
+    });
+    wkTimes().forEach(t => {
+      html += `<div class="wk-time">${t}</div>`;
+      for (let d = 1; d <= 7; d++) {
+        const key = `${d}|${t}`;
+        const on = wkState.has(key);
+        const dirty = on !== wkSaved.has(key);
+        html += `<button type="button" class="wk-cell${on ? ' on' : ''}${dirty ? ' dirty' : ''}" data-key="${key}"
+                   aria-pressed="${on}" aria-label="${WK_DAYS[d - 1]} ${t}"></button>`;
+      }
+    });
+    grid.innerHTML = html;
+    renderWeekSummary();
+  }
+
+  function renderWeekSummary() {
+    const added = [...wkState].filter(k => !wkSaved.has(k)).length;
+    const removed = [...wkSaved].filter(k => !wkState.has(k)).length;
+    const changes = added + removed;
+    let txt = `<strong>${wkState.size}</strong> clases por semana.`;
+    if (changes) txt += ` <span class="wk-pending">Sin guardar: ${added ? `+${added}` : ''}${added && removed ? ' / ' : ''}${removed ? `−${removed}` : ''}</span>`;
+    document.getElementById('wk-summary').innerHTML = txt;
+    document.getElementById('wk-save').disabled = !changes;
+    document.getElementById('wk-reset').disabled = !changes;
+  }
+
+  function setWeekCell(cell, on) {
+    const key = cell.dataset.key;
+    if (on) wkState.add(key); else wkState.delete(key);
+    cell.classList.toggle('on', on);
+    cell.classList.toggle('dirty', on !== wkSaved.has(key));
+    cell.setAttribute('aria-pressed', on);
+    renderWeekSummary();
+  }
+
+  function toggleWeekDay(day) {
+    const cells = [...document.querySelectorAll(`#wk-grid .wk-cell[data-key^="${day}|"]`)];
+    const allOn = cells.every(c => wkState.has(c.dataset.key));
+    cells.forEach(c => setWeekCell(c, !allOn));
+  }
+
+  function resetWeekTemplate() {
+    wkState = new Set(wkSaved);
+    document.getElementById('wk-msg').innerHTML = '';
+    renderWeekTemplate();
+  }
+
+  // Click-and-drag painting: the first cell decides whether the drag opens or
+  // closes. touch-action: pan-y keeps vertical swipes scrolling on a phone.
+  (function initWeekGrid() {
+    const grid = document.getElementById('wk-grid');
+    grid.addEventListener('pointerdown', e => {
+      const cell = e.target.closest('.wk-cell');
+      if (!cell || e.button !== 0) return;
+      e.preventDefault();
+      wkPaint = !wkState.has(cell.dataset.key);
+      setWeekCell(cell, wkPaint);
+    });
+    grid.addEventListener('pointermove', e => {
+      if (wkPaint === null) return;
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const cell = el && el.closest('#wk-grid .wk-cell');
+      if (cell && wkState.has(cell.dataset.key) !== wkPaint) setWeekCell(cell, wkPaint);
+    });
+    ['pointerup', 'pointercancel'].forEach(t => window.addEventListener(t, () => { wkPaint = null; }));
+    // Keyboard activation (Enter/Space) arrives as a click with detail 0;
+    // pointer clicks were already handled on pointerdown.
+    grid.addEventListener('click', e => {
+      const cell = e.target.closest('.wk-cell');
+      if (cell && e.detail === 0) setWeekCell(cell, !wkState.has(cell.dataset.key));
+    });
+  })();
+
+  async function saveWeekTemplate() {
+    const msgBox = document.getElementById('wk-msg');
+    const removed = [...wkSaved].filter(k => !wkState.has(k)).length;
+    if (removed && !confirm(`Vas a cerrar ${removed} hora(s) de tu semana tipo. Se quitarán sus clases libres a partir de ahora; las ya reservadas se mantienen. ¿Seguir?`)) return;
+
+    const cells = [...wkState].map(k => {
+      const [weekday, start] = k.split('|');
+      return { weekday: parseInt(weekday, 10), start };
+    });
+    const btn = document.getElementById('wk-save');
+    btn.disabled = true;
+    const { data, error } = await sb.rpc('admin_save_weekly_template', { p_cells: cells });
+    if (error) {
+      msgBox.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`;
+      btn.disabled = false;
+      return;
+    }
+    let txt = `Semana tipo guardada. ${data.created} clases nuevas publicadas, ${data.removed} quitadas.`;
+    if (data.booked_kept) txt += ` <strong>${data.booked_kept} clase(s) ya reservada(s)</strong> caen en horas que has cerrado y siguen en pie — cancélalas desde el calendario si no vas a darlas.`;
+    msgBox.innerHTML = `<div class="msg ok">${txt}</div>`;
+    await loadWeekTemplate();
     await loadCalendar();
+  }
+
+  // ---- CLOSURES (vacations / days off) ----
+  function fmtDay(dateStr) {
+    return new Date(`${dateStr}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  let closuresCache = [];
+
+  async function loadClosures() {
+    const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Warsaw' });
+    const { data, error } = await sb.from('schedule_closures')
+      .select('id, starts_on, ends_on, note')
+      .gte('ends_on', today)
+      .order('starts_on');
+    const list = document.getElementById('closure-list');
+    if (error) { list.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+    closuresCache = data || [];
+    if (!closuresCache.length) { list.innerHTML = '<p class="empty-note">No tienes fechas cerradas próximamente.</p>'; return; }
+    list.innerHTML = closuresCache.map(c => `
+      <div class="slot-row">
+        <span>${fmtDay(c.starts_on)}${c.ends_on !== c.starts_on ? ` – ${fmtDay(c.ends_on)}` : ''}${c.note ? ` <span class="status open">${escapeHtml(c.note)}</span>` : ''}</span>
+        <button class="btn btn-small btn-outline" onclick="deleteClosure('${c.id}')">Quitar cierre</button>
+      </div>`).join('');
+  }
+
+  async function addClosure() {
+    const from = document.getElementById('closure-from').value;
+    const to = document.getElementById('closure-to').value || from;
+    const note = document.getElementById('closure-note').value;
+    const msgBox = document.getElementById('closure-msg');
+    if (!from) { msgBox.innerHTML = '<div class="msg error">Elige al menos la fecha de inicio.</div>'; return; }
+    if (to < from) { msgBox.innerHTML = '<div class="msg error">"Hasta" no puede ser antes que "Desde".</div>'; return; }
+
+    const { data, error } = await sb.rpc('admin_add_closure', { p_from: from, p_to: to, p_note: note });
+    if (error) { msgBox.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+
+    let html = `<div class="msg ok">Fechas cerradas. Se quitaron ${data.removed} clases libres.</div>`;
+    if (data.booked.length) {
+      const rows = data.booked.map(b => {
+        const d = new Date(b.start_time);
+        return `<li>${d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}, ${d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })} — ${escapeHtml(b.student)}</li>`;
+      }).join('');
+      html += `<div class="msg error"><strong>Estas clases reservadas siguen en pie</strong> — cancélalas desde el calendario (eligiendo si devuelves el crédito) o dalas igualmente:<ul style="margin: 6px 0 0; padding-left: 18px;">${rows}</ul></div>`;
+    }
+    msgBox.innerHTML = html;
+    document.getElementById('closure-note').value = '';
+    await loadClosures();
+    await loadCalendar();
+  }
+
+  async function deleteClosure(id) {
+    if (!confirm('¿Quitar este cierre? Las clases de tu semana tipo vuelven a publicarse en esas fechas.')) return;
+    const { data, error } = await sb.rpc('admin_delete_closure', { p_id: id });
+    const msgBox = document.getElementById('closure-msg');
+    if (error) { msgBox.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+    msgBox.innerHTML = `<div class="msg ok">Cierre quitado. ${data} clases vuelven a estar publicadas.</div>`;
+    await loadClosures();
+    await loadCalendar();
+  }
+
+  async function restoreOccurrence(templateId, day) {
+    const { data, error } = await sb.rpc('admin_restore_occurrence', { p_template_id: templateId, p_day: day });
+    if (error) { alert(error.message); return; }
+    if (!data) alert('Excepción quitada, pero la clase no se ha publicado ahora: choca con otra clase o con unas vacaciones, o está a más de 12 semanas (se publicará sola cuando llegue).');
+    const dayToRestore = selectedDay;
+    await loadCalendar();
+    if (dayToRestore) await selectDay(dayToRestore);
   }
 
   // ---- CALENDAR ----
@@ -1077,7 +1237,7 @@
 
     const { data: slots, error } = await sb
       .from('schedule_slots')
-      .select('id, start_time, end_time, is_booked, is_blocked, student_id, google_meet_link')
+      .select('id, start_time, end_time, is_booked, is_blocked, student_id, google_meet_link, template_id')
       .gte('start_time', monthStart.toISOString())
       .lt('start_time', monthEnd.toISOString())
       .order('start_time');
@@ -1172,8 +1332,27 @@
     title.innerText = dateLabel;
     panel.style.display = 'block';
 
+    // Exceptions to the weekly template on this date: a closure covering it,
+    // and occurrences deleted one by one (restorable).
+    const dayStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const closure = closuresCache.find(c => c.starts_on <= dayStr && dayStr <= c.ends_on);
+    const { data: skips } = await sb.from('schedule_skips')
+      .select('template_id, occurs_on, weekly_template(start_local)')
+      .eq('occurs_on', dayStr);
+    const closureHtml = closure
+      ? `<p class="msg error" style="margin: 0 0 10px;">Día cerrado${closure.note ? ` (${escapeHtml(closure.note)})` : ''}: tu semana tipo no publica clases aquí.</p>`
+      : '';
+    const skipsHtml = (skips || [])
+      .filter(k => k.weekly_template)
+      .sort((a, b) => a.weekly_template.start_local.localeCompare(b.weekly_template.start_local))
+      .map(k => `
+        <div class="slot-row skipped">
+          <span>${k.weekly_template.start_local.slice(0, 5)} <span class="status">Quitada solo este día</span></span>
+          <button class="btn btn-small btn-outline" onclick="restoreOccurrence('${k.template_id}', '${dayStr}')">Restaurar</button>
+        </div>`).join('');
+
     if (daySlots.length === 0) {
-      list.innerHTML = '<p class="empty-note">No hay clases este día.</p>';
+      list.innerHTML = closureHtml + (skipsHtml || '<p class="empty-note">No hay clases este día.</p>');
       return;
     }
 
@@ -1209,22 +1388,24 @@
           <span style="display:flex; align-items:center;">
             ${meetHtml}
             ${refundToggle}
-            <button class="btn btn-small btn-danger" onclick="cancelSlot('${s.id}', ${s.is_booked})">Eliminar</button>
+            <button class="btn btn-small btn-danger" onclick="cancelSlot('${s.id}', ${s.is_booked}, ${!!s.template_id})">Eliminar</button>
           </span>
         </div>`;
-    }).join('');
+    }).join('') + skipsHtml;
+    list.innerHTML = closureHtml + list.innerHTML;
   }
 
-  async function cancelSlot(slotId, wasBooked) {
+  async function cancelSlot(slotId, wasBooked, fromTemplate) {
     let refund = true;
     if (wasBooked) {
       const checkbox = document.getElementById(`refund-${slotId}`);
       refund = checkbox ? checkbox.checked : true;
     }
 
-    const confirmMsg = wasBooked
+    const confirmMsg = (wasBooked
       ? `¿Eliminar esta clase reservada? ${refund ? 'Se devolverá el crédito al alumno.' : 'NO se devolverá el crédito al alumno.'}`
-      : '¿Eliminar esta clase disponible?';
+      : '¿Eliminar esta clase disponible?')
+      + (fromTemplate ? '\n\nSolo se quita este día; tu semana tipo no cambia.' : '');
     if (!confirm(confirmMsg)) return;
 
     const { error } = await sb.rpc('admin_cancel_slot', { _slot_id: slotId, _refund: wasBooked ? refund : false });
@@ -1245,7 +1426,7 @@
   async function loadStudents() {
     const { data, error } = await sb
       .from('profiles')
-      .select('id, full_name, email, credits, is_admin, language, referral_code, price_per_credit')
+      .select('id, full_name, email, credits, is_admin, language, referral_code, price_per_credit, intro_offer_used')
       .order('full_name');
 
     if (error) {
@@ -1257,6 +1438,7 @@
     renderStudents();
     fillFocusStudents();
     loadPayments();
+    loadOfferLink();
   }
 
   function renderStudents() {
@@ -1284,6 +1466,7 @@
         <td><code>${escapeHtml(s.referral_code || '—')}</code></td>
         <td><input type="number" min="0.01" step="0.01" value="${fmtCredits(s.price_per_credit)}" id="price-input-${s.id}" style="max-width: 80px;"></td>
         <td><input type="number" min="0" step="0.01" value="${fmtCredits(s.credits)}" id="credit-input-${s.id}"></td>
+        <td style="text-align:center;"><input type="checkbox" ${s.intro_offer_used ? 'checked' : ''} onchange="setIntroOfferUsed('${s.id}', this)"></td>
         <td><button class="btn btn-small btn-outline" onclick="saveCredits('${s.id}')">Guardar</button></td>
       `;
       tbody.appendChild(tr);
@@ -1324,11 +1507,61 @@
     await loadStudents();
   }
 
+  async function setIntroOfferUsed(studentId, box) {
+    const { error } = await sb.rpc('admin_set_intro_offer_used', { _student_id: studentId, _used: box.checked });
+    if (error) { alert(error.message); box.checked = !box.checked; }
+  }
+
+  // ---- WELCOME OFFER LINK ----
+  const OFFER_STATUS = {
+    active: 'Activo', used: 'Usado (pagado)', closed: 'Ya no está activo en Wise (pagado o caducado)', replaced: 'Sustituido'
+  };
+
+  async function loadOfferLink() {
+    const box = document.getElementById('offer-link-status');
+    const { data, error } = await sb.from('offer_links')
+      .select('url, amount_eur, credits, wise_reference, expires_at, status, checked_at, created_at')
+      .order('created_at', { ascending: false }).limit(1);
+    if (error) { box.textContent = 'Error: ' + error.message; return; }
+    const l = data?.[0];
+    if (!l) { box.textContent = 'No hay ningún enlace todavía.'; return; }
+    const when = d => d ? new Date(d).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+    const live = l.status === 'active';
+    box.innerHTML = `
+      <div><b style="color: ${live ? 'var(--success)' : 'var(--danger)'};">${escapeHtml(OFFER_STATUS[l.status] || l.status)}</b>
+        ${live ? '' : ' — crea uno nuevo en Wise y pégalo abajo.'}</div>
+      <div><a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" style="color: var(--link);">${escapeHtml(l.url)}</a></div>
+      <div class="hint" style="margin: 0;">${fmtCredits(l.amount_eur)}€ → ${fmtCredits(l.credits)} créditos · referencia ${escapeHtml(l.wise_reference || '—')} ·
+        caduca ${when(l.expires_at)} · comprobado ${when(l.checked_at)}</div>`;
+  }
+
+  async function saveOfferLink() {
+    const input = document.getElementById('offer-link-input');
+    const msg = document.getElementById('offer-link-msg');
+    msg.innerHTML = '';
+    const { error } = await sb.rpc('admin_set_offer_link', { _url: input.value.trim() });
+    if (error) { msg.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+    input.value = '';
+    // Read the new link's reference and expiry from Wise straight away.
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      await fetch(`${SUPABASE_URL}/functions/v1/offer-link-watch`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}`, apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+        body: '{}'
+      });
+    } catch (e) {
+      console.error('offer-link-watch failed:', e);
+    }
+    await loadOfferLink();
+    msg.innerHTML = '<div class="msg ok">Enlace guardado. Los alumnos ya lo ven.</div>';
+  }
+
   // ---- WISE PAYMENTS ----
   async function loadPayments() {
     const { data, error } = await sb
       .from('payments')
-      .select('id, received_at, amount_eur, sender_name, reference, student_id, price_per_credit, credits_granted, status')
+      .select('id, received_at, amount_eur, sender_name, reference, student_id, price_per_credit, credits_granted, status, offer_link_id')
       .order('received_at', { ascending: false })
       .limit(50);
     const tbody = document.getElementById('payments-tbody');
@@ -1353,7 +1586,7 @@
         action = `<button class="btn btn-small" onclick="assignPayment('${p.id}')">Asignar</button>`;
       } else {
         student = escapeHtml(nameOf(p.student_id));
-        credits = `${fmtCredits(p.credits_granted)} <span class="hint">(a ${fmtCredits(p.price_per_credit)}€)</span>`;
+        credits = `${fmtCredits(p.credits_granted)} <span class="hint">(${p.offer_link_id ? 'oferta' : `a ${fmtCredits(p.price_per_credit)}€`})</span>`;
         action = p.status === 'credited'
           ? `<button class="btn btn-small btn-outline" onclick="revertPayment('${p.id}')">Deshacer</button>`
           : '<span class="hint">Deshecho</span>';

@@ -1,5 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "english-tutoring-website.vercel.app" }],
+      "destination": "https://www.inglesconpaulo.org/:path*",
+      "permanent": true
+    },
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/pl/index.html", "destination": "/pl/", "permanent": true },
+    { "source": "/en/index.html", "destination": "/en/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

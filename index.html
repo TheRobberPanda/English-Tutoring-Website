@@ -99,7 +99,7 @@
         "@type": "Offer",
         "price": "15",
         "priceCurrency": "EUR",
-        "description": "Clase individual de 50 minutos. Primera clase de prueba 10€.",
+        "description": "Clase individual de 50 minutos. Las 3 primeras clases a 10€ cada una.",
         "url": "https://www.inglesconpaulo.org/#precios",
         "availability": "https://schema.org/InStock"
       }
@@ -459,6 +459,18 @@
   }
 
 
+  /* Signup gift. A quiet text link under the CTAs rather than a third button,
+     so the two "write to me" actions stay the primary path. Yellow on the pink
+     ground is the same pairing as the headline emphasis. */
+  .hero p.hero-bonus { margin-top: 18px; font-size: 0.95rem; }
+  .hero-bonus a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .hero-bonus a:hover { text-decoration-thickness: 2px; }
+
   .cta-row {
     display: flex;
     justify-content: flex-start;
@@ -730,6 +742,11 @@
     color: oklch(0.97 0.01 350 / 0.82);
     font-size: 0.92rem;
   }
+  .price-simple-bonus {
+    margin-top: 6px;
+    color: var(--accent);
+    font-size: 0.92rem;
+  }
   .price-simple-go {
     display: inline-block;
     margin-top: 20px;
@@ -960,6 +977,8 @@
       <a class="btn btn-solid" href="mailto:yankxwtic@mozmail.com" data-i18n="hero_cta_email">Escríbeme por email</a>
       <a class="btn btn-outline" href="https://t.me/frelseisme" target="_blank" rel="noopener" data-i18n="hero_cta_telegram">Escríbeme por Telegram</a>
     </div>
+    <!-- The 0.5 is granted server-side in handle_new_user(); change both together. -->
+    <p class="hero-bonus"><a href="cuenta.html?signup=1" data-i18n="hero_bonus">Crea tu cuenta gratis y te regalo media clase →</a></p>
   </div>
 </section>
 
@@ -1068,7 +1087,8 @@
         <span class="price-simple-amount">15€</span>
         <span class="price-simple-per" data-i18n="precios_per_class_long">por clase de 50 minutos</span>
       </div>
-      <div class="price-simple-trial" data-i18n="precios_trial_short">Primera clase de prueba: 10€</div>
+      <div class="price-simple-trial" data-i18n="precios_trial_short">Tus 3 primeras clases a 10€: ahorras 15€</div>
+      <div class="price-simple-bonus" data-i18n="precios_bonus_short">Y al crear tu cuenta, media clase de regalo</div>
       <span class="price-simple-go" data-i18n="precios_see_details">Ver métodos de pago y condiciones →</span>
     </a>
   </div>
@@ -1206,6 +1226,7 @@ const translations = {
     hero_p: 'Clases 1 a 1 por videollamada, notas personalizadas y un chat siempre abierto.',
     hero_cta_email: 'Escríbeme por email',
     hero_cta_telegram: 'Escríbeme por Telegram',
+    hero_bonus: 'Crea tu cuenta gratis y te regalo media clase →',
     about_eyebrow: 'Sobre mí',
     about_h2: 'Soy Paulo, y te ayudo a hablar sin miedo',
     about_p1: 'Llevo años enseñando inglés, pero lo que de verdad marca la diferencia no es la gramática: es perder la vergüenza a hablar. Trabajo especialmente con personas tímidas o que se bloquean al hablar en público. Primero soltamos la voz — hablar en voz alta, equivocarse sin que pase nada, acostumbrarse a sonar distinto — y la corrección viene después.',
@@ -1225,7 +1246,7 @@ const translations = {
     opiniones_note: 'Testimonios ilustrativos a modo de ejemplo — se actualizarán con opiniones reales de alumnos.',
     opiniones_note_real: 'Opiniones reales de alumnos.',
     precios_eyebrow: 'Precios y pago', precios_h2: 'Una clase, un precio claro',
-    precios_per_class_long: 'por clase de 50 minutos', precios_trial_short: 'Primera clase de prueba: 10€',
+    precios_per_class_long: 'por clase de 50 minutos', precios_trial_short: 'Tus 3 primeras clases a 10€: ahorras 15€', precios_bonus_short: 'Y al crear tu cuenta, media clase de regalo',
     precios_see_details: 'Ver métodos de pago y condiciones →',
     faq_eyebrow: 'Preguntas frecuentes', faq_h2: 'Antes de escribirme',
     faq_q1_h: '¿Necesito ya un buen nivel de inglés?', faq_q1_p: 'No. Adaptamos las clases a tu nivel real, desde quien tiene una base y quiere soltarse, hasta quien ya se defiende pero se bloquea al hablar.',
@@ -1260,6 +1281,7 @@ const translations = {
     hero_p: 'Lekcje 1 na 1 przez wideorozmowę, spersonalizowane notatki i czat, który jest zawsze otwarty.',
     hero_cta_email: 'Napisz do mnie e-mail',
     hero_cta_telegram: 'Napisz do mnie na Telegramie',
+    hero_bonus: 'Załóż darmowe konto, a dostaniesz ode mnie pół lekcji w prezencie →',
     about_eyebrow: 'O mnie',
     about_h2: 'Jestem Paulo i pomagam mówić bez strachu — po angielsku i po hiszpańsku',
     about_p1: 'Uczę angielskiego i hiszpańskiego od wielu lat, ale to, co naprawdę robi różnicę, to nie gramatyka — to pokonanie wstydu przed mówieniem. Pracuję szczególnie z osobami nieśmiałymi lub takimi, które blokują się mówiąc publicznie. Najpierw uwalniamy głos — mówienie na głos, pomyłki bez konsekwencji, przyzwyczajenie się do własnego brzmienia — a poprawianie przychodzi później.',
@@ -1279,7 +1301,7 @@ const translations = {
     opiniones_note: 'Przykładowe opinie — zostaną zaktualizowane prawdziwymi opiniami uczniów.',
     opiniones_note_real: 'Prawdziwe opinie uczniów.',
     precios_eyebrow: 'Cennik i płatność', precios_h2: 'Jedna lekcja, jasna cena',
-    precios_per_class_long: 'za lekcję 50 minut', precios_trial_short: 'Pierwsza lekcja próbna: 10€',
+    precios_per_class_long: 'za lekcję 50 minut', precios_trial_short: 'Pierwsze 3 lekcje po 10€: oszczędzasz 15€', precios_bonus_short: 'A po założeniu konta pół lekcji w prezencie',
     precios_see_details: 'Zobacz metody płatności i warunki →',
     faq_eyebrow: 'Najczęstsze pytania', faq_h2: 'Zanim napiszesz',
     faq_q1_h: 'Czy muszę już dobrze znać ten język?', faq_q1_p: 'Nie. Dostosowujemy lekcje do twojego rzeczywistego poziomu — od osób z podstawami, które chcą się otworzyć, po te, które radzą sobie, ale blokują się mówiąc. Dotyczy to zarówno angielskiego, jak i hiszpańskiego.',
@@ -1314,6 +1336,7 @@ const translations = {
     hero_p: '1-on-1 video lessons, personalized notes, and a chat that\'s always open.',
     hero_cta_email: 'Email me',
     hero_cta_telegram: 'Message me on Telegram',
+    hero_bonus: 'Create a free account and get half a lesson on me →',
     about_eyebrow: 'About me',
     about_h2: 'I\'m Paulo, and I help you speak Spanish without fear',
     about_p1: 'I\'ve been teaching languages for years, but what really makes the difference isn\'t grammar — it\'s losing the fear of speaking. I work especially with shy people, or those who freeze up speaking in public. We free up your voice first — speaking out loud, getting things wrong with no consequences, getting used to sounding different — and correction comes after.',
@@ -1333,7 +1356,7 @@ const translations = {
     opiniones_note: 'Illustrative example reviews — these will be updated with real student reviews.',
     opiniones_note_real: 'Real reviews from students.',
     precios_eyebrow: 'Pricing and payment', precios_h2: 'One lesson, one clear price',
-    precios_per_class_long: 'for a 50-minute lesson', precios_trial_short: 'First trial lesson: €10',
+    precios_per_class_long: 'for a 50-minute lesson', precios_trial_short: 'Your first 3 lessons at €10: save €15', precios_bonus_short: 'Plus half a lesson free when you create an account',
     precios_see_details: 'See payment methods and terms →',
     faq_eyebrow: 'Frequently asked questions', faq_h2: 'Before you write to me',
     faq_q1_h: 'Do I need to already speak good Spanish?', faq_q1_p: 'No. We adapt lessons to your real level, from people with some basics who want to open up, to those who get by but freeze up when speaking.',

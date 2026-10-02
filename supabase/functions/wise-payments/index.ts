@@ -17,6 +17,12 @@
 //      students whose Wise name differs from their account name.
 // Anything else is stored as 'unmatched' and Paulo assigns it in admin.
 //
+// WELCOME OFFER: the first 3 credits for 30€ are paid through a single-use
+// Wise payment-request link (offer_links). apply_wise_payment decides whether
+// a payment is the offer; this passes along whether the email carries the live
+// link's Wise reference. Once a payment through the link is imported the link
+// is spent, so Paulo is told on Telegram to paste a new one.
+//
 // On a match the student gets a thank-you email, sent from Paulo's own Gmail
 // (same token, gmail.send scope) so it arrives as a normal personal email.
 //
@@ -222,6 +228,15 @@ Deno.serve(async (req) => {
     const { data: seen } = await sb.from('payments').select('gmail_message_id').in('gmail_message_id', ids);
     const seenIds = new Set((seen || []).map(r => r.gmail_message_id));
 
+    // The offer link's Wise reference (filled in by offer-link-watch). 'closed'
+    // counts too: the watcher may have seen the link go dead before the email
+    // that paid it was imported.
+    const { data: offerLink } = await sb.from('offer_links')
+      .select('wise_reference').in('status', ['active', 'closed'])
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    const offerRef = (offerLink?.wise_reference || '').replace(/[^\w-]/g, '');
+    const offerRefRe = offerRef.length >= 4 ? new RegExp(`\\b${offerRef}\\b`) : null;
+
     const { data: students } = await sb.from('profiles')
       .select('id, full_name, email, referral_code, telegram_chat_id, language')
       .eq('is_admin', false);
@@ -261,19 +276,29 @@ Deno.serve(async (req) => {
         _amount_eur: parsed.amount,
         _sender_name: parsed.sender,
         _reference: parsed.reference,
-        _student_id: student?.id ?? null
+        _student_id: student?.id ?? null,
+        _offer_ref_seen: !!offerRefRe && offerRefRe.test(`${subject}\n${text}`)
       });
       if (error) { console.error('apply_wise_payment failed:', id, error); continue; }
       if (!row?.id) continue; // raced with another run
 
       const amountStr = Number(row.amount_eur).toFixed(2);
+      if (row.offer_link_id && ADMIN_TELEGRAM_CHAT_ID) {
+        await sendMessage(ADMIN_TELEGRAM_CHAT_ID,
+          `🔗 <b>Se ha usado el enlace de la oferta (3 clases)</b>\n` +
+          `Era de un solo uso. Crea una nueva solicitud de pago en Wise (${amountStr}€, un solo uso) ` +
+          `y pégala en https://www.inglesconpaulo.org/admin.html → Alumnos → Enlace de la oferta.\n` +
+          `Hasta entonces, la oferta pide a los alumnos que te escriban.`);
+      }
       if (row.status === 'credited' && student) {
         credited++;
         const creditsStr = String(Number(row.credits_granted));
         if (ADMIN_TELEGRAM_CHAT_ID) {
           await sendMessage(ADMIN_TELEGRAM_CHAT_ID,
             `💶 <b>Pago Wise acreditado</b>\n👤 ${esc(student.full_name || 'Alumno/a')}\n` +
-            `${amountStr}€ ÷ ${row.price_per_credit}€ = <b>${creditsStr}</b> créditos\n` +
+            (row.offer_link_id
+              ? `${amountStr}€ — oferta de bienvenida = <b>${creditsStr}</b> créditos\n`
+              : `${amountStr}€ ÷ ${row.price_per_credit}€ = <b>${creditsStr}</b> créditos\n`) +
             (student.email ? `✉️ Email de agradecimiento enviado a ${esc(student.email)}\n` : '') +
             `Si no es correcto, puedes deshacerlo en admin → Pagos.`);
         }
@@ -296,6 +321,7 @@ Deno.serve(async (req) => {
           await sendMessage(ADMIN_TELEGRAM_CHAT_ID,
             `⚠️ <b>Pago Wise sin asignar</b>\n${amountStr}€ de ${esc(parsed.sender || 'remitente desconocido')}\n` +
             (parsed.reference ? `Referencia: ${esc(parsed.reference)}\n` : '') +
+            (row.offer_link_id ? `Es un pago de la oferta: al asignarlo recibe los créditos de la oferta.\n` : '') +
             `No sé de qué alumno es. Asígnalo en admin → Pagos.`);
         }
       }
