@@ -115,6 +115,12 @@
   a.back:hover { color: var(--link); }
 
   .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .history-row > td { background: var(--surface); }
+  .history-table { width: 100%; font-size: 0.85rem; }
+  .history-table th, .history-table td { padding: 4px 8px; }
+  .history-empty { color: var(--ink-soft); font-size: 0.85rem; margin: 6px 0; }
+  .delta-pos { color: var(--success); font-weight: 600; }
+  .delta-neg { color: var(--danger); font-weight: 600; }
   .logout-link { background: none; border: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 0.88rem; }
 
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
@@ -1467,10 +1473,70 @@
         <td><input type="number" min="0.01" step="0.01" value="${fmtCredits(s.price_per_credit)}" id="price-input-${s.id}" style="max-width: 80px;"></td>
         <td><input type="number" min="0" step="0.01" value="${fmtCredits(s.credits)}" id="credit-input-${s.id}"></td>
         <td style="text-align:center;"><input type="checkbox" ${s.intro_offer_used ? 'checked' : ''} onchange="setIntroOfferUsed('${s.id}', this)"></td>
-        <td><button class="btn btn-small btn-outline" onclick="saveCredits('${s.id}')">Guardar</button></td>
+        <td style="white-space:nowrap;"><button class="btn btn-small btn-outline" onclick="saveCredits('${s.id}')">Guardar</button>
+          <button class="btn btn-small btn-outline" onclick="toggleCreditHistory('${s.id}', this)">Historial</button></td>
       `;
       tbody.appendChild(tr);
     });
+  }
+
+  // ---- CREDIT HISTORY ----
+  // credit_ledger and booking_log are written by triggers (migration
+  // 20261005_credit_ledger.sql), so they only cover changes since then.
+  const LEDGER_SOURCES = {
+    book_slot: 'Reserva', book_slot_for: 'Reserva (admin)',
+    cancel_booking: 'Cancelación', cancel_booking_for: 'Cancelación (admin)',
+    admin_cancel_slot: 'Clase cancelada (admin)', admin_force_cancel_for_conflict: 'Cancelada por conflicto',
+    admin_grant_credits: 'Recarga (admin)', apply_wise_payment: 'Pago Wise',
+    admin_assign_payment: 'Pago asignado', admin_revert_payment: 'Pago deshecho',
+    signup: 'Regalo de registro'
+  };
+
+  async function toggleCreditHistory(studentId, btn) {
+    const tr = btn.closest('tr');
+    const next = tr.nextElementSibling;
+    if (next && next.classList.contains('history-row')) { next.remove(); return; }
+
+    const row = document.createElement('tr');
+    row.className = 'history-row';
+    row.innerHTML = `<td colspan="7"><p class="history-empty">Cargando…</p></td>`;
+    tr.after(row);
+    const cell = row.firstElementChild;
+
+    const [ledger, bookings] = await Promise.all([
+      sb.from('credit_ledger').select('created_at, delta, balance_after, source').eq('student_id', studentId).order('created_at', { ascending: false }).limit(100),
+      sb.from('booking_log').select('created_at, action, start_time, credit_cost').eq('student_id', studentId).order('created_at', { ascending: false }).limit(100)
+    ]);
+    if (ledger.error || bookings.error) {
+      cell.innerHTML = `<div class="msg error">${escapeHtml((ledger.error || bookings.error).message)}</div>`;
+      return;
+    }
+
+    const fmt = d => new Date(d).toLocaleString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+    const events = [
+      ...ledger.data.map(e => ({
+        at: e.created_at,
+        what: escapeHtml(LEDGER_SOURCES[e.source] || e.source || 'Cambio manual'),
+        delta: `<span class="${Number(e.delta) < 0 ? 'delta-neg' : 'delta-pos'}">${Number(e.delta) > 0 ? '+' : ''}${fmtCredits(e.delta)}</span>`,
+        balance: fmtCredits(e.balance_after)
+      })),
+      ...bookings.data.map(b => ({
+        at: b.created_at,
+        what: `${b.action === 'booked' ? 'Reservó' : 'Liberó'} la clase del ${fmt(b.start_time)} (${fmtCredits(b.credit_cost)} cr.)`,
+        delta: '', balance: ''
+      }))
+    ].sort((a, b) => new Date(b.at) - new Date(a.at));
+
+    if (events.length === 0) {
+      cell.innerHTML = `<p class="history-empty">Sin movimientos registrados todavía. El historial empezó el 5 oct 2026.</p>`;
+      return;
+    }
+    cell.innerHTML = `
+      <table class="history-table">
+        <thead><tr><th>Fecha</th><th>Movimiento</th><th>Créditos</th><th>Saldo</th></tr></thead>
+        <tbody>${events.map(e => `<tr><td>${fmt(e.at)}</td><td>${e.what}</td><td>${e.delta}</td><td>${e.balance}</td></tr>`).join('')}</tbody>
+      </table>
+      <p class="history-empty">El historial empezó el 5 oct 2026; lo anterior no está registrado.</p>`;
   }
 
   // numeric(6,2) comes back as a string like "3.00"; show 3 and 1.5 nicely.
