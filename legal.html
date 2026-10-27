@@ -201,7 +201,7 @@
   </div>
 
   <h1 data-i18n="h1">Privacidad y Términos</h1>
-  <p class="updated" data-i18n="last_updated">Última actualización: 27 de julio de 2026</p>
+  <p class="updated" data-i18n="last_updated">Última actualización: 27 de octubre de 2026</p>
   <p class="lede" data-i18n="lede">Esta página explica qué datos recogemos, por qué, con quién los compartimos, y cuáles son tus derechos — incluido tu derecho de desistimiento como consumidor de la Unión Europea. Si tienes cualquier duda, escríbeme directamente.</p>
 
   <div class="card toc">
@@ -240,6 +240,8 @@
     <tr><td data-i18n="dato_5">Dirección de email para invitación de Google Meet</td><td data-i18n="para_que_5">Crear el enlace de videollamada de tu clase</td></tr>
     <tr><td data-i18n="dato_6">Idioma preferido</td><td data-i18n="para_que_6">Mostrarte la web y los mensajes en tu idioma</td></tr>
     <tr><td data-i18n="dato_7">Opiniones que envíes voluntariamente</td><td data-i18n="para_que_7">Publicarlas en la web (solo si las aprobamos y tú las enviaste)</td></tr>
+    <tr><td data-i18n="dato_8">Grabación de una clase (imagen y voz de la videollamada)</td><td data-i18n="para_que_8">Que Paulo pueda repasar la clase y preparar las siguientes. Se queda solo en su ordenador</td></tr>
+    <tr><td data-i18n="dato_9">Tus respuestas en los ejercicios de práctica</td><td data-i18n="para_que_9">Repetirte antes lo que fallas y que Paulo sepa en qué ayudarte</td></tr>
   </table>
   <p data-i18n="datos_p2">No recogemos datos de pago directamente: si pagas con Monero, la transacción ocurre en la red Monero, no en nuestros servidores. No almacenamos números de tarjeta ni datos bancarios.</p>
 
@@ -249,6 +251,7 @@
     <li data-i18n-html="legal_2"><strong>Consentimiento:</strong> para enviarte avisos por Telegram (solo si vinculas tu cuenta voluntariamente) y para publicar tu opinión (solo si la envías tú mismo/a).</li>
     <li data-i18n-html="legal_3"><strong>Interés legítimo:</strong> para mantener la seguridad de la web y prevenir abusos.</li>
     <li data-i18n-html="legal_4"><strong>Obligación legal:</strong> para conservar registros de facturación según la normativa fiscal polaca.</li>
+    <li data-i18n-html="legal_5"><strong>Interés legítimo (grabación de clases):</strong> Paulo puede grabar una clase en su propio ordenador para repasarla.</li>
   </ul>
 
   <h2 id="terceros" data-i18n="h2_terceros">4. Con quién los compartimos</h2>
@@ -260,12 +263,15 @@
     <tr><td>Resend</td><td data-i18n="prov_resend">Envío de emails</td><td data-i18n="loc_us">EE.UU.</td></tr>
     <tr><td>Telegram</td><td data-i18n="prov_telegram">Notificaciones (opcional)</td><td data-i18n="loc_eu">UE (Dubái/global, self-hosted por Telegram)</td></tr>
     <tr><td>Vercel / Cloudflare</td><td data-i18n="prov_vercel">Alojamiento web y DNS</td><td data-i18n="loc_global">Global (red de distribución)</td></tr>
+    <tr><td>YouTube (Google)</td><td data-i18n="prov_youtube">Reproducir las vídeo-lecciones</td><td data-i18n="loc_us">EE.UU.</td></tr>
   </table>
   <p data-i18n="terceros_p2">Cuando tus datos salen de la Unión Europea (por ejemplo, hacia servidores en EE.UU.), esos proveedores se acogen a cláusulas contractuales tipo (SCCs) aprobadas por la Comisión Europea como garantía de protección equivalente.</p>
   <p data-i18n="terceros_p3">Nunca vendemos tus datos a terceros ni los usamos con fines publicitarios.</p>
 
   <h2 id="conservacion" data-i18n="h2_conservacion">5. Cuánto tiempo los conservamos</h2>
   <p data-i18n="conservacion_p1">Conservamos tus datos mientras tengas una cuenta activa. Si eliminas tu cuenta desde el panel, tus datos personales y tu vínculo de Telegram se borran de forma permanente e inmediata; tus clases reservadas quedan liberadas y tus opiniones publicadas se mantienen, pero sin asociarlas a tu identidad. Los registros de facturación se conservan el tiempo exigido por la ley fiscal polaca (habitualmente 5 años).</p>
+
+  <p data-i18n="conservacion_p2">Grabaciones y transcripciones de clases.</p>
 
   <h2 id="derechos" data-i18n="h2_derechos">6. Tus derechos</h2>
   <p data-i18n="derechos_p1">Bajo el RODO (GDPR), tienes derecho a:</p>
@@ -313,7 +319,14 @@ const translations = {
   es: {
     dev_banner_text: '🚧 Estamos mejorando la web estos días. Puede que veas pequeños cambios de un día a otro.',
     back_link: 'Volver a la web', h1: 'Privacidad y Términos',
-    last_updated: 'Última actualización: 27 de julio de 2026',
+    last_updated: 'Última actualización: 27 de octubre de 2026',
+    dato_8: 'Grabación de una clase (imagen y voz de la videollamada)',
+    para_que_8: 'Que Paulo pueda repasar la clase y preparar las siguientes. Se queda solo en su ordenador',
+    dato_9: 'Tus respuestas en los ejercicios de práctica',
+    para_que_9: 'Repetirte antes lo que fallas y que Paulo sepa en qué ayudarte',
+    legal_5: '<strong>Interés legítimo (grabación de clases):</strong> Paulo puede grabar una clase en su propio ordenador para repasarla y preparar las siguientes. La grabación no se sube a la web ni a ningún servicio, nadie más la ve, y se borra cuando deja de ser útil.',
+    prov_youtube: 'Reproducir las vídeo-lecciones (solo cuando pulsas reproducir; en modo de privacidad mejorada)',
+    conservacion_p2: 'Grabaciones de clases: se guardan solo en el ordenador de Paulo, igual que su transcripción, que se hace en ese mismo ordenador. No se suben a la web ni se envían a ningún servicio externo, y Paulo las borra cuando dejan de ser útiles.',
     lede: 'Esta página explica qué datos recogemos, por qué, con quién los compartimos, y cuáles son tus derechos — incluido tu derecho de desistimiento como consumidor de la Unión Europea. Si tienes cualquier duda, escríbeme directamente.',
     toc_title: 'Índice',
     toc_1: 'Quién es el responsable de tus datos', toc_2: 'Qué datos recogemos', toc_3: 'Por qué los usamos (base legal)',
@@ -373,7 +386,14 @@ const translations = {
   pl: {
     dev_banner_text: '🚧 Strona jest w trakcie ulepszania. Możesz zauważyć drobne zmiany z dnia na dzień.',
     back_link: 'Wróć do strony', h1: 'Prywatność i regulamin',
-    last_updated: 'Ostatnia aktualizacja: 27 lipca 2026',
+    last_updated: 'Ostatnia aktualizacja: 27 października 2026',
+    dato_8: 'Nagranie lekcji (obraz i głos z wideorozmowy)',
+    para_que_8: 'Żeby Paulo mógł powtórzyć lekcję i przygotować kolejne. Zostaje tylko na jego komputerze',
+    dato_9: 'Twoje odpowiedzi w ćwiczeniach',
+    para_que_9: 'Częstsze powtarzanie tego, w czym się mylisz, i informacja dla Paula, w czym pomóc',
+    legal_5: '<strong>Prawnie uzasadniony interes (nagrywanie lekcji):</strong> Paulo może nagrać lekcję na własnym komputerze, żeby ją powtórzyć i przygotować kolejne. Nagranie nie trafia na stronę ani do żadnej usługi, nikt inny go nie widzi i jest usuwane, gdy przestaje być potrzebne.',
+    prov_youtube: 'Odtwarzanie lekcji wideo (tylko po kliknięciu „odtwórz”; w trybie rozszerzonej prywatności)',
+    conservacion_p2: 'Nagrania lekcji: są przechowywane wyłącznie na komputerze Paula, tak samo jak ich transkrypcja, która powstaje na tym samym komputerze. Nie trafiają na stronę ani do żadnej zewnętrznej usługi, a Paulo usuwa je, gdy przestają być potrzebne.',
     lede: 'Ta strona wyjaśnia jakie dane zbieramy, dlaczego, komu je udostępniamy i jakie masz prawa — w tym prawo do odstąpienia od umowy jako konsument Unii Europejskiej. Jeśli masz jakiekolwiek wątpliwości, napisz do mnie bezpośrednio.',
     toc_title: 'Spis treści',
     toc_1: 'Kto jest administratorem twoich danych', toc_2: 'Jakie dane zbieramy', toc_3: 'Dlaczego ich używamy (podstawa prawna)',
@@ -433,7 +453,14 @@ const translations = {
   en: {
     dev_banner_text: '🚧 We\'re improving the site right now. You might notice small changes from day to day.',
     back_link: 'Back to the site', h1: 'Privacy & Terms',
-    last_updated: 'Last updated: July 27, 2026',
+    last_updated: 'Last updated: October 27, 2026',
+    dato_8: 'Recording of a lesson (video and voice from the call)',
+    para_que_8: 'So Paulo can review the lesson and prepare the next ones. It stays on his computer only',
+    dato_9: 'Your answers in the practice exercises',
+    para_que_9: 'Bringing back sooner what you get wrong, and showing Paulo where to help',
+    legal_5: '<strong>Legitimate interest (lesson recording):</strong> Paulo may record a lesson on his own computer to review it and prepare the next ones. The recording is not uploaded to the site or to any service, nobody else sees it, and it is deleted once it is no longer useful.',
+    prov_youtube: 'Playing the video lessons (only once you press play; in privacy-enhanced mode)',
+    conservacion_p2: 'Lesson recordings: they are stored only on Paulo\'s computer, as is their transcript, which is made on that same computer. They are not uploaded to the site or sent to any outside service, and Paulo deletes them once they are no longer useful.',
     lede: 'This page explains what data we collect, why, who we share it with, and what your rights are — including your withdrawal right as an EU consumer. If you have any questions, message me directly.',
     toc_title: 'Contents',
     toc_1: 'Who is responsible for your data', toc_2: 'What data we collect', toc_3: 'Why we use it (legal basis)',
