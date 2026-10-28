@@ -10,6 +10,17 @@
         "8765"
       ],
       "port": 8765
+    },
+    {
+      "name": "static-windows",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8771"
+      ],
+      "port": 8771,
+      "autoPort": false
     }
   ]
 }

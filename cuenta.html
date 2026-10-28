@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="practice-data.js"></script>
 <meta name="color-scheme" content="light dark">
 <script>
   // Stamp the theme before first paint, otherwise the light palette shows
@@ -804,6 +805,7 @@
   }
   .time-chip small { font-size: 0.68rem; font-weight: 500; color: var(--ink-soft); }
   .time-chip:hover { border-color: var(--accent); }
+  .time-chip .chip-held { color: var(--link); font-weight: 700; }
   .time-chip.selected { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .time-chip.selected small { color: var(--accent-ink); }
   .week-empty { margin: 18px 0 0; text-align: center; }
@@ -964,6 +966,97 @@
     padding: 4px 8px; border-radius: 4px;
   }
   .dev-banner-close:hover { background: var(--line); }
+
+  /* ---- Weekly slot ---- */
+  .card-hint { color: var(--ink-soft); font-size: 0.86rem; margin: 4px 0 14px; line-height: 1.55; }
+  .wk-block { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+  .wk-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.95rem; }
+  .wk-occs { list-style: none; margin: 10px 0 0; padding: 0; }
+  .wk-occ { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 7px 0; border-top: 1px solid var(--line); font-size: 0.86rem; }
+  .wk-when { min-width: 92px; font-weight: 600; }
+  .wk-chip { font-size: 0.74rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--line); color: var(--ink-soft); }
+  .wk-chip.booked { background: var(--success-bg); border-color: var(--success-line); color: var(--success); }
+  .wk-chip.held { background: var(--ground-soft); border-color: transparent; color: var(--on-ground-soft); }
+  .wk-chip.skipped, .wk-chip.taken { background: var(--paper-alt); }
+  .wk-note { color: var(--ink-soft); font-size: 0.8rem; }
+  .wk-note.warn { color: var(--danger); font-weight: 600; }
+  .wk-act { margin-left: auto; }
+  .wk-add-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .wk-add-row select, .pr-top select {
+    flex: 1; min-width: 220px; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--line);
+    background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem;
+  }
+  .slot-held-badge { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 100px; background: var(--ground-soft); color: var(--on-ground-soft); margin-left: 6px; }
+
+  /* ---- Practice ---- */
+  .pr-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .pr-target { display: inline-flex; align-items: center; gap: 10px; font-size: 0.84rem; color: var(--ink-soft); }
+  .seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button {
+    border: none; background: transparent; color: var(--ink-soft); cursor: pointer;
+    padding: 8px 14px; font-family: 'Inter', system-ui, sans-serif; font-size: 0.86rem; font-weight: 600;
+  }
+  .seg button + button { border-left: 1.5px solid var(--line); }
+  .seg button.active { background: var(--accent); color: var(--accent-ink); }
+  .pr-decks { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .pr-deck {
+    position: relative; display: flex; flex-direction: column; gap: 4px; text-align: left; cursor: pointer;
+    background: var(--paper); border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px;
+    font-family: 'Inter', system-ui, sans-serif; color: var(--ink);
+  }
+  .pr-deck:hover:not(:disabled) { border-color: var(--accent); }
+  .pr-deck:disabled { opacity: 0.55; cursor: default; }
+  .pr-deck.star { border-left: 4px solid var(--accent); }
+  .pr-deck-name { font-weight: 700; font-size: 0.95rem; }
+  .pr-deck-sub { font-size: 0.8rem; color: var(--ink-soft); }
+  .pr-deck-stats { font-size: 0.76rem; color: var(--link); font-weight: 600; margin-top: 6px; }
+  .pr-due-dot { position: absolute; top: 12px; right: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+  .pr-meta { display: flex; justify-content: space-between; gap: 10px; font-size: 0.78rem; color: var(--ink-soft); font-weight: 600; }
+  .pr-bar { height: 6px; border-radius: 3px; background: var(--paper-alt); overflow: hidden; margin: 6px 0 18px; }
+  .pr-bar > div { height: 100%; background: var(--accent); }
+  .pr-card { display: block; }
+  .pr-instr { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  .pr-prompt { font-family: 'Archivo Black', system-ui, sans-serif; font-size: 1.45rem; line-height: 1.35; margin: 8px 0 4px; overflow-wrap: anywhere; }
+  .pr-prompt.gap { font-family: 'Inter', system-ui, sans-serif; font-weight: 600; font-size: 1.2rem; }
+  .pr-sub { color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 12px; }
+  .pr-card input.pr-input, .pr-card textarea.pr-input {
+    width: auto; min-width: 90px; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--line);
+    background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; font-size: 1rem;
+  }
+  .pr-prompt.gap .pr-input { width: 120px; margin: 0 6px; font-size: 1.05rem; }
+  .pr-card .pr-input.wide { display: block; width: 100%; margin-top: 10px; resize: vertical; }
+  .pr-input.right { border-color: var(--success); background: var(--success-bg); }
+  .pr-input.almost { border-color: var(--accent); }
+  .pr-input.wrong { border-color: var(--danger); background: var(--danger-bg); }
+  .pr-blanks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .pr-blanks { grid-template-columns: 1fr; } }
+  .pr-blank-label { margin: 0; font-size: 0.8rem; color: var(--ink-soft); }
+  .pr-feedback { min-height: 8px; margin: 14px 0 6px; font-size: 0.92rem; }
+  .pr-verdict { font-weight: 700; }
+  .pr-verdict.right { color: var(--success); }
+  .pr-verdict.almost { color: var(--link); }
+  .pr-verdict.wrong { color: var(--danger); }
+  .pr-answer { margin-top: 4px; overflow-wrap: anywhere; }
+  .pr-note { margin-top: 8px; padding: 9px 12px; border-radius: 8px; background: var(--ground-soft); color: var(--on-ground-soft); font-size: 0.86rem; }
+  .pr-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  .pr-actions .btn-link { border: none; cursor: pointer; font-family: inherit; }
+  .pr-score { font-family: 'Archivo Black', system-ui, sans-serif; font-size: 2rem; margin-top: 6px; }
+  .pr-misses { margin: 8px 0 0; padding-left: 18px; font-size: 0.9rem; line-height: 1.7; }
+
+  /* ---- Video lessons ---- */
+  .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .vid-thumb { position: relative; display: block; width: 100%; padding: 0; border: none; border-radius: 10px; overflow: hidden; cursor: pointer; background: #000; aspect-ratio: 16 / 9; }
+  .vid-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vid-play {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+  }
+  .vid-frame { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 10px; display: block; }
+  .vid-title { font-weight: 600; font-size: 0.92rem; margin-top: 8px; }
+  .vid-desc { color: var(--ink-soft); font-size: 0.84rem; margin-top: 2px; }
+  .vid-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 100px; background: var(--accent); color: var(--accent-ink); vertical-align: middle; }
+
 </style>
 </head>
 <body>
@@ -1081,6 +1174,7 @@
 
     <nav class="tabs" role="tablist">
       <button class="tab" data-tab="clases" role="tab" onclick="showTab('clases')"><span data-i18n="tab_classes">Clases</span></button>
+      <button class="tab" data-tab="practicar" role="tab" onclick="showTab('practicar')"><span data-i18n="tab_practice">Practicar</span></button>
       <button class="tab" data-tab="creditos" role="tab" onclick="showTab('creditos')"><span data-i18n="tab_credits">Créditos</span></button>
       <button class="tab" data-tab="progreso" role="tab" onclick="showTab('progreso')"><span data-i18n="tab_focus">Progreso</span></button>
       <button class="tab" data-tab="opiniones" role="tab" onclick="showTab('opiniones')"><span data-i18n="tab_reviews">Opiniones</span></button>
@@ -1130,6 +1224,36 @@
           <button class="btn-ghost" id="req-times-btn" onclick="requestMoreTimes()" data-i18n="req_times_btn">Pedir otros horarios</button>
           <div id="req-times-msg"></div>
         </div>
+      </div>
+
+      <div class="card" id="weekly-card" style="display:none;">
+        <h3 class="card-title" data-i18n="wk_title">Tu clase fija semanal</h3>
+        <p class="card-hint" data-i18n="wk_hint">Quédate con la misma hora todas las semanas.</p>
+        <div id="weekly-body"></div>
+        <div id="weekly-msg"></div>
+      </div>
+    </section>
+
+    <!-- ============ PRACTICAR ============ -->
+    <section class="tab-panel" id="panel-practicar" role="tabpanel">
+      <div class="card">
+        <div class="pr-top">
+          <h3 class="card-title" data-i18n="pr_title">Practicar</h3>
+          <span class="pr-target"><span data-i18n="pr_learning">Estoy aprendiendo</span>
+            <span class="seg" id="pr-target" role="group">
+              <button type="button" data-target="en" onclick="setPracticeTarget('en')" data-i18n="pr_lang_en">Inglés</button>
+              <button type="button" data-target="es" onclick="setPracticeTarget('es')" data-i18n="pr_lang_es">Español</button>
+            </span></span>
+        </div>
+        <p class="card-hint" data-i18n="pr_hint">Rondas de 10 ejercicios.</p>
+        <div class="pr-decks" id="pr-decks"></div>
+        <div id="pr-session" style="display:none;"></div>
+      </div>
+
+      <div class="card" id="videos-card" style="display:none;">
+        <h3 class="card-title" data-i18n="vid_title">Vídeo-lecciones</h3>
+        <p class="card-hint" data-i18n="vid_hint">Vídeos cortos que Paulo graba para sus alumnos.</p>
+        <div class="video-grid" id="videos-list"></div>
       </div>
     </section>
 
@@ -1892,6 +2016,154 @@
     }
   };
 
+
+  // Weekly slot, practice and video lessons.
+  // Kept as one block merged into `translations`, so the three languages of
+  // these features sit side by side and can be checked against each other.
+  Object.entries({
+    es: {
+      tab_practice: 'Practicar',
+      wk_title: 'Tu clase fija semanal',
+      wk_hint: 'Quédate con la misma hora todas las semanas. Cada clase se reserva sola 7 días antes y descuenta su crédito; las 4 semanas siguientes quedan guardadas para ti, así nadie te quita la hora. Puedes cancelar cualquier clase hasta 12 horas antes, como siempre.',
+      wk_every: 'Cada {day} a las {time}',
+      wk_st_booked: 'Reservada', wk_st_held: 'Guardada para ti', wk_st_pending: 'Se reservará pronto',
+      wk_st_skipped: 'Saltada', wk_st_released: 'Liberada por falta de créditos', wk_st_taken: 'Ocupada esa semana',
+      wk_auto_on: 'se reserva sola el {date}',
+      wk_needs_credit: 'Necesitas un crédito antes del {date} o esa semana se libera',
+      wk_skip_btn: 'Saltar esta semana', wk_restore_btn: 'Recuperar', wk_stop_btn: 'Dejar de reservar esta hora',
+      wk_confirm_stop: '¿Dejar de reservar esta hora cada semana? Las semanas guardadas quedan libres para otros. Las clases ya reservadas siguen en pie (puedes cancelarlas hasta 12 horas antes).',
+      wk_confirm_skip: '¿Saltar solo esta semana? Esa clase quedará libre para otros; las demás semanas siguen siendo tuyas.',
+      wk_add_title: 'Fija una hora', wk_add_another: 'Añadir otra hora fija', wk_pick: 'Elige la hora',
+      wk_free_weeks: 'libre {n} de las próximas {m} semanas', wk_set_btn: 'Fijar esta hora',
+      wk_confirm_set: '¿Fijar {label} todas las semanas? Cada clase se reservará sola 7 días antes y descontará un crédito. Puedes cancelar cualquiera hasta 12 horas antes.',
+      wk_done: 'Hecho. Clases ya reservadas: {booked}. Semanas guardadas para ti: {held}.',
+      wk_need_credit_to_set: 'Necesitas al menos 1 crédito para fijar una hora semanal.',
+      wk_no_options: 'Ahora mismo no queda ninguna hora semanal libre. Usa «Pedir otros horarios» y Paulo añadirá más.',
+      wk_max: 'Ya tienes el máximo de 3 horas fijas.',
+      wk_err_slot_taken: 'Otro alumno acaba de quedarse esa hora. Elige otra.',
+      wk_err_no_credits: 'Necesitas al menos 1 crédito.',
+      wk_err_no_free_weeks: 'Esa hora ya no está libre las próximas semanas.',
+      wk_err_too_many: 'Ya tienes el máximo de 3 horas fijas.',
+      wk_badge: 'Tu hora fija',
+      pr_title: 'Practicar', pr_learning: 'Estoy aprendiendo', pr_lang_en: 'Inglés', pr_lang_es: 'Español',
+      pr_hint: 'Rondas de 10 ejercicios. Lo que fallas vuelve pronto; lo que aciertas, cada vez más tarde, hasta que se te queda.',
+      pr_deck_paulo: 'De tus clases', pr_deck_paulo_sub: 'Lo que Paulo ha preparado a partir de tus clases',
+      pr_deck_verbs: 'Verbos irregulares', pr_deck_verbs_sub: 'Past simple y past participle',
+      pr_deck_verbsPresent: 'Verbos: presente', pr_deck_verbsPast: 'Verbos: pasado',
+      pr_deck_conj_sub: 'Conjugación de regulares e irregulares',
+      pr_deck_prepositions: 'Preposiciones',
+      pr_deck_preps_sub_en: 'in, on, at y las que van con cada palabra', pr_deck_preps_sub_es: 'por, para, a, en, de…',
+      pr_deck_translation: 'Traducción activa',
+      pr_from_es: 'desde el español', pr_from_pl: 'desde el polaco', pr_from_en: 'desde el inglés',
+      pr_due: 'para repasar: {n}', pr_new: 'nuevos: {n}', pr_mastered: 'dominados: {n}', pr_start: 'Empezar',
+      pr_instr_verb2: 'Escribe el past simple y el past participle', pr_instr_conj: 'Conjuga el verbo',
+      pr_instr_gap: 'Completa el hueco', pr_instr_translate_en: 'Tradúcelo al inglés', pr_instr_translate_es: 'Tradúcelo al español',
+      pr_check: 'Comprobar', pr_dontknow: 'No lo sé', pr_next: 'Siguiente',
+      pr_right: '¡Bien!', pr_almost: 'Casi: revisa las tildes.', pr_wrong: 'No del todo.', pr_answer: 'Respuesta:',
+      pr_override: 'Lo tenía bien', pr_override_done: 'Contada como bien.',
+      pr_done_title: 'Ronda terminada', pr_done_score: '{n} de {m} bien', pr_done_misses: 'Para repasar',
+      pr_again: 'Otra ronda', pr_back: 'Volver', pr_tense_pres: 'presente', pr_tense_past: 'pasado',
+      pr_empty_deck: 'Este mazo está vacío.', pr_none_left: 'Todo repasado por hoy en este mazo. Puedes hacer una ronda extra igualmente.',
+      pr_offline: 'Ahora mismo no se ha podido guardar tu progreso; la práctica funciona igual.',
+      vid_title: 'Vídeo-lecciones', vid_hint: 'Vídeos cortos que Paulo graba para sus alumnos.',
+      vid_for_you: 'Para ti', vid_play: 'Reproducir',
+    },
+    pl: {
+      tab_practice: 'Ćwiczenia',
+      wk_title: 'Twoja stała lekcja co tydzień',
+      wk_hint: 'Zatrzymaj tę samą godzinę w każdym tygodniu. Każda lekcja rezerwuje się sama 7 dni wcześniej i pobiera swój kredyt; kolejne 4 tygodnie są zatrzymane dla Ciebie, więc nikt nie zajmie Ci tej godziny. Każdą lekcję możesz odwołać do 12 godzin przed, jak zawsze.',
+      wk_every: 'Co tydzień: {day}, godz. {time}',
+      wk_st_booked: 'Zarezerwowana', wk_st_held: 'Zatrzymana dla Ciebie', wk_st_pending: 'Wkrótce się zarezerwuje',
+      wk_st_skipped: 'Pominięta', wk_st_released: 'Zwolniona z braku kredytów', wk_st_taken: 'Zajęta w tym tygodniu',
+      wk_auto_on: 'zarezerwuje się sama {date}',
+      wk_needs_credit: 'Potrzebujesz kredytu przed {date}, inaczej ten tydzień zostanie zwolniony',
+      wk_skip_btn: 'Pomiń ten tydzień', wk_restore_btn: 'Przywróć', wk_stop_btn: 'Przestań rezerwować tę godzinę',
+      wk_confirm_stop: 'Przestać rezerwować tę godzinę co tydzień? Zatrzymane tygodnie zwolnią się dla innych. Już zarezerwowane lekcje zostają (możesz je odwołać do 12 godzin przed).',
+      wk_confirm_skip: 'Pominąć tylko ten tydzień? Ta lekcja zwolni się dla innych; pozostałe tygodnie dalej są Twoje.',
+      wk_add_title: 'Ustal stałą godzinę', wk_add_another: 'Dodaj kolejną stałą godzinę', wk_pick: 'Wybierz godzinę',
+      wk_free_weeks: 'wolna w {n} z najbliższych {m} tygodni', wk_set_btn: 'Ustal tę godzinę',
+      wk_confirm_set: 'Ustalić stałą godzinę ({label})? Każda lekcja zarezerwuje się sama 7 dni wcześniej i pobierze jeden kredyt. Każdą możesz odwołać do 12 godzin przed.',
+      wk_done: 'Gotowe. Już zarezerwowane lekcje: {booked}. Tygodnie zatrzymane dla Ciebie: {held}.',
+      wk_need_credit_to_set: 'Potrzebujesz co najmniej 1 kredytu, żeby ustalić stałą godzinę.',
+      wk_no_options: 'W tej chwili nie ma wolnej stałej godziny. Użyj „Poproś o inne terminy”, a Paulo doda więcej.',
+      wk_max: 'Masz już maksymalnie 3 stałe godziny.',
+      wk_err_slot_taken: 'Inny uczeń właśnie zajął tę godzinę. Wybierz inną.',
+      wk_err_no_credits: 'Potrzebujesz co najmniej 1 kredytu.',
+      wk_err_no_free_weeks: 'Ta godzina nie jest już wolna w najbliższych tygodniach.',
+      wk_err_too_many: 'Masz już maksymalnie 3 stałe godziny.',
+      wk_badge: 'Twoja stała godzina',
+      pr_title: 'Ćwiczenia', pr_learning: 'Uczę się', pr_lang_en: 'Angielski', pr_lang_es: 'Hiszpański',
+      pr_hint: 'Rundy po 10 ćwiczeń. To, w czym się mylisz, wraca szybko; to, co umiesz, coraz rzadziej, aż zostanie w głowie.',
+      pr_deck_paulo: 'Z Twoich lekcji', pr_deck_paulo_sub: 'Ćwiczenia, które Paulo przygotował na podstawie Twoich lekcji',
+      pr_deck_verbs: 'Czasowniki nieregularne', pr_deck_verbs_sub: 'Past simple i past participle',
+      pr_deck_verbsPresent: 'Czasowniki: czas teraźniejszy', pr_deck_verbsPast: 'Czasowniki: czas przeszły',
+      pr_deck_conj_sub: 'Odmiana czasowników regularnych i nieregularnych',
+      pr_deck_prepositions: 'Przyimki',
+      pr_deck_preps_sub_en: 'in, on, at i te, które łączą się z danym słowem', pr_deck_preps_sub_es: 'por, para, a, en, de…',
+      pr_deck_translation: 'Aktywne tłumaczenie',
+      pr_from_es: 'z hiszpańskiego', pr_from_pl: 'z polskiego', pr_from_en: 'z angielskiego',
+      pr_due: 'do powtórki: {n}', pr_new: 'nowe: {n}', pr_mastered: 'opanowane: {n}', pr_start: 'Zacznij',
+      pr_instr_verb2: 'Wpisz past simple i past participle', pr_instr_conj: 'Odmień czasownik',
+      pr_instr_gap: 'Uzupełnij lukę', pr_instr_translate_en: 'Przetłumacz na angielski', pr_instr_translate_es: 'Przetłumacz na hiszpański',
+      pr_check: 'Sprawdź', pr_dontknow: 'Nie wiem', pr_next: 'Dalej',
+      pr_right: 'Dobrze!', pr_almost: 'Prawie: sprawdź akcenty.', pr_wrong: 'Nie do końca.', pr_answer: 'Odpowiedź:',
+      pr_override: 'Moja odpowiedź jest dobra', pr_override_done: 'Zaliczone jako dobrze.',
+      pr_done_title: 'Runda skończona', pr_done_score: 'Dobrze: {n} z {m}', pr_done_misses: 'Do powtórki',
+      pr_again: 'Kolejna runda', pr_back: 'Wróć', pr_tense_pres: 'czas teraźniejszy', pr_tense_past: 'czas przeszły',
+      pr_empty_deck: 'Ten zestaw jest pusty.', pr_none_left: 'W tym zestawie wszystko na dziś powtórzone. Możesz i tak zrobić dodatkową rundę.',
+      pr_offline: 'Nie udało się teraz zapisać postępów; ćwiczenia działają normalnie.',
+      vid_title: 'Lekcje wideo', vid_hint: 'Krótkie filmy, które Paulo nagrywa dla swoich uczniów.',
+      vid_for_you: 'Dla Ciebie', vid_play: 'Odtwórz',
+    },
+    en: {
+      tab_practice: 'Practice',
+      wk_title: 'Your weekly lesson',
+      wk_hint: 'Keep the same hour every week. Each lesson books itself 7 days ahead and uses its credit; the following 4 weeks are held for you, so nobody can take your slot. You can still cancel any lesson up to 12 hours before, as always.',
+      wk_every: 'Every {day} at {time}',
+      wk_st_booked: 'Booked', wk_st_held: 'Held for you', wk_st_pending: 'Booking soon',
+      wk_st_skipped: 'Skipped', wk_st_released: 'Released: no credits', wk_st_taken: 'Taken that week',
+      wk_auto_on: 'books itself on {date}',
+      wk_needs_credit: 'You need a credit before {date}, or that week is released',
+      wk_skip_btn: 'Skip this week', wk_restore_btn: 'Bring back', wk_stop_btn: 'Stop booking this slot',
+      wk_confirm_stop: 'Stop booking this slot every week? Held weeks become free for others. Lessons already booked stay booked (you can cancel them up to 12 hours before).',
+      wk_confirm_skip: 'Skip just this week? That lesson opens up for others; the other weeks stay yours.',
+      wk_add_title: 'Pick a weekly slot', wk_add_another: 'Add another weekly slot', wk_pick: 'Choose a time',
+      wk_free_weeks: 'free {n} of the next {m} weeks', wk_set_btn: 'Keep this slot',
+      wk_confirm_set: 'Keep {label} every week? Each lesson will book itself 7 days ahead and use one credit. You can cancel any of them up to 12 hours before.',
+      wk_done: 'Done. Lessons already booked: {booked}. Weeks held for you: {held}.',
+      wk_need_credit_to_set: 'You need at least 1 credit to keep a weekly slot.',
+      wk_no_options: 'There is no weekly slot free right now. Use "Request other times" and Paulo will add more.',
+      wk_max: 'You already have the maximum of 3 weekly slots.',
+      wk_err_slot_taken: 'Another student just took that slot. Please pick another one.',
+      wk_err_no_credits: 'You need at least 1 credit.',
+      wk_err_no_free_weeks: 'That slot is no longer free in the coming weeks.',
+      wk_err_too_many: 'You already have the maximum of 3 weekly slots.',
+      wk_badge: 'Your weekly slot',
+      pr_title: 'Practice', pr_learning: "I'm learning", pr_lang_en: 'English', pr_lang_es: 'Spanish',
+      pr_hint: "Rounds of 10 exercises. What you get wrong comes back soon; what you get right comes back less and less, until it sticks.",
+      pr_deck_paulo: 'From your lessons', pr_deck_paulo_sub: 'Exercises Paulo made from your lessons',
+      pr_deck_verbs: 'Irregular verbs', pr_deck_verbs_sub: 'Past simple and past participle',
+      pr_deck_verbsPresent: 'Verbs: present', pr_deck_verbsPast: 'Verbs: past',
+      pr_deck_conj_sub: 'Conjugating regular and irregular verbs',
+      pr_deck_prepositions: 'Prepositions',
+      pr_deck_preps_sub_en: 'in, on, at, and the ones that go with each word', pr_deck_preps_sub_es: 'por, para, a, en, de…',
+      pr_deck_translation: 'Active translation',
+      pr_from_es: 'from Spanish', pr_from_pl: 'from Polish', pr_from_en: 'from English',
+      pr_due: '{n} to review', pr_new: '{n} new', pr_mastered: '{n} mastered', pr_start: 'Start',
+      pr_instr_verb2: 'Write the past simple and the past participle', pr_instr_conj: 'Conjugate the verb',
+      pr_instr_gap: 'Fill the gap', pr_instr_translate_en: 'Translate it into English', pr_instr_translate_es: 'Translate it into Spanish',
+      pr_check: 'Check', pr_dontknow: "I don't know", pr_next: 'Next',
+      pr_right: 'Right!', pr_almost: 'Almost: check the accents.', pr_wrong: 'Not quite.', pr_answer: 'Answer:',
+      pr_override: 'I was right', pr_override_done: 'Counted as right.',
+      pr_done_title: 'Round finished', pr_done_score: '{n} of {m} right', pr_done_misses: 'To review',
+      pr_again: 'Another round', pr_back: 'Back', pr_tense_pres: 'present', pr_tense_past: 'past',
+      pr_empty_deck: 'This deck is empty.', pr_none_left: 'Everything in this deck is reviewed for today. You can still do an extra round.',
+      pr_offline: "Your progress couldn't be saved just now; practice still works.",
+      vid_title: 'Video lessons', vid_hint: 'Short videos Paulo records for his students.',
+      vid_for_you: 'For you', vid_play: 'Play',
+    }
+  }).forEach(([lang, dict]) => Object.assign(translations[lang], dict));
+
   let currentLang = localStorage.getItem('site_lang') || 'es';
   if (!translations[currentLang]) currentLang = 'es';
   function t(key) { return translations[currentLang][key]; }
@@ -2241,6 +2513,7 @@
       renderIntroOffer(profile),
       loadOpenSlots(),
       loadMyBookings(),
+      loadWeekly(profile?.credits ?? 0),
       loadReferralInfo(),
       loadChat()
     ]);
@@ -2481,7 +2754,7 @@
     const to = new Date(Date.now() + BOOK_HORIZON_DAYS * 86400000);
     const { data, error } = await sb
       .from('schedule_slots')
-      .select('id, start_time, end_time, credit_cost')
+      .select('id, start_time, end_time, credit_cost, reserved_for')
       .eq('is_booked', false)
       .eq('is_blocked', false)
       .gte('start_time', from.toISOString())
@@ -2573,7 +2846,7 @@
         const cost = Number(s.credit_cost ?? 1);
         const on = s.id === selectedSlotId;
         return `<button type="button" class="time-chip${on ? ' selected' : ''}" aria-pressed="${on}" onclick="selectSlot('${s.id}')">
-          ${fmtTime(s.start_time)}${cost !== 1 ? `<small>${fmtNum(cost)} ${escapeChat(creditsWord(cost))}</small>` : ''}
+          ${fmtTime(s.start_time)}${cost !== 1 ? `<small>${fmtNum(cost)} ${escapeChat(creditsWord(cost))}</small>` : ''}${s.reserved_for ? `<small class="chip-held">${escapeChat(t('wk_badge'))}</small>` : ''}
         </button>`;
       }).join('')}</div>`;
     renderBookConfirm();
@@ -3007,7 +3280,7 @@
   }
 
   // ---- SUBPAGE TABS ----
-  const TABS = ['clases', 'creditos', 'progreso', 'opiniones', 'referidos', 'cuenta'];
+  const TABS = ['clases', 'practicar', 'creditos', 'progreso', 'opiniones', 'referidos', 'cuenta'];
 
   function showTab(name) {
     if (!TABS.includes(name)) name = 'clases';
@@ -3034,11 +3307,503 @@
     if (name === 'opiniones') loadReviews();
     if (name === 'progreso') loadFocus();
     if (name === 'creditos') loadLedger();
+    if (name === 'practicar') loadPractice();
   }
 
   window.addEventListener('hashchange', () => {
     showTab((window.location.hash || '#clases').slice(1));
   });
+
+  // =====================================================================
+  // WEEKLY SLOT (standing booking)
+  // The server holds the next 4 weeks and books each lesson 7 days ahead
+  // (migration 20261027_standing_bookings.sql). This card shows what that
+  // means week by week and lets the student start, skip or stop it. If the
+  // migration isn't applied yet the RPCs fail and the card simply stays hidden.
+  // =====================================================================
+  const fill = (s, vars) => s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] ?? m));
+  const fmtCr = n => String(parseFloat(Number(n ?? 0).toFixed(2)));
+  let weeklyCredits = 0;
+
+  function weeklyLabel(iso) {
+    const d = new Date(iso);
+    return fill(t('wk_every'), {
+      day: d.toLocaleDateString(t('locale'), { weekday: 'long' }),
+      time: d.toLocaleTimeString(t('locale'), { hour: '2-digit', minute: '2-digit', hour12: false })
+    });
+  }
+  const shortDate = iso => new Date(iso).toLocaleDateString(t('locale'), { weekday: 'short', day: 'numeric', month: 'short' });
+  const shortDateTime = iso => new Date(iso).toLocaleString(t('locale'), { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+
+  function weeklyError(e) {
+    const m = (e && e.message) || '';
+    if (e && e.code === '23505') return t('wk_err_slot_taken');
+    for (const code of ['slot_taken', 'no_credits', 'no_free_weeks', 'too_many']) if (m.includes(code)) return t('wk_err_' + code);
+    return m || t('connection_error');
+  }
+
+  function weeklyMsg(text, kind) {
+    const box = document.getElementById('weekly-msg');
+    box.innerHTML = text ? `<div class="msg ${kind || 'ok'}"></div>` : '';
+    if (text) box.firstChild.textContent = text;
+  }
+
+  async function loadWeekly(credits) {
+    weeklyCredits = Number(credits ?? 0);
+    const card = document.getElementById('weekly-card');
+    const [mine, opts] = await Promise.all([sb.rpc('my_standing_bookings'), sb.rpc('standing_booking_options')]);
+    if (mine.error || opts.error) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    const bookings = mine.data || [];
+    const options = opts.data || [];
+    const now = Date.now();
+
+    const blocks = bookings.map(b => {
+      const first = (b.occurrences || [])[0];
+      const head = first ? weeklyLabel(first.start_time) : fill(t('wk_every'), { day: '', time: b.start_local });
+      const rows = (b.occurrences || []).map(o => {
+        const start = Date.parse(o.start_time);
+        const released = o.status === 'skipped' && o.skip_reason === 'no_credits';
+        const label = released ? t('wk_st_released') : t('wk_st_' + o.status);
+        let note = '', action = '';
+        if (o.status === 'held') {
+          const bookAt = new Date(start - 7 * 86400000);
+          const short = start - now <= 7 * 86400000 && weeklyCredits < Number(o.credit_cost ?? 1);
+          note = short
+            ? `<span class="wk-note warn">${escapeChat(fill(t('wk_needs_credit'), { date: shortDateTime(new Date(start - 86400000).toISOString()) }))}</span>`
+            : (bookAt > now ? `<span class="wk-note">${escapeChat(fill(t('wk_auto_on'), { date: shortDate(bookAt.toISOString()) }))}</span>` : '');
+          action = `<button class="btn-ghost btn-sm" onclick="skipWeekly('${o.slot_id}')">${escapeChat(t('wk_skip_btn'))}</button>`;
+        } else if (o.status === 'skipped' && start - now > 12 * 3600000) {
+          action = `<button class="btn-ghost btn-sm" onclick="restoreWeekly('${b.id}', '${o.day}')">${escapeChat(t('wk_restore_btn'))}</button>`;
+        }
+        return `<li class="wk-occ">
+          <span class="wk-when">${escapeChat(shortDate(o.start_time))}</span>
+          <span class="wk-chip ${released ? 'skipped' : o.status}">${escapeChat(label)}</span>
+          ${note}<span class="wk-act">${action}</span></li>`;
+      }).join('');
+      return `<div class="wk-block">
+        <div class="wk-head"><strong>${escapeChat(head)}</strong>
+          <button class="btn-ghost btn-sm" onclick="stopWeekly('${b.id}')">${escapeChat(t('wk_stop_btn'))}</button></div>
+        <ul class="wk-occs">${rows}</ul></div>`;
+    }).join('');
+
+    let add = '';
+    if (bookings.length >= 3) add = `<p class="empty-note">${escapeChat(t('wk_max'))}</p>`;
+    else if (weeklyCredits < 1) add = `<p class="empty-note">${escapeChat(t('wk_need_credit_to_set'))}</p>`;
+    else if (!options.length) add = `<p class="empty-note">${escapeChat(t('wk_no_options'))}</p>`;
+    else {
+      add = `<div class="wk-add">
+        <label for="weekly-pick" style="margin-top: 0;">${escapeChat(bookings.length ? t('wk_add_another') : t('wk_add_title'))}</label>
+        <div class="wk-add-row">
+          <select id="weekly-pick">${options.map(o => `<option value="${o.template_id}" data-start="${o.next_start}">${escapeChat(weeklyLabel(o.next_start))} — ${escapeChat(fill(t('wk_free_weeks'), { n: o.free_weeks, m: o.weeks }))}</option>`).join('')}</select>
+          <button class="btn" style="margin-top: 0;" onclick="createWeekly()">${escapeChat(t('wk_set_btn'))}</button>
+        </div></div>`;
+    }
+    document.getElementById('weekly-body').innerHTML = blocks + add;
+  }
+
+  async function createWeekly() {
+    const sel = document.getElementById('weekly-pick');
+    if (!sel || !sel.value) return;
+    const label = weeklyLabel(sel.selectedOptions[0].dataset.start);
+    if (!await confirmDialog(fill(t('wk_confirm_set'), { label }), t('wk_set_btn'))) return;
+    const { data, error } = await sb.rpc('create_standing_booking', { p_template_id: sel.value });
+    if (error) { weeklyMsg(weeklyError(error), 'error'); return; }
+    await loadDashboard();
+    weeklyMsg(fill(t('wk_done'), { booked: data.booked, held: data.held }));
+    if (data.booked) pollForMeetLink();
+  }
+
+  async function stopWeekly(id) {
+    if (!await confirmDialog(t('wk_confirm_stop'), t('wk_stop_btn'), true)) return;
+    const { error } = await sb.rpc('cancel_standing_booking', { p_id: id });
+    if (error) { weeklyMsg(weeklyError(error), 'error'); return; }
+    await loadDashboard();
+  }
+
+  async function skipWeekly(slotId) {
+    if (!await confirmDialog(t('wk_confirm_skip'), t('wk_skip_btn'))) return;
+    const { error } = await sb.rpc('skip_standing_occurrence', { p_slot_id: slotId });
+    if (error) { weeklyMsg(weeklyError(error), 'error'); return; }
+    await loadDashboard();
+  }
+
+  async function restoreWeekly(id, day) {
+    const { error } = await sb.rpc('restore_standing_occurrence', { p_id: id, p_day: day });
+    if (error) { weeklyMsg(weeklyError(error), 'error'); return; }
+    await loadDashboard();
+  }
+
+  // =====================================================================
+  // PRACTICE
+  // Starter exercises come from practice-data.js; Paulo's own ones from
+  // practice_items. Each answer is recorded with record_practice(), which
+  // moves the exercise between Leitner boxes on the server, so the next
+  // round starts with whatever is due.
+  // =====================================================================
+  const PD = window.PRACTICE_DATA;
+  let prTarget = null;
+  let prProgress = new Map();
+  let prCustom = [];
+  let prSaveOk = true;
+  let prSession = null;
+
+  function prDefaultTarget() {
+    try {
+      const saved = localStorage.getItem('practice_target');
+      if (saved === 'en' || saved === 'es') return saved;
+    } catch (e) {}
+    // English-speaking students come here for Spanish; everyone else for English.
+    return currentLang === 'en' ? 'es' : 'en';
+  }
+
+  function setPracticeTarget(lang) {
+    prTarget = lang;
+    try { localStorage.setItem('practice_target', lang); } catch (e) {}
+    prSession = null;
+    renderPracticeHome();
+    renderVideos();
+  }
+
+  async function loadPractice() {
+    if (!prTarget) prTarget = prDefaultTarget();
+    const [prog, items] = await Promise.all([
+      sb.from('practice_progress').select('item_key, box, correct, wrong, due_at'),
+      sb.from('practice_items').select('id, kind, target_lang, source_lang, prompt, answers, hint, student_id')
+    ]);
+    prProgress = new Map((prog.data || []).map(r => [r.item_key, r]));
+    prCustom = items.error ? [] : (items.data || []);
+    if (!prSession) renderPracticeHome();
+    loadVideos();
+  }
+
+  function customCard(c) {
+    const ans = (c.answers || []).map(a => Array.isArray(a) ? a : [String(a)]);
+    const key = 'c:' + c.id;
+    if (c.kind === 'verb' && c.target_lang === 'en' && ans.length >= 2) {
+      return { key, type: 'verb2', prompt: c.prompt, sub: c.hint, blanks: [{ label: 'Past simple', answers: ans[0] }, { label: 'Past participle', answers: ans[1] }] };
+    }
+    if (c.kind === 'preposition') return { key, type: 'gap', prompt: c.prompt, note: c.hint, blanks: [{ answers: ans[0] }] };
+    if (c.kind === 'translation') return { key, type: 'translate', prompt: c.prompt, sub: c.hint, blanks: [{ answers: ans[0] }] };
+    return { key, type: 'conj', prompt: c.prompt, sub: c.hint, blanks: [{ answers: ans[0] }] };
+  }
+
+  // Which translation directions to offer: the one from the student's own
+  // language when it exists, otherwise all of them.
+  function prSources() {
+    const all = Object.keys(PD[prTarget].translation);
+    return all.includes(currentLang) ? [currentLang] : all;
+  }
+
+  function prDecks() {
+    const decks = [];
+    const mine = prCustom.filter(c => c.target_lang === prTarget);
+    if (mine.length) decks.push({ key: 'paulo', name: t('pr_deck_paulo'), sub: t('pr_deck_paulo_sub'), star: true });
+    if (prTarget === 'en') {
+      decks.push({ key: 'verbs', name: t('pr_deck_verbs'), sub: t('pr_deck_verbs_sub') });
+    } else {
+      decks.push({ key: 'verbsPresent', name: t('pr_deck_verbsPresent'), sub: t('pr_deck_conj_sub') });
+      decks.push({ key: 'verbsPast', name: t('pr_deck_verbsPast'), sub: t('pr_deck_conj_sub') });
+    }
+    decks.push({ key: 'prepositions', name: t('pr_deck_prepositions'), sub: t('pr_deck_preps_sub_' + prTarget) });
+    prSources().forEach(src => decks.push({ key: 'translation:' + src, name: t('pr_deck_translation'), sub: t('pr_from_' + src) }));
+    return decks;
+  }
+
+  function prCards(deckKey) {
+    const D = PD[prTarget];
+    const ui = currentLang;
+    if (deckKey === 'paulo') return prCustom.filter(c => c.target_lang === prTarget).map(customCard);
+    if (deckKey === 'verbs') {
+      return D.verbs.map(v => ({
+        key: 's:' + v.id, type: 'verb2', prompt: v.base, sub: v.meaning[ui] || v.meaning.es,
+        blanks: [{ label: 'Past simple', answers: v.past }, { label: 'Past participle', answers: v.pp }]
+      }));
+    }
+    if (deckKey === 'verbsPresent' || deckKey === 'verbsPast') {
+      return D[deckKey].map(c => ({
+        key: 's:' + c.id, type: 'conj', prompt: c.inf, sub: c.meaning[ui === 'pl' ? 'pl' : 'en'],
+        extra: `${c.person} · ${t(c.tense === 'pres' ? 'pr_tense_pres' : 'pr_tense_past')}`,
+        blanks: [{ answers: c.answers }]
+      }));
+    }
+    if (deckKey === 'prepositions') {
+      return D.prepositions.map(p => ({
+        key: 's:' + p.id, type: 'gap', prompt: p.sentence,
+        note: (PD.notes[p.rule] || {})[ui] || (PD.notes[p.rule] || {}).es, blanks: [{ answers: p.answers }]
+      }));
+    }
+    if (deckKey.startsWith('translation:')) {
+      return (D.translation[deckKey.split(':')[1]] || []).map(x => ({
+        key: 's:' + x.id, type: 'translate', prompt: x.prompt, blanks: [{ answers: x.answers }]
+      }));
+    }
+    return [];
+  }
+
+  function prStats(cards) {
+    const now = Date.now();
+    let due = 0, fresh = 0, mastered = 0;
+    cards.forEach(c => {
+      const p = prProgress.get(c.key);
+      if (!p) fresh++;
+      else {
+        if (Date.parse(p.due_at) <= now) due++;
+        if (p.box >= 4) mastered++;
+      }
+    });
+    return { due, fresh, mastered };
+  }
+
+  function shuffle(a) {
+    a = [...a];
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+
+  // Due first (oldest first), then new ones, then — if the deck is all done
+  // for today — the weakest, so "Start" never leads to an empty round.
+  function prPick(cards, n = 10) {
+    const now = Date.now();
+    const due = cards.filter(c => { const p = prProgress.get(c.key); return p && Date.parse(p.due_at) <= now; })
+      .sort((a, b) => Date.parse(prProgress.get(a.key).due_at) - Date.parse(prProgress.get(b.key).due_at));
+    let pick = [...due, ...shuffle(cards.filter(c => !prProgress.has(c.key)))].slice(0, n);
+    if (pick.length < n) {
+      const rest = shuffle(cards.filter(c => !pick.includes(c)))
+        .sort((a, b) => (prProgress.get(a.key)?.box ?? 0) - (prProgress.get(b.key)?.box ?? 0));
+      pick = pick.concat(rest.slice(0, n - pick.length));
+    }
+    return shuffle(pick);
+  }
+
+  function renderPracticeHome() {
+    if (!PD) return;
+    document.querySelectorAll('#pr-target button').forEach(b => b.classList.toggle('active', b.dataset.target === prTarget));
+    document.getElementById('pr-session').style.display = 'none';
+    const box = document.getElementById('pr-decks');
+    box.style.display = 'grid';
+    box.innerHTML = prDecks().map(d => {
+      const cards = prCards(d.key);
+      const s = prStats(cards);
+      const bits = [s.due && fill(t('pr_due'), { n: s.due }), s.fresh && fill(t('pr_new'), { n: s.fresh }), s.mastered && fill(t('pr_mastered'), { n: s.mastered })].filter(Boolean);
+      return `<button class="pr-deck${d.star ? ' star' : ''}" onclick="startPractice('${d.key}')" ${cards.length ? '' : 'disabled'}>
+        <span class="pr-deck-name">${escapeChat(d.name)}</span>
+        <span class="pr-deck-sub">${escapeChat(d.sub)}</span>
+        <span class="pr-deck-stats">${escapeChat(cards.length ? bits.join(' · ') : t('pr_empty_deck'))}</span>
+        ${s.due ? `<span class="pr-due-dot" aria-hidden="true"></span>` : ''}
+      </button>`;
+    }).join('');
+  }
+
+  // ---- answer checking ----
+  const EN_CONTRACTIONS = [
+    [/\bcan not\b/g, 'cannot'], [/\bcan't\b/g, 'cannot'], [/\bwon't\b/g, 'will not'], [/\bshan't\b/g, 'shall not'],
+    [/\b(\w+)n't\b/g, '$1 not'], [/\bi'm\b/g, 'i am'], [/\b(you|we|they)'re\b/g, '$1 are'],
+    [/\b(he|she|it|that|what|there|who|where|how)'s\b/g, '$1 is'], [/\b(i|you|we|they)'ve\b/g, '$1 have'],
+    [/\b(i|you|he|she|it|we|they|that)'ll\b/g, '$1 will'], [/\b(i|you|he|she|we|they)'d\b/g, '$1 would'], [/\blet's\b/g, 'let us']
+  ];
+  function prNorm(s, lang) {
+    let x = (s || '').toLowerCase().normalize('NFC')
+      .replace(/[’‘`´]/g, "'").replace(/[“”«»"]/g, '')
+      .replace(/[¿¡?!.,;:]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (lang === 'en') EN_CONTRACTIONS.forEach(([re, rep]) => { x = x.replace(re, rep); });
+    return x.replace(/\s+/g, ' ').trim();
+  }
+  const prLoose = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/g, 'l');
+
+  // 'right' | 'almost' (only accents differ) | 'wrong'
+  function prJudge(input, answers, lang) {
+    const a = prNorm(input, lang);
+    if (!a) return 'wrong';
+    const forms = answers.map(x => prNorm(x, lang));
+    const ok = v => forms.includes(v);
+    if (ok(a)) return 'right';
+    // "dreamed/dreamt" or "was, were" when every part is accepted
+    const parts = a.split(/\s*\/\s*|\s+/).filter(Boolean);
+    if (forms.every(f => !f.includes(' ')) && parts.length > 1 && parts.every(ok)) return 'right';
+    const la = prLoose(a);
+    if (forms.some(f => prLoose(f) === la)) return 'almost';
+    return 'wrong';
+  }
+
+  function startPractice(deckKey) {
+    const cards = prPick(prCards(deckKey));
+    if (!cards.length) return;
+    const deck = prDecks().find(d => d.key === deckKey);
+    prSession = { deckKey, deckName: deck ? `${deck.name} · ${deck.sub}` : '', cards, i: 0, results: [], state: 'ask', verdict: null };
+    document.getElementById('pr-decks').style.display = 'none';
+    document.getElementById('pr-session').style.display = 'block';
+    renderPracticeCard();
+  }
+
+  function prBlankInput(i, label, wide) {
+    return `<input type="text" class="pr-input${wide ? ' wide' : ''}" data-blank="${i}" autocomplete="off" autocapitalize="off" spellcheck="false"
+      ${label ? `aria-label="${escapeChat(label)}" placeholder="${escapeChat(label)}"` : ''}>`;
+  }
+
+  function renderPracticeCard() {
+    const s = prSession, c = s.cards[s.i];
+    const box = document.getElementById('pr-session');
+    let instr = t('pr_instr_' + (c.type === 'translate' ? 'translate_' + prTarget : c.type));
+    let body;
+    if (c.type === 'gap') {
+      const [before, after] = c.prompt.split('___');
+      body = `<div class="pr-prompt gap">${escapeChat(before || '')}${prBlankInput(0, '', false)}${escapeChat(after || '')}</div>`;
+    } else if (c.type === 'translate') {
+      body = `<div class="pr-prompt">${escapeChat(c.prompt)}</div>${c.sub ? `<div class="pr-sub">${escapeChat(c.sub)}</div>` : ''}
+        <textarea class="pr-input wide" data-blank="0" rows="2" autocomplete="off" spellcheck="false"></textarea>`;
+    } else if (c.type === 'verb2') {
+      body = `<div class="pr-prompt">${escapeChat(c.prompt)}</div>${c.sub ? `<div class="pr-sub">${escapeChat(c.sub)}</div>` : ''}
+        <div class="pr-blanks">${c.blanks.map((b, i) => `<label class="pr-blank-label">${escapeChat(b.label)}${prBlankInput(i, b.label, true)}</label>`).join('')}</div>`;
+    } else {
+      body = `<div class="pr-prompt">${escapeChat(c.prompt)}</div>
+        <div class="pr-sub">${c.extra ? `<strong>${escapeChat(c.extra)}</strong>` : ''}${c.sub ? ` · ${escapeChat(c.sub)}` : ''}</div>
+        ${prBlankInput(0, '', true)}`;
+    }
+    box.innerHTML = `
+      <div class="pr-meta"><span>${escapeChat(s.deckName)}</span><span>${s.i + 1} / ${s.cards.length}</span></div>
+      <div class="pr-bar"><div style="width: ${(s.i / s.cards.length) * 100}%"></div></div>
+      <form class="pr-card" onsubmit="practiceSubmit(event)">
+        <div class="pr-instr">${escapeChat(instr)}</div>
+        ${body}
+        <div class="pr-feedback" id="pr-feedback" aria-live="polite"></div>
+        <div class="pr-actions">
+          <button type="submit" class="btn" id="pr-main" style="margin-top: 0;">${escapeChat(t('pr_check'))}</button>
+          <button type="button" class="btn-ghost" id="pr-dontknow" onclick="practiceDontKnow()">${escapeChat(t('pr_dontknow'))}</button>
+          <button type="button" class="btn-link" style="margin: 0 0 0 auto;" onclick="endPractice()">${escapeChat(t('pr_back'))}</button>
+        </div>
+      </form>`;
+    s.state = 'ask';
+    s.verdict = null;
+    const first = box.querySelector('.pr-input');
+    if (first) first.focus();
+    // Enter checks in a textarea too; Shift+Enter still makes a new line.
+    box.querySelectorAll('textarea.pr-input').forEach(ta => ta.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); practiceSubmit(e); }
+    }));
+  }
+
+  function practiceSubmit(e) {
+    if (e) e.preventDefault();
+    if (!prSession) return;
+    if (prSession.state === 'ask') practiceCheck(false);
+    else practiceNext();
+  }
+
+  function practiceDontKnow() {
+    if (prSession && prSession.state === 'ask') practiceCheck(true);
+  }
+
+  function practiceCheck(gaveUp) {
+    const s = prSession, c = s.cards[s.i];
+    const inputs = [...document.querySelectorAll('#pr-session .pr-input')];
+    const verdicts = c.blanks.map((b, i) => gaveUp ? 'wrong' : prJudge(inputs[i] ? inputs[i].value : '', b.answers, prTarget));
+    const verdict = verdicts.includes('wrong') ? 'wrong' : (verdicts.includes('almost') ? 'almost' : 'right');
+    s.verdict = verdict;
+    s.state = 'shown';
+    inputs.forEach((el, i) => { el.readOnly = true; el.classList.add(verdicts[i]); });
+    const answerText = c.blanks.map(b => b.answers[0]).join(' · ');
+    const fb = document.getElementById('pr-feedback');
+    let html = `<div class="pr-verdict ${verdict}">${escapeChat(t(verdict === 'right' ? 'pr_right' : verdict === 'almost' ? 'pr_almost' : 'pr_wrong'))}</div>`;
+    if (verdict !== 'right') html += `<div class="pr-answer">${escapeChat(t('pr_answer'))} <strong>${escapeChat(answerText)}</strong></div>`;
+    if (c.blanks.some(b => b.answers.length > 1) && verdict === 'right' && c.type === 'translate') {
+      html += `<div class="pr-answer">${escapeChat(c.blanks[0].answers.slice(0, 3).join(' / '))}</div>`;
+    }
+    if (c.note) html += `<div class="pr-note">${escapeChat(c.note)}</div>`;
+    // A translation can be right in a way the list doesn't cover; the
+    // student is the better judge of that than string matching.
+    if (verdict === 'wrong' && !gaveUp && c.type === 'translate') {
+      html += `<button type="button" class="btn-ghost" style="margin-top: 8px;" onclick="practiceOverride()">${escapeChat(t('pr_override'))}</button>`;
+    }
+    fb.innerHTML = html;
+    document.getElementById('pr-main').textContent = t('pr_next');
+    document.getElementById('pr-dontknow').style.display = 'none';
+    document.getElementById('pr-main').focus();
+  }
+
+  function practiceOverride() {
+    prSession.verdict = 'right';
+    document.getElementById('pr-feedback').innerHTML =
+      `<div class="pr-verdict right">${escapeChat(t('pr_override_done'))}</div>`;
+    document.getElementById('pr-main').focus();
+  }
+
+  async function practiceNext() {
+    const s = prSession, c = s.cards[s.i];
+    const correct = s.verdict !== 'wrong';
+    s.results.push({ card: c, correct });
+    // Fire and forget: the next card must not wait on the network.
+    sb.rpc('record_practice', { p_item_key: c.key, p_correct: correct }).then(({ error }) => {
+      if (error && prSaveOk) { prSaveOk = false; console.error('record_practice:', error); }
+    });
+    s.i++;
+    if (s.i < s.cards.length) renderPracticeCard();
+    else renderPracticeDone();
+  }
+
+  function renderPracticeDone() {
+    const s = prSession;
+    const right = s.results.filter(r => r.correct).length;
+    const misses = s.results.filter(r => !r.correct);
+    document.getElementById('pr-session').innerHTML = `
+      <div class="pr-card pr-done">
+        <h3>${escapeChat(t('pr_done_title'))}</h3>
+        <div class="pr-score">${escapeChat(fill(t('pr_done_score'), { n: right, m: s.results.length }))}</div>
+        ${misses.length ? `<div class="pr-instr" style="margin-top: 14px;">${escapeChat(t('pr_done_misses'))}</div>
+          <ul class="pr-misses">${misses.map(r => `<li>${escapeChat(r.card.type === 'gap' ? r.card.prompt.replace('___', '…') : r.card.prompt)}
+            → <strong>${escapeChat(r.card.blanks.map(b => b.answers[0]).join(' · '))}</strong></li>`).join('')}</ul>` : ''}
+        ${prSaveOk ? '' : `<p class="empty-note">${escapeChat(t('pr_offline'))}</p>`}
+        <div class="pr-actions">
+          <button class="btn" style="margin-top: 0;" onclick="startPractice('${s.deckKey}')">${escapeChat(t('pr_again'))}</button>
+          <button class="btn-ghost" onclick="endPractice()">${escapeChat(t('pr_back'))}</button>
+        </div>
+      </div>`;
+    // Pick up the server's new due dates for the deck counts.
+    sb.from('practice_progress').select('item_key, box, correct, wrong, due_at').then(({ data }) => {
+      if (data) prProgress = new Map(data.map(r => [r.item_key, r]));
+    });
+  }
+
+  function endPractice() {
+    prSession = null;
+    renderPracticeHome();
+  }
+
+  // ---- video lessons ----
+  // The YouTube player is only created on click, so nothing is loaded from
+  // Google until the student actually chooses to watch.
+  let videoRows = [];
+  async function loadVideos() {
+    const { data, error } = await sb.from('video_lessons')
+      .select('id, title, description, youtube_id, target_lang, student_id, created_at')
+      .order('created_at', { ascending: false });
+    videoRows = error ? [] : (data || []);
+    renderVideos();
+  }
+  function renderVideos() {
+    const card = document.getElementById('videos-card');
+    const list = videoRows.filter(v => !v.target_lang || v.target_lang === prTarget);
+    card.style.display = list.length ? 'block' : 'none';
+    document.getElementById('videos-list').innerHTML = list.map(v => `
+      <div class="vid">
+        <button class="vid-thumb" onclick="playVideo(this, '${v.youtube_id}')" aria-label="${escapeChat(t('vid_play'))}: ${escapeChat(v.title)}">
+          <img src="https://i.ytimg.com/vi/${v.youtube_id}/hqdefault.jpg" alt="" loading="lazy">
+          <span class="vid-play" aria-hidden="true">▶</span>
+        </button>
+        <div class="vid-title">${escapeChat(v.title)}${v.student_id ? ` <span class="vid-badge">${escapeChat(t('vid_for_you'))}</span>` : ''}</div>
+        ${v.description ? `<div class="vid-desc">${escapeChat(v.description)}</div>` : ''}
+      </div>`).join('');
+  }
+  function playVideo(btn, id) {
+    if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+    const frame = document.createElement('iframe');
+    frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+    frame.title = 'YouTube';
+    frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    frame.allowFullscreen = true;
+    frame.className = 'vid-frame';
+    btn.replaceWith(frame);
+  }
 
   // ---- RELATIVE TIME ----
   // Intl handles the pluralisation rules per language, which matters a lot

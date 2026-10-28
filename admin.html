@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="practice-data.js"></script>
 <meta name="color-scheme" content="light dark">
 <script>
   // Stamp the theme before first paint, otherwise the light palette shows
@@ -528,6 +529,226 @@
     padding: 4px 8px; border-radius: 4px;
   }
   .dev-banner-close:hover { background: var(--line); }
+
+  /* ======================================================================
+     Shell: a sidebar of sections instead of a row of tabs, so every part of
+     the panel is one click away and the page itself can use the full width.
+     ====================================================================== */
+  .gate { max-width: 900px; margin: 0 auto; padding: 48px 24px; }
+  .admin-shell { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100vh; }
+  .side {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    background: var(--ground); color: var(--on-ground);
+    padding: 24px 14px 18px; display: flex; flex-direction: column; gap: 2px;
+  }
+  .side-brand {
+    font-family: 'Archivo Black', system-ui, sans-serif; font-size: 1.15rem; line-height: 1.15;
+    color: var(--on-ground); text-decoration: none;
+    margin: 0 10px 18px; padding-left: 12px; border-left: 2px solid var(--accent);
+  }
+  .side-brand small {
+    display: block; margin-top: 4px; font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8;
+  }
+  .side-nav { display: flex; flex-direction: column; gap: 2px; }
+  .side-group {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    opacity: 0.8; padding: 16px 12px 4px;
+  }
+  .side-link {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    border: none; background: none; color: var(--on-ground); cursor: pointer; text-align: left;
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.9rem; font-weight: 600;
+    padding: 9px 12px; border-radius: 7px;
+  }
+  .side-link svg { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .side-link:hover { background: var(--ground-deep); }
+  .side-link.active { background: var(--accent); color: var(--accent-ink); }
+  .side-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .side-count { margin-left: auto; }
+  .side-link.active .chat-badge { background: var(--accent-ink); color: var(--accent); }
+  .side-foot {
+    margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line-on-ground);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px;
+  }
+  .side-foot a, .side-foot .linkish {
+    color: var(--on-ground); font-family: inherit; font-size: 0.84rem; text-decoration: none;
+    background: none; border: none; cursor: pointer; padding: 6px 12px; border-radius: 6px;
+  }
+  .side-foot a:hover, .side-foot .linkish:hover { background: var(--ground-deep); }
+  .side .theme-toggle { color: var(--on-ground); border-color: var(--line-on-ground); margin-left: auto; }
+  .side .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+  .main { padding: 32px 36px 96px; max-width: 1200px; width: 100%; min-width: 0; }
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .page-head h1 { font-size: 1.7rem; line-height: 1.15; padding-left: 14px; border-left: 2px solid var(--accent); }
+  .page-head p { margin: 6px 0 0 16px; color: var(--ink-soft); font-size: 0.9rem; }
+  .page-head-actions { display: flex; align-items: center; gap: 10px; }
+  .mobile-only { display: none; }
+
+  @media (max-width: 900px) {
+    .admin-shell { grid-template-columns: 1fr; }
+    .side {
+      height: auto; z-index: 50; flex-direction: row; align-items: center;
+      padding: 8px 10px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    }
+    .side::-webkit-scrollbar { display: none; }
+    .side-brand, .side-group, .side-foot { display: none; }
+    .side-nav { flex-direction: row; gap: 4px; }
+    .side-link { width: auto; white-space: nowrap; padding: 8px 11px; font-size: 0.85rem; }
+    .main { padding: 22px 16px 90px; }
+    .page-head h1 { font-size: 1.4rem; }
+    .mobile-only { display: inline-flex; }
+  }
+
+  input, textarea, select { color: var(--ink); }
+  select {
+    padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--paper);
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem; max-width: 100%;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  .form-row input, .form-row select { width: 100%; }
+  .table-scroll { overflow-x: auto; }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; margin-bottom: 24px; }
+  .grid-2 > .card { margin-bottom: 0; }
+  @media (max-width: 1000px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ---- Hoy ---- */
+  .hero-lesson {
+    background: var(--ground); color: var(--on-ground); border-radius: 14px;
+    padding: 26px 28px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .hero-lesson .eyebrow { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .hero-lesson h2 { font-size: 1.55rem; line-height: 1.2; margin: 8px 0 4px; padding-left: 12px; border-left: 2px solid var(--accent); }
+  .hero-lesson .when { font-size: 0.95rem; }
+  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hero-lesson a.btn { text-decoration: none; }
+  .hero-lesson .btn:hover, .hero-lesson .join-meet-btn:hover { background: var(--accent); filter: brightness(1.06); }
+  .btn-on-ground { background: transparent; color: var(--on-ground); border: 1.5px solid var(--line-on-ground); }
+  .hero-lesson .btn-on-ground:hover { background: transparent; filter: none; border-color: var(--accent); color: var(--accent); }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .stat .k, .stat-inline .k { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  .stat .v, .stat-inline .v { font-family: 'Archivo Black', system-ui, sans-serif; font-size: 1.7rem; line-height: 1.2; margin-top: 4px; }
+  .stat .s { font-size: 0.8rem; color: var(--ink-soft); }
+
+  .todo-list { list-style: none; margin: 0; padding: 0; }
+  .todo-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-count {
+    min-width: 30px; height: 30px; padding: 0 6px; border-radius: 8px; flex-shrink: 0;
+    background: var(--ground-soft); color: var(--on-ground-soft); font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .todo-item .grow { flex: 1; min-width: 0; }
+  .todo-done { color: var(--success); font-weight: 600; }
+
+  /* ---- Calendar: weekly holds ---- */
+  .cal-dot.held { background: var(--link); }
+  .cal-badge.held { background: var(--link); color: var(--paper); }
+  .slot-row .status.held { background: var(--paper-alt); color: var(--link); border: 1px solid var(--link); }
+  .slot-row { flex-wrap: wrap; gap: 8px; }
+  .wk-cell { position: relative; font-family: 'Inter', system-ui, sans-serif; font-size: 0.62rem; font-weight: 700; color: var(--accent-ink); }
+  .wk-cell.standing { box-shadow: inset 0 0 0 2px var(--link); }
+  .wk-cell.standing.dirty { box-shadow: inset 0 0 0 2px var(--ink); }
+  .wk-cell:not(.on) { color: var(--ink); }
+
+  /* ---- Alumnos ---- */
+  .students-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
+  .students-list-col { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; padding-right: 2px; }
+  .student-detail { min-width: 0; }
+  /* The detail column is narrower than the old full-width tab, so the two
+     focus lists stack as soon as they would squeeze. */
+  .student-detail .focus-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .student-detail .focus-head { flex-wrap: wrap; }
+  @media (max-width: 1240px) { .students-layout { grid-template-columns: 250px minmax(0, 1fr); } }
+  @media (max-width: 1000px) {
+    .students-layout { grid-template-columns: 1fr; }
+    .students-list-col { position: static; max-height: 300px; }
+  }
+  .student-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 9px 12px; margin-bottom: 7px; cursor: pointer; font-family: inherit; color: var(--ink);
+  }
+  .student-row:hover { border-color: var(--accent); }
+  .student-row.active { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); }
+  .student-row .who { min-width: 0; flex: 1; }
+  .student-row .nm { display: block; font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .student-row .sub { display: block; font-size: 0.76rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .credit-pill {
+    font-weight: 700; font-size: 0.76rem; padding: 3px 9px; border-radius: 100px; white-space: nowrap;
+    background: var(--ground-soft); color: var(--on-ground-soft);
+  }
+  .credit-pill.low { background: var(--danger-bg); color: var(--danger); }
+  .sd-head { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .sd-head .student-avatar { width: 52px; height: 52px; font-size: 1.2rem; }
+  .sd-head .grow { flex: 1; min-width: 200px; }
+  .sd-head h2 { font-size: 1.3rem; line-height: 1.2; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tag { font-size: 0.72rem; font-weight: 600; padding: 3px 9px; border-radius: 100px; border: 1px solid var(--line); color: var(--ink-soft); }
+  .tag.ok { border-color: var(--success-line); background: var(--success-bg); color: var(--success); }
+  .tag.warn { border-color: var(--danger-line); background: var(--danger-bg); color: var(--danger); }
+  .mini-list { list-style: none; margin: 0; padding: 0; }
+  .mini-list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+  .mini-list li:last-child { border-bottom: none; }
+  .sub-h { font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); margin: 16px 0 6px; }
+  .sub-h:first-child { margin-top: 4px; }
+
+  /* ---- Recorder + transcripts ---- */
+  .rec-steps { margin: 0 0 16px; padding-left: 20px; color: var(--ink-soft); font-size: 0.88rem; line-height: 1.7; }
+  .rec-steps strong { color: var(--ink); }
+  .rec-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .rec-timer { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.05rem; display: inline-flex; align-items: center; gap: 8px; }
+  .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--danger); animation: rec-blink 1.4s ease-in-out infinite; }
+  @keyframes rec-blink { 50% { opacity: 0.25; } }
+  @media (prefers-reduced-motion: reduce) { .rec-dot { animation: none; } }
+  .meters { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .meter label { font-size: 0.78rem; color: var(--ink-soft); font-weight: 500; }
+  .meter-bar { height: 8px; border-radius: 4px; background: var(--paper-alt); overflow: hidden; border: 1px solid var(--line); }
+  .meter-fill { height: 100%; width: 0; background: var(--accent); }
+  .progress { height: 10px; background: var(--paper-alt); border-radius: 5px; overflow: hidden; border: 1px solid var(--line); margin: 10px 0 14px; }
+  .progress > div { height: 100%; width: 0; background: var(--accent); }
+  .tx-lines { max-height: 520px; overflow-y: auto; }
+  .tx-line { display: grid; grid-template-columns: 76px 52px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+  .tx-who {
+    font-family: 'Inter', system-ui, sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    background: none; border: none; padding: 0; text-align: left; cursor: pointer;
+  }
+  .tx-who.tutor { color: var(--link); }
+  .tx-who.student { color: var(--ink); }
+  .tx-time { color: var(--ink-soft); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+  .tx-text { outline: none; border-radius: 4px; padding: 1px 3px; overflow-wrap: anywhere; }
+  .tx-text:focus { background: var(--ground-soft); color: var(--ink); }
+  .rec-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+  .rec-item:last-child { border-bottom: none; }
+  .rec-item .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .video-preview { display: block; width: 100%; max-width: 640px; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; margin-top: 14px; }
+
+  /* ---- Video lessons + exercises ---- */
+  .vl-item { display: flex; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .vl-item:last-child { border-bottom: none; }
+  .vl-item img { width: 112px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: var(--paper-alt); }
+  .vl-item .grow { flex: 1; min-width: 0; font-size: 0.88rem; }
+  .vl-item .ttl { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ex-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+  .ex-row:last-child { border-bottom: none; }
+  .ex-row .grow { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .ex-row .ans { color: var(--ink-soft); font-size: 0.82rem; }
+
+  /* ---- Toasts (replace alert()) ---- */
+  .toasts { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 70; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; width: max-content; max-width: calc(100vw - 32px); }
+  .toast {
+    pointer-events: auto; background: var(--ink); color: var(--paper); border-radius: 10px;
+    padding: 11px 16px; font-size: 0.88rem; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.35);
+    animation: toast-in 0.25s ease;
+  }
+  .toast.error { background: var(--danger); color: oklch(0.99 0 0); }
+  :root[data-theme="dark"] .toast.error { color: oklch(0.16 0.02 25); }
+  @media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
 </style>
 </head>
 <body>
@@ -537,48 +758,90 @@
   <button class="dev-banner-close" onclick="dismissDevBanner()" aria-label="Cerrar">&times;</button>
 </div>
 
-<div class="wrap">
-  <div class="back-row"><a class="back" href="cuenta.html">&larr; Volver a mi cuenta</a>
-    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
-  </div>
-
+<div id="gate" class="gate">
   <div id="loading-msg"><p class="empty-note">Comprobando acceso...</p></div>
-
   <div id="access-denied" style="display:none;">
     <h1 style="font-size: 1.6rem; margin-bottom: 10px;">Acceso denegado</h1>
     <p>Esta página es solo para el administrador de la web.</p>
+    <p><a class="back" href="cuenta.html">&larr; Volver a mi cuenta</a></p>
   </div>
+</div>
 
-  <div id="admin-content" style="display:none;">
-    <div class="top-bar">
-      <h1 style="font-size: 1.8rem;">Panel de administración</h1>
-      <button class="logout-link" onclick="handleLogout()">Cerrar sesión</button>
-    </div>
-
-    <nav class="tabs" role="tablist">
-      <button class="tab" data-tab="clases" role="tab" onclick="showAdminTab('clases')">Clases</button>
-      <button class="tab" data-tab="alumnos" role="tab" onclick="showAdminTab('alumnos')">Alumnos</button>
-      <button class="tab" data-tab="notas" role="tab" onclick="showAdminTab('notas')">Notas</button>
-      <button class="tab" data-tab="mensajes" role="tab" onclick="showAdminTab('mensajes')">Mensajes <span id="tab-msg-badge"></span></button>
-      <button class="tab" data-tab="opiniones" role="tab" onclick="showAdminTab('opiniones')">Opiniones</button>
-      <button class="tab" data-tab="blog" role="tab" onclick="showAdminTab('blog')">Blog</button>
-      <button class="tab" data-tab="horario" role="tab" onclick="showAdminTab('horario')">Horario</button>
+<div id="admin-content" class="admin-shell" style="display:none;">
+  <!-- Sidebar on desktop; a scrolling strip of links on a phone. -->
+  <aside class="side">
+    <a class="side-brand" href="/">Paulo Crespo<small>Panel</small></a>
+    <nav class="side-nav" role="tablist" aria-label="Secciones">
+      <button class="side-link" data-tab="hoy" role="tab" onclick="showAdminTab('hoy')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Hoy</span></button>
+      <button class="side-link" data-tab="agenda" role="tab" onclick="showAdminTab('agenda')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Agenda</span></button>
+      <button class="side-link" data-tab="alumnos" role="tab" onclick="showAdminTab('alumnos')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.6 5.2"/></svg><span>Alumnos</span></button>
+      <button class="side-link" data-tab="mensajes" role="tab" onclick="showAdminTab('mensajes')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Mensajes</span><span class="side-count" id="tab-msg-badge"></span></button>
+      <button class="side-link" data-tab="pagos" role="tab" onclick="showAdminTab('pagos')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6.5A6.5 6.5 0 1 0 17 17.5"/><path d="M4 10h9M4 14h9"/></svg><span>Pagos</span><span class="side-count" id="tab-pay-badge"></span></button>
+      <div class="side-group">Clases</div>
+      <button class="side-link" data-tab="grabar" role="tab" onclick="showAdminTab('grabar')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Grabar clase</span></button>
+      <button class="side-link" data-tab="practica" role="tab" onclick="showAdminTab('practica')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg><span>Práctica y vídeos</span></button>
+      <div class="side-group">Web</div>
+      <button class="side-link" data-tab="opiniones" role="tab" onclick="showAdminTab('opiniones')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg><span>Opiniones</span><span class="side-count" id="tab-rev-badge"></span></button>
+      <button class="side-link" data-tab="blog" role="tab" onclick="showAdminTab('blog')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></svg><span>Blog</span></button>
+      <button class="side-link" data-tab="horario" role="tab" onclick="showAdminTab('horario')">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg><span>Imagen de horario</span></button>
     </nav>
+    <div class="side-foot">
+      <a href="/">Ver la web &nearr;</a>
+      <button type="button" class="linkish" onclick="handleLogout()">Cerrar sesión</button>
+      <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
+    </div>
+  </aside>
 
-    <section class="tab-panel" id="apanel-clases" role="tabpanel">
-      <!-- NEXT LESSONS -->
-      <div class="card">
-        <h3>Próximas clases</h3>
-        <p class="hint">Tus clases reservadas más próximas, con acceso directo a Google Meet.</p>
-        <div id="next-lessons-list"></div>
-        <p class="empty-note" id="next-lessons-empty" style="display:none;">No tienes clases reservadas próximamente.</p>
+  <main class="main">
+    <header class="page-head">
+      <div>
+        <h1 id="page-title">Hoy</h1>
+        <p id="page-sub"></p>
       </div>
+      <div class="page-head-actions">
+        <button type="button" class="theme-toggle mobile-only" onclick="toggleTheme()" aria-label="Modo oscuro" title="Modo oscuro">☾</button>
+        <button type="button" class="logout-link mobile-only" onclick="handleLogout()">Cerrar sesión</button>
+      </div>
+    </header>
 
-      <!-- CALENDAR -->
+    <!-- ============ HOY ============ -->
+    <section class="tab-panel" id="apanel-hoy" role="tabpanel">
+      <div class="hero-lesson" id="hero-lesson">
+        <div><span class="eyebrow">Cargando…</span></div>
+      </div>
+      <div class="stat-row" id="stat-row"></div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Pendiente</h3>
+          <p class="hint">Lo que está esperando a que hagas algo.</p>
+          <ul class="todo-list" id="todo-list"></ul>
+        </div>
+        <div class="card">
+          <h3>Próximas clases</h3>
+          <p class="hint">Tus clases reservadas más próximas, con acceso directo a Google Meet.</p>
+          <div id="next-lessons-list"></div>
+          <p class="empty-note" id="next-lessons-empty" style="display:none;">No tienes clases reservadas próximamente.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AGENDA ============ -->
+    <section class="tab-panel" id="apanel-agenda" role="tabpanel">
       <div class="card">
         <h3>Calendario de clases</h3>
         <p class="hint">
           <span class="cal-dot open" style="display:inline-block; vertical-align:middle;"></span> disponible &nbsp;
+          <span class="cal-dot held" style="display:inline-block; vertical-align:middle;"></span> guardada (clase fija) &nbsp;
           <span class="cal-dot booked" style="display:inline-block; vertical-align:middle;"></span> reservada &nbsp;
           <span class="cal-dot blocked" style="display:inline-block; vertical-align:middle;"></span> bloqueada (evento personal)
         </p>
@@ -594,10 +857,31 @@
         </div>
       </div>
 
+      <!-- STANDING (WEEKLY) BOOKINGS -->
+      <div class="card" id="standing-card">
+        <h3>Clases fijas semanales</h3>
+        <p class="hint">Alumnos que tienen su hora todas las semanas. Cada clase se reserva sola 7 días antes, descontando el crédito; las 4 semanas siguientes quedan guardadas para ese alumno. Si 24 h antes no tiene créditos, esa semana se libera (y a los dos os aviso por Telegram). Los alumnos se la pueden fijar ellos mismos desde su cuenta; aquí puedes hacerlo por ellos.</p>
+        <div id="standing-list"></div>
+        <div class="form-row" style="margin-top: 16px;">
+          <div>
+            <label for="standing-student">Alumno</label>
+            <select id="standing-student"></select>
+          </div>
+          <div>
+            <label for="standing-time">Hora de cada semana</label>
+            <select id="standing-time"></select>
+          </div>
+          <div style="flex: 0 0 auto;">
+            <button class="btn" onclick="adminCreateStanding()">Fijar hora</button>
+          </div>
+        </div>
+        <div id="standing-msg"></div>
+      </div>
+
       <!-- WEEKLY TEMPLATE -->
       <div class="card" id="week-card">
         <h3>Semana tipo</h3>
-        <p class="hint">Marca las horas en las que das clase normalmente. Se repite todas las semanas: las clases se publican 12 semanas por delante y se renuevan solas cada noche. Hora de Polonia, clases de 50 min. Haz clic o arrastra para abrir o cerrar horas; clic en un día para todo el día.</p>
+        <p class="hint">Marca las horas en las que das clase normalmente. Se repite todas las semanas: las clases se publican 12 semanas por delante y se renuevan solas cada noche. Hora de Polonia, clases de 50 min. Haz clic o arrastra para abrir o cerrar horas; clic en un día para todo el día. Las iniciales marcan las horas que son la clase fija de un alumno.</p>
         <div class="wk-grid" id="wk-grid" role="group" aria-label="Semana tipo"></div>
         <p class="wk-summary" id="wk-summary"></p>
         <div class="wk-actions">
@@ -607,151 +891,148 @@
         <div id="wk-msg"></div>
       </div>
 
-      <!-- CLOSURES -->
-      <div class="card">
-        <h3>Vacaciones y días libres</h3>
-        <p class="hint">Cierra un rango de fechas sin tocar tu semana tipo. Se quitan las clases libres de esos días; las ya reservadas no se tocan (te las enseño para que decidas). Si borras el cierre, las clases vuelven.</p>
-        <div class="form-row">
-          <div>
-            <label for="closure-from">Desde</label>
-            <input type="date" id="closure-from">
+      <div class="grid-2">
+        <!-- CLOSURES -->
+        <div class="card">
+          <h3>Vacaciones y días libres</h3>
+          <p class="hint">Cierra un rango de fechas sin tocar tu semana tipo. Se quitan las clases libres de esos días; las ya reservadas no se tocan (te las enseño para que decidas). Si borras el cierre, las clases vuelven.</p>
+          <div class="form-row">
+            <div>
+              <label for="closure-from">Desde</label>
+              <input type="date" id="closure-from">
+            </div>
+            <div>
+              <label for="closure-to">Hasta (incluido)</label>
+              <input type="date" id="closure-to">
+            </div>
           </div>
-          <div>
-            <label for="closure-to">Hasta (incluido)</label>
-            <input type="date" id="closure-to">
+          <div class="form-row" style="margin-top: 10px;">
+            <div>
+              <label for="closure-note">Motivo (opcional)</label>
+              <input type="text" id="closure-note" maxlength="80" placeholder="Vacaciones">
+            </div>
+            <div style="flex: 0 0 auto;">
+              <button class="btn" onclick="addClosure()">Cerrar fechas</button>
+            </div>
           </div>
-          <div>
-            <label for="closure-note">Motivo (opcional)</label>
-            <input type="text" id="closure-note" maxlength="80" placeholder="Vacaciones">
-          </div>
-          <div style="flex: 0 0 auto;">
-            <button class="btn" onclick="addClosure()">Cerrar fechas</button>
-          </div>
+          <div id="closure-msg"></div>
+          <div id="closure-list" style="margin-top: 16px;"></div>
         </div>
-        <div id="closure-msg"></div>
-        <div id="closure-list" style="margin-top: 16px;"></div>
-      </div>
 
-      <!-- CREATE SLOT -->
-      <div class="card">
-        <h3>Clase suelta</h3>
-        <p class="hint">Una clase extra fuera de tu semana tipo. Se publicará para que cualquier alumno con créditos pueda reservarla.</p>
-        <div class="form-row">
-          <div>
-            <label for="slot-date">Fecha</label>
-            <input type="date" id="slot-date">
+        <!-- CREATE SLOT -->
+        <div class="card">
+          <h3>Clase suelta</h3>
+          <p class="hint">Una clase extra fuera de tu semana tipo. Se publicará para que cualquier alumno con créditos pueda reservarla.</p>
+          <div class="form-row">
+            <div>
+              <label for="slot-date">Fecha</label>
+              <input type="date" id="slot-date">
+            </div>
           </div>
-          <div>
-            <label for="slot-start">Hora inicio</label>
-            <input type="time" id="slot-start">
+          <div class="form-row" style="margin-top: 10px;">
+            <div>
+              <label for="slot-start">Hora inicio</label>
+              <input type="time" id="slot-start">
+            </div>
+            <div>
+              <label for="slot-end">Hora fin</label>
+              <input type="time" id="slot-end">
+            </div>
+            <div style="flex: 0 0 auto;">
+              <button class="btn" onclick="createSlot()">Crear clase</button>
+            </div>
           </div>
-          <div>
-            <label for="slot-end">Hora fin</label>
-            <input type="time" id="slot-end">
-          </div>
-          <div style="flex: 0 0 auto;">
-            <button class="btn" onclick="createSlot()">Crear clase</button>
-          </div>
+          <div id="create-slot-msg"></div>
         </div>
-        <div id="create-slot-msg"></div>
       </div>
     </section>
 
+    <!-- ============ ALUMNOS ============ -->
     <section class="tab-panel" id="apanel-alumnos" role="tabpanel">
-      <!-- STUDENT CREDITS -->
-      <div class="card">
-        <h3>Créditos de alumnos</h3>
-        <p class="hint">Cambia el número y pulsa Guardar para actualizar el saldo de un alumno. El precio (€ por crédito) es el que se usa al acreditar automáticamente sus pagos de Wise; la referencia es el código que el alumno pone en la transferencia.</p>
-        <input type="text" id="student-search" placeholder="Buscar por nombre o email..." oninput="renderStudents()">
-        <table>
-          <thead>
-            <tr><th>Nombre</th><th>Email</th><th>Referencia</th><th>€/crédito</th><th>Créditos</th><th title="Marcado = ya no se le muestra la oferta de bienvenida">Oferta usada</th><th></th></tr>
-          </thead>
-          <tbody id="students-tbody"></tbody>
-        </table>
-        <p class="empty-note" id="students-empty" style="display:none;">No se encontraron alumnos.</p>
-      </div>
-
-      <!-- WELCOME OFFER LINK -->
-      <div class="card">
-        <h3>Enlace de la oferta</h3>
-        <p class="hint">Las 3 primeras clases por 30€. El enlace es una solicitud de pago de Wise de un solo uso: cuando alguien la paga o caduca, te aviso por Telegram para que crees otra (30€, un solo uso) y la pegues aquí. Mientras no haya enlace activo, la oferta pide a los alumnos que te escriban.</p>
-        <div id="offer-link-status" style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 14px;">Cargando…</div>
-        <div class="form-row">
-          <div>
-            <label for="offer-link-input">Nuevo enlace de Wise</label>
-            <input type="url" id="offer-link-input" placeholder="https://wise.com/pay/r/…" style="width: 100%;">
-          </div>
-          <div style="flex: 0 0 auto;">
-            <button class="btn" onclick="saveOfferLink()">Guardar enlace</button>
-          </div>
+      <div class="students-layout">
+        <div class="students-list-col">
+          <input type="text" id="student-search" placeholder="Buscar por nombre o email…" oninput="renderStudents()">
+          <div id="students-list"></div>
+          <p class="empty-note" id="students-empty" style="display:none;">No se encontraron alumnos.</p>
         </div>
-        <div id="offer-link-msg"></div>
-      </div>
 
-      <!-- WISE PAYMENTS -->
-      <div class="card">
-        <h3>Pagos de Wise</h3>
-        <p class="hint">Se leen de los emails de Wise cada 10 minutos y se convierten en créditos al precio de cada alumno (se acreditan fracciones: 40€ a 15€ = 2,66). Si un pago no trae referencia ni un nombre que coincida, queda aquí sin asignar.</p>
-        <table>
-          <thead>
-            <tr><th>Fecha</th><th>Importe</th><th>Remitente / referencia</th><th>Alumno</th><th>Créditos</th><th></th></tr>
-          </thead>
-          <tbody id="payments-tbody"></tbody>
-        </table>
-        <p class="empty-note" id="payments-empty" style="display:none;">Todavía no hay pagos.</p>
-      </div>
-
-      <!-- ESTIMATED EARNINGS -->
-      <div class="card">
-        <h3>Ingresos estimados</h3>
-        <p class="hint">Calculado sobre el mes mostrado en el calendario de arriba, suponiendo que todas las clases se pagan con Monero (12€/clase).</p>
-        <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px;">
-          <div>
-            <div class="price-label" style="color: var(--ink-soft); font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; text-transform: uppercase;">Clases reservadas</div>
-            <div style="font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.8rem;" id="earnings-count">0</div>
+        <div class="student-detail">
+          <div class="card" id="student-detail-empty">
+            <h3>Elige un alumno</h3>
+            <p class="hint" style="margin:0;">Aquí ves todo lo suyo en un sitio: créditos y precio, clases y clase fija, puntos a trabajar, lo que ha practicado y las transcripciones de sus clases.</p>
           </div>
-          <div>
-            <div class="price-label" style="color: var(--ink-soft); font-family: 'Inter', system-ui, sans-serif; font-size: 0.78rem; text-transform: uppercase;">Ingreso estimado</div>
-            <div style="font-family: 'Archivo Black', system-ui, sans-serif; font-weight: 400; font-size: 1.8rem; color: var(--link);" id="earnings-total">0€</div>
+
+          <div id="student-detail-body" style="display:none;">
+            <div class="card sd-head" id="sd-head"></div>
+
+            <div class="card" id="sd-credits">
+              <h3>Créditos y precio</h3>
+              <p class="hint">Cambia el saldo y pulsa Guardar. Una recarga real pasa por aquí para que el regalo de referidos funcione. El precio (€ por crédito) es el que se usa al acreditar sus pagos de Wise.</p>
+              <div class="form-row">
+                <div><label for="sd-credit-input">Créditos</label><input type="number" min="0" step="0.01" id="sd-credit-input"></div>
+                <div><label for="sd-price-input">€ por crédito</label><input type="number" min="0.01" step="0.01" id="sd-price-input"></div>
+                <div style="flex: 0 0 auto;"><button class="btn" onclick="saveCredits(currentStudentId)">Guardar</button></div>
+              </div>
+              <label class="sched-check" style="margin-top: 12px;">
+                <input type="checkbox" id="sd-offer-used" onchange="setIntroOfferUsed(currentStudentId, this)">
+                Ya ha usado la oferta de bienvenida (no se le vuelve a mostrar)
+              </label>
+              <div style="margin-top: 14px;">
+                <button class="btn btn-small btn-outline" id="sd-history-btn" onclick="toggleCreditHistory(currentStudentId)">Ver historial de créditos</button>
+              </div>
+              <div id="sd-history" style="display:none; margin-top: 12px;"></div>
+            </div>
+
+            <div class="card" id="sd-lessons">
+              <h3>Clases</h3>
+              <div id="sd-lessons-body"></div>
+            </div>
+
+            <!-- FOCUS AREAS (the picker is hidden: the student is chosen on the left) -->
+            <div class="card" id="focus-card">
+              <h3>Puntos a trabajar</h3>
+              <p class="hint">Lo que el alumno siente que le cuesta, junto a tus observaciones. El alumno ve ambas listas.</p>
+              <div class="student-picker" id="focus-picker" style="display:none;"></div>
+              <div class="focus-grid" id="focus-panels" style="display:none;">
+                <div class="focus-col focus-mine">
+                  <div class="focus-head">
+                    <span class="focus-tag focus-tag-mine">Alumno</span>
+                    <strong>Lo que dice que le cuesta</strong>
+                  </div>
+                  <ul class="focus-list" id="admin-focus-student"></ul>
+                  <p class="empty-note" id="admin-focus-student-empty" style="display:none;">El alumno no ha apuntado nada.</p>
+                </div>
+                <div class="focus-col focus-tutor">
+                  <div class="focus-head">
+                    <span class="focus-tag focus-tag-tutor">Tú</span>
+                    <strong>Tus observaciones</strong>
+                  </div>
+                  <form class="focus-form" onsubmit="addAdminFocus(event)">
+                    <input type="text" id="admin-focus-input" maxlength="500" placeholder="Ej: confunde past simple y present perfect">
+                    <button type="submit">Añadir</button>
+                  </form>
+                  <ul class="focus-list" id="admin-focus-tutor"></ul>
+                  <p class="empty-note" id="admin-focus-tutor-empty" style="display:none;">Todavía no has añadido notas.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" id="sd-practice">
+              <h3>Práctica</h3>
+              <div id="sd-practice-body"></div>
+            </div>
+
+            <div class="card" id="sd-transcripts">
+              <h3>Transcripciones</h3>
+              <div id="sd-transcripts-body"></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="tab-panel" id="apanel-notas" role="tabpanel">
-      <!-- FOCUS AREAS -->
-      <div class="card" id="focus-card">
-        <h3>Puntos a trabajar</h3>
-        <p class="hint">Lo que el alumno siente que le cuesta, junto a tus observaciones. El alumno ve ambas listas.</p>
-        <div class="student-picker" id="focus-picker"></div>
-        <div class="focus-grid" id="focus-panels" style="display:none;">
-          <div class="focus-col focus-mine">
-            <div class="focus-head">
-              <span class="focus-tag focus-tag-mine">Alumno</span>
-              <strong>Lo que dice que le cuesta</strong>
-            </div>
-            <ul class="focus-list" id="admin-focus-student"></ul>
-            <p class="empty-note" id="admin-focus-student-empty" style="display:none;">El alumno no ha apuntado nada.</p>
-          </div>
-          <div class="focus-col focus-tutor">
-            <div class="focus-head">
-              <span class="focus-tag focus-tag-tutor">Tú</span>
-              <strong>Tus observaciones</strong>
-            </div>
-            <form class="focus-form" onsubmit="addAdminFocus(event)">
-              <input type="text" id="admin-focus-input" maxlength="500" placeholder="Ej: confunde past simple y present perfect">
-              <button type="submit">Añadir</button>
-            </form>
-            <ul class="focus-list" id="admin-focus-tutor"></ul>
-            <p class="empty-note" id="admin-focus-tutor-empty" style="display:none;">Todavía no has añadido notas.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
+    <!-- ============ MENSAJES ============ -->
     <section class="tab-panel" id="apanel-mensajes" role="tabpanel">
-      <!-- STUDENT CHAT -->
       <div class="card" id="chat-card">
         <h3>Mensajes de alumnos <span id="chat-total-unread"></span></h3>
         <p class="hint">Los mensajes y archivos se borran solos a los 30 días. Máximo 25 MB por archivo.</p>
@@ -781,8 +1062,234 @@
       </div>
     </section>
 
+    <!-- ============ PAGOS ============ -->
+    <section class="tab-panel" id="apanel-pagos" role="tabpanel">
+      <div class="card">
+        <h3>Pagos de Wise</h3>
+        <p class="hint">Se leen de los emails de Wise cada 10 minutos y se convierten en créditos al precio de cada alumno (se acreditan fracciones: 40€ a 15€ = 2,66). Si un pago no trae referencia ni un nombre que coincida, queda aquí sin asignar.</p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Fecha</th><th>Importe</th><th>Remitente / referencia</th><th>Alumno</th><th>Créditos</th><th></th></tr>
+            </thead>
+            <tbody id="payments-tbody"></tbody>
+          </table>
+        </div>
+        <p class="empty-note" id="payments-empty" style="display:none;">Todavía no hay pagos.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Enlace de la oferta</h3>
+          <p class="hint">Las 3 primeras clases por 30€. El enlace es una solicitud de pago de Wise de un solo uso: cuando alguien la paga o caduca, te aviso por Telegram para que crees otra (30€, un solo uso) y la pegues aquí. Mientras no haya enlace activo, la oferta pide a los alumnos que te escriban.</p>
+          <div id="offer-link-status" style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 14px; overflow-wrap: anywhere;">Cargando…</div>
+          <label for="offer-link-input">Nuevo enlace de Wise</label>
+          <input type="url" id="offer-link-input" placeholder="https://wise.com/pay/r/…" style="width: 100%; margin-bottom: 10px;">
+          <button class="btn" onclick="saveOfferLink()">Guardar enlace</button>
+          <div id="offer-link-msg"></div>
+        </div>
+
+        <div class="card">
+          <h3>Ingresos previstos</h3>
+          <p class="hint">Clases reservadas del mes que se ve en la Agenda, cada una al precio por crédito de su alumno. Es una estimación: no mira si el crédito vino de un pago, del regalo de registro o de un referido.</p>
+          <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px;">
+            <div class="stat-inline">
+              <div class="k">Clases reservadas</div>
+              <div class="v" id="earnings-count">0</div>
+            </div>
+            <div class="stat-inline">
+              <div class="k">Ingreso previsto</div>
+              <div class="v" style="color: var(--link);" id="earnings-total">0€</div>
+            </div>
+          </div>
+          <p class="hint" id="earnings-month" style="margin: 8px 0 0;"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GRABAR CLASE ============ -->
+    <section class="tab-panel" id="apanel-grabar" role="tabpanel">
+      <div class="card" id="rec-card">
+        <h3>Grabar una clase</h3>
+        <p class="hint">Graba a la vez la pestaña de Google Meet (lo que ves y lo que dice el alumno) y tu micrófono (lo que dices tú). Se guarda en este ordenador mientras grabas, así que si el navegador se cierra no se pierde. <strong>Todo se queda en este ordenador</strong>: la grabación, la transcripción y el modelo que transcribe. No se sube nada a la web ni a ningún servicio.</p>
+        <ol class="rec-steps">
+          <li>Entra en la llamada de Meet en otra pestaña. <strong>Usa auriculares</strong>: si el alumno suena por los altavoces, tu micrófono le graba también y la transcripción sale repetida.</li>
+          <li>Pulsa <strong>Empezar a grabar</strong>, elige la pestaña de Meet y deja marcado <strong>«Compartir también el audio de la pestaña»</strong>.</li>
+          <li>Al terminar, pulsa <strong>Parar</strong>: descargas el vídeo y, si quieres, lo transcribes aquí mismo.</li>
+        </ol>
+        <div class="form-row">
+          <div>
+            <label for="rec-lesson">Clase</label>
+            <select id="rec-lesson"></select>
+          </div>
+          <div style="flex: 0 1 220px;">
+            <label for="rec-mode">Qué grabar</label>
+            <select id="rec-mode">
+              <option value="video">Vídeo y audio</option>
+              <option value="audio">Solo audio (ocupa mucho menos)</option>
+            </select>
+          </div>
+        </div>
+        <div class="rec-controls">
+          <button class="btn" id="rec-start" onclick="startLessonRecording()">Empezar a grabar</button>
+          <button class="btn btn-danger" id="rec-stop" onclick="stopLessonRecording()" disabled>Parar</button>
+          <span class="rec-timer" id="rec-timer"></span>
+        </div>
+        <div class="meters" id="rec-meters" style="display:none;">
+          <div class="meter"><label>Tu micrófono</label><div class="meter-bar"><div class="meter-fill" id="meter-mic"></div></div></div>
+          <div class="meter"><label>Pestaña de Meet (alumno)</label><div class="meter-bar"><div class="meter-fill" id="meter-tab"></div></div></div>
+        </div>
+        <div id="rec-msg"></div>
+      </div>
+
+      <div class="card" id="tx-card" style="display:none;">
+        <h3 id="tx-title">Transcripción</h3>
+        <div id="tx-status" class="hint"></div>
+        <div class="progress" id="tx-progress" style="display:none;"><div></div></div>
+        <div id="tx-lines" class="tx-lines"></div>
+        <div id="tx-actions" class="rec-controls" style="display:none;">
+          <button class="btn" onclick="saveTranscript()">Guardar en este ordenador</button>
+          <button class="btn btn-outline" onclick="downloadTranscriptTxt()">Descargar .txt</button>
+        </div>
+        <div id="tx-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>Grabaciones en este ordenador</h3>
+        <p class="hint">Solo existen en este navegador hasta que las descargas. Bórralas cuando las tengas guardadas: ocupan espacio en el disco.</p>
+        <div class="form-row" style="margin-bottom: 14px;">
+          <div>
+            <label for="tx-quality">Transcripción</label>
+            <select id="tx-quality">
+              <option value="precise">Precisa (Whisper grande, necesita tarjeta gráfica, ~560 MB la primera vez)</option>
+              <option value="fast">Rápida de descargar (Whisper pequeño, ~250 MB)</option>
+            </select>
+          </div>
+          <div style="flex: 0 1 200px;">
+            <label for="tx-language">Idioma</label>
+            <select id="tx-language">
+              <option value="">Detectar solo (clase mixta)</option>
+              <option value="en">Inglés</option>
+              <option value="es">Español</option>
+              <option value="pl">Polaco</option>
+            </select>
+          </div>
+        </div>
+        <div id="rec-local-list"></div>
+        <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);">
+          <label class="chat-attach" for="tx-file" style="display:inline-block;">Transcribir un archivo de audio o vídeo…
+            <input type="file" id="tx-file" hidden accept="audio/*,video/*" onchange="transcribeFile(this)">
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Transcripciones en este ordenador</h3>
+        <p class="hint">Guardadas solo en este navegador, como las grabaciones. Descarga el .txt si quieres conservar alguna en otro sitio.</p>
+        <div id="tx-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ PRÁCTICA Y VÍDEOS ============ -->
+    <section class="tab-panel" id="apanel-practica" role="tabpanel">
+      <div class="card" id="vl-card">
+        <h3>Grabar una vídeo-lección</h3>
+        <p class="hint">Graba aquí, descarga el vídeo, súbelo a YouTube como <strong>«No listado»</strong> y pega el enlace abajo. Los alumnos lo ven dentro de su pestaña Practicar; nadie lo encuentra buscando en YouTube.</p>
+        <div class="seg" role="group" aria-label="Qué grabar" id="vl-mode">
+          <button type="button" data-mode="camera" class="active" onclick="setVlMode('camera')">Cámara</button>
+          <button type="button" data-mode="screen" onclick="setVlMode('screen')">Pantalla</button>
+          <button type="button" data-mode="both" onclick="setVlMode('both')">Pantalla + cámara</button>
+        </div>
+        <p class="hint" id="vl-mode-hint" style="margin-top: 10px;"></p>
+        <video id="vl-preview" class="video-preview" playsinline muted style="display:none;"></video>
+        <div class="rec-controls">
+          <button class="btn" id="vl-start" onclick="startVideoLesson()">Empezar a grabar</button>
+          <button class="btn btn-danger" id="vl-stop" onclick="stopVideoLesson()" disabled>Parar</button>
+          <span class="rec-timer" id="vl-timer"></span>
+        </div>
+        <div id="vl-result" style="display:none; margin-top: 16px;">
+          <video id="vl-playback" class="video-preview" controls playsinline></video>
+          <div class="rec-controls">
+            <a class="btn" id="vl-download">Descargar vídeo</a>
+            <a class="btn btn-outline" href="https://www.youtube.com/upload" target="_blank" rel="noopener">Abrir YouTube para subirlo &nearr;</a>
+          </div>
+        </div>
+        <div id="vl-msg"></div>
+        <div id="vl-local-list" style="margin-top: 14px;"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Publicar un vídeo</h3>
+          <p class="hint">Pega el enlace de YouTube (no listado). Solo lo ven alumnos con cuenta.</p>
+          <label for="vl-url">Enlace de YouTube</label>
+          <input type="url" id="vl-url" placeholder="https://youtu.be/…" style="width: 100%; margin-bottom: 10px;">
+          <label for="vl-title">Título</label>
+          <input type="text" id="vl-title" maxlength="200" placeholder="Ej: Present perfect sin miedo" style="width: 100%; margin-bottom: 10px;">
+          <label for="vl-desc">Descripción (opcional)</label>
+          <textarea id="vl-desc" rows="3" maxlength="2000" style="width: 100%; margin-bottom: 10px;"></textarea>
+          <div class="form-row">
+            <div>
+              <label for="vl-lang">Para quien aprende</label>
+              <select id="vl-lang">
+                <option value="">Cualquier idioma</option>
+                <option value="en">Inglés</option>
+                <option value="es">Español</option>
+              </select>
+            </div>
+            <div>
+              <label for="vl-student">Quién lo ve</label>
+              <select id="vl-student"></select>
+            </div>
+          </div>
+          <button class="btn" style="margin-top: 14px;" onclick="publishVideoLesson()">Publicar</button>
+          <div id="vl-pub-msg"></div>
+        </div>
+
+        <div class="card">
+          <h3>Vídeos publicados</h3>
+          <div id="vl-list"></div>
+        </div>
+      </div>
+
+      <div class="card" id="ex-card">
+        <h3>Tus ejercicios</h3>
+        <p class="hint">Frases o verbos que salieron en clase, para que el alumno los practique. Aparecen en su pestaña Practicar, en el mazo «De tus clases», y se repasan con el mismo sistema de repetición que los de serie.</p>
+        <div class="form-row">
+          <div style="flex: 0 1 200px;">
+            <label for="ex-kind">Tipo</label>
+            <select id="ex-kind" onchange="renderExerciseForm()">
+              <option value="translation">Traducción</option>
+              <option value="preposition">Hueco (preposición u otra palabra)</option>
+              <option value="verb">Verbo</option>
+            </select>
+          </div>
+          <div style="flex: 0 1 180px;">
+            <label for="ex-target">Idioma que aprende</label>
+            <select id="ex-target" onchange="renderExerciseForm()">
+              <option value="en">Inglés</option>
+              <option value="es">Español</option>
+            </select>
+          </div>
+          <div>
+            <label for="ex-student">Para</label>
+            <select id="ex-student"></select>
+          </div>
+        </div>
+        <div id="ex-fields" style="margin-top: 12px;"></div>
+        <button class="btn" style="margin-top: 12px;" onclick="saveExercise()">Añadir ejercicio</button>
+        <div id="ex-msg"></div>
+        <div id="ex-list" style="margin-top: 18px;"></div>
+      </div>
+
+      <div class="card">
+        <h3>Ejercicios de serie</h3>
+        <p class="hint" id="ex-starter-summary" style="margin: 0;"></p>
+      </div>
+    </section>
+
+    <!-- ============ OPINIONES ============ -->
     <section class="tab-panel" id="apanel-opiniones" role="tabpanel">
-      <!-- TESTIMONIAL MODERATION -->
       <div class="card">
         <h3>Opiniones pendientes de aprobación</h3>
         <div id="pending-testimonials"></div>
@@ -790,8 +1297,8 @@
       </div>
     </section>
 
+    <!-- ============ BLOG ============ -->
     <section class="tab-panel" id="apanel-blog" role="tabpanel">
-      <!-- BLOG -->
       <div class="card">
         <h3 id="blog-form-title">Nuevo artículo</h3>
         <p class="hint">Los artículos publicados aparecen en <a href="blog.html" target="_blank" rel="noopener">/blog.html</a> para cualquier visitante, con o sin cuenta.</p>
@@ -807,7 +1314,7 @@
         </label>
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <button class="btn" onclick="saveBlogPost()">Guardar</button>
-          <button class="btn-outline" id="blog-cancel-edit" style="display:none;" onclick="resetBlogForm()">Cancelar edición</button>
+          <button class="btn btn-outline" id="blog-cancel-edit" style="display:none;" onclick="resetBlogForm()">Cancelar edición</button>
         </div>
         <div id="blog-form-msg"></div>
       </div>
@@ -836,7 +1343,7 @@
           </label>
           <div>
             <label>Franja</label>
-            <div class="seg" role="group" aria-label="Franja del día">
+            <div class="seg" role="group" aria-label="Franja del día" id="sched-seg">
               <button type="button" data-view="summary" class="active" onclick="setSchedView('summary')">Semana completa</button>
               <button type="button" data-view="morning" onclick="setSchedView('morning')">Mañanas</button>
               <button type="button" data-view="afternoon" onclick="setSchedView('afternoon')">Tardes</button>
@@ -864,8 +1371,10 @@
         </div>
       </div>
     </section>
-  </div>
+  </main>
 </div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
 
 <!-- Floating unread indicator + live toast. Both sit on the right and are
      hidden until there is actually something to report. -->
@@ -924,20 +1433,38 @@
       return;
     }
 
-    document.getElementById('admin-content').style.display = 'block';
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'grid';
     const now = new Date();
     calYear = now.getFullYear();
     calMonth = now.getMonth();
-    await loadNextLessons();
+    // Show the page straight away; each section fills itself in as its data
+    // arrives instead of the whole panel waiting on the slowest query.
+    showAdminTab((window.location.hash || '#hoy').slice(1));
     await loadStudents();
-    await loadCalendar();
-    await loadWeekTemplate();
-    await loadClosures();
-    await loadPendingTestimonials();
-    await loadChatThreads();
+    await Promise.all([
+      loadNextLessons(), loadCalendar(), loadWeekTemplate(), loadClosures(),
+      loadPendingTestimonials(), loadChatThreads(), loadBlogPosts(), loadStanding(),
+      loadVideoLessons(), loadExercises(), loadTranscripts(), loadHoyStats()
+    ]);
     subscribeAdminChat();
-    await loadBlogPosts();
-    showAdminTab((window.location.hash || '#clases').slice(1));
+    renderHoy();
+    renderLocalRecordings();
+    // Keep "Hoy" honest while the tab stays open all day: the live lesson
+    // and the countdown move on even if nothing is clicked.
+    setInterval(() => { loadNextLessons().then(renderHoy); }, 60_000);
+  }
+
+  // ---- Toasts: a non-blocking replacement for alert() ----
+  function toast(text, kind) {
+    const box = document.getElementById('toasts');
+    const el = document.createElement('div');
+    el.className = 'toast' + (kind === 'error' ? ' error' : '');
+    el.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+    el.textContent = text;
+    box.appendChild(el);
+    setTimeout(() => el.remove(), kind === 'error' ? 7000 : 3500);
+    while (box.children.length > 3) box.firstChild.remove();
   }
 
   // ---- NEXT LESSONS ----
@@ -963,6 +1490,8 @@
 
     if (!slots || slots.length === 0) {
       empty.style.display = 'block';
+      hoy.lessons = [];
+      fillRecLessonSelect();
       return;
     }
     empty.style.display = 'none';
@@ -973,6 +1502,8 @@
       const { data: profiles } = await sb.from('profiles').select('id, full_name, email').in('id', studentIds);
       (profiles || []).forEach(p => { namesById[p.id] = p.full_name || p.email || 'Alumno/a'; });
     }
+    hoy.lessons = slots.map(s => ({ ...s, name: namesById[s.student_id] || 'Alumno/a' }));
+    fillRecLessonSelect();
 
     const soonThreshold = new Date(Date.now() + 2 * 60 * 60 * 1000); // starting within 2h
 
@@ -1072,14 +1603,22 @@
     WK_DAYS.forEach((d, i) => {
       html += `<button type="button" class="wk-day" onclick="toggleWeekDay(${i + 1})" title="Abrir o cerrar todo el ${d}">${d}</button>`;
     });
+    // A student's weekly class shows their initials, so closing that hour
+    // is never done by accident.
+    const standingAt = {};
+    standingRows.forEach(r => {
+      if (r.weekly_template) standingAt[`${r.weekly_template.weekday}|${r.weekly_template.start_local.slice(0, 5)}`] = studentNameById(r.student_id);
+    });
     wkTimes().forEach(t => {
       html += `<div class="wk-time">${t}</div>`;
       for (let d = 1; d <= 7; d++) {
         const key = `${d}|${t}`;
         const on = wkState.has(key);
         const dirty = on !== wkSaved.has(key);
-        html += `<button type="button" class="wk-cell${on ? ' on' : ''}${dirty ? ' dirty' : ''}" data-key="${key}"
-                   aria-pressed="${on}" aria-label="${WK_DAYS[d - 1]} ${t}"></button>`;
+        const who = standingAt[key];
+        html += `<button type="button" class="wk-cell${on ? ' on' : ''}${dirty ? ' dirty' : ''}${who ? ' standing' : ''}" data-key="${key}"
+                   aria-pressed="${on}" aria-label="${WK_DAYS[d - 1]} ${t}${who ? ' — clase fija de ' + escapeHtml(who) : ''}"
+                   ${who ? `title="Clase fija de ${escapeHtml(who)}"` : ''}>${who ? escapeHtml(initials(who)) : ''}</button>`;
       }
     });
     grid.innerHTML = html;
@@ -1146,8 +1685,14 @@
 
   async function saveWeekTemplate() {
     const msgBox = document.getElementById('wk-msg');
-    const removed = [...wkSaved].filter(k => !wkState.has(k)).length;
-    if (removed && !confirm(`Vas a cerrar ${removed} hora(s) de tu semana tipo. Se quitarán sus clases libres a partir de ahora; las ya reservadas se mantienen. ¿Seguir?`)) return;
+    const removedKeys = [...wkSaved].filter(k => !wkState.has(k));
+    const removed = removedKeys.length;
+    const losing = standingRows.filter(r => r.weekly_template &&
+      removedKeys.includes(`${r.weekly_template.weekday}|${r.weekly_template.start_local.slice(0, 5)}`));
+    const losingTxt = losing.length
+      ? `\n\nOJO: ${losing.map(r => studentNameById(r.student_id)).join(', ')} ${losing.length === 1 ? 'tiene' : 'tienen'} ahí su clase fija semanal y la perdería${losing.length === 1 ? '' : 'n'}.`
+      : '';
+    if (removed && !confirm(`Vas a cerrar ${removed} hora(s) de tu semana tipo. Se quitarán sus clases libres a partir de ahora; las ya reservadas se mantienen. ¿Seguir?${losingTxt}`)) return;
 
     const cells = [...wkState].map(k => {
       const [weekday, start] = k.split('|');
@@ -1229,8 +1774,8 @@
 
   async function restoreOccurrence(templateId, day) {
     const { data, error } = await sb.rpc('admin_restore_occurrence', { p_template_id: templateId, p_day: day });
-    if (error) { alert(error.message); return; }
-    if (!data) alert('Excepción quitada, pero la clase no se ha publicado ahora: choca con otra clase o con unas vacaciones, o está a más de 12 semanas (se publicará sola cuando llegue).');
+    if (error) { toast(error.message, 'error'); return; }
+    if (!data) toast('Excepción quitada, pero la clase no se ha publicado ahora: choca con otra clase o con unas vacaciones, o está a más de 12 semanas (se publicará sola cuando llegue).');
     const dayToRestore = selectedDay;
     await loadCalendar();
     if (dayToRestore) await selectDay(dayToRestore);
@@ -1243,7 +1788,7 @@
 
     const { data: slots, error } = await sb
       .from('schedule_slots')
-      .select('id, start_time, end_time, is_booked, is_blocked, student_id, google_meet_link, template_id')
+      .select('id, start_time, end_time, is_booked, is_blocked, student_id, google_meet_link, template_id, reserved_for, credit_cost')
       .gte('start_time', monthStart.toISOString())
       .lt('start_time', monthEnd.toISOString())
       .order('start_time');
@@ -1261,13 +1806,19 @@
     document.getElementById('day-panel').style.display = 'none';
   }
 
-  // 20% off the 15€ standard price.
-  const MONERO_PRICE_PER_CLASS = 12;
-
+  // Each booked lesson at its own student's price (credit_cost × €/credit).
+  // The old estimate assumed every lesson was paid in Monero at 12€, which
+  // stopped being true when Monero was paused.
   function renderEarnings() {
-    const bookedCount = slotsThisMonth.filter(s => s.is_booked).length;
-    document.getElementById('earnings-count').innerText = bookedCount;
-    document.getElementById('earnings-total').innerText = `${bookedCount * MONERO_PRICE_PER_CLASS}€`;
+    const booked = slotsThisMonth.filter(s => s.is_booked);
+    const total = booked.reduce((n, s) => {
+      const st = allStudents.find(x => x.id === s.student_id);
+      return n + Number(s.credit_cost ?? 1) * Number(st?.price_per_credit ?? 15);
+    }, 0);
+    const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    document.getElementById('earnings-count').innerText = booked.length;
+    document.getElementById('earnings-total').innerText = `${fmtCredits(total)}€`;
+    document.getElementById('earnings-month').innerText = `Mes: ${monthNames[calMonth]} ${calYear}. Cambia de mes en la Agenda.`;
   }
 
   function changeMonth(delta) {
@@ -1306,12 +1857,14 @@
       cell.className = 'cal-cell';
       const daySlots = slotsThisMonth.filter(s => new Date(s.start_time).getDate() === day);
 
-      const openCount = daySlots.filter(s => !s.is_booked && !s.is_blocked).length;
+      const openCount = daySlots.filter(s => !s.is_booked && !s.is_blocked && !s.reserved_for).length;
+      const heldCount = daySlots.filter(s => !s.is_booked && !s.is_blocked && s.reserved_for).length;
       const bookedCount = daySlots.filter(s => s.is_booked).length;
       const blockedCount = daySlots.filter(s => !s.is_booked && s.is_blocked).length;
 
       let badges = '';
       if (openCount) badges += `<span class="cal-badge open">${openCount}</span>`;
+      if (heldCount) badges += `<span class="cal-badge held">${heldCount}</span>`;
       if (bookedCount) badges += `<span class="cal-badge booked">${bookedCount}</span>`;
       if (blockedCount) badges += `<span class="cal-badge blocked">${blockedCount}</span>`;
 
@@ -1362,8 +1915,8 @@
       return;
     }
 
-    // Look up student names for booked slots.
-    const studentIds = daySlots.filter(s => s.student_id).map(s => s.student_id);
+    // Look up student names for booked and held slots.
+    const studentIds = daySlots.flatMap(s => [s.student_id, s.reserved_for]).filter(Boolean);
     let namesById = {};
     if (studentIds.length > 0) {
       const { data: profiles } = await sb.from('profiles').select('id, full_name, email').in('id', studentIds);
@@ -1373,11 +1926,18 @@
     list.innerHTML = daySlots.map(s => {
       const start = new Date(s.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
       const end = new Date(s.end_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const standing = s.template_id && standingRows.find(r => r.template_id === s.template_id);
+      const isHeld = !s.is_booked && !s.is_blocked && s.reserved_for;
       const statusHtml = s.is_booked
-        ? `<span class="status booked">Reservada — ${escapeHtml(namesById[s.student_id] || 'Alumno/a')}</span>`
+        ? `<span class="status booked">Reservada — ${escapeHtml(namesById[s.student_id] || 'Alumno/a')}${standing && standing.student_id === s.student_id ? ' (clase fija)' : ''}</span>`
         : (s.is_blocked
             ? `<span class="status booked" style="background: var(--danger);">Bloqueada (evento personal)</span>`
-            : `<span class="status open">Disponible</span>`);
+            : isHeld
+              ? `<span class="status held">${standing && standing.student_id === s.reserved_for ? 'Guardada' : 'Reservada solo'} para ${escapeHtml(namesById[s.reserved_for] || 'Alumno/a')}${standing && standing.student_id === s.reserved_for ? ' — se reserva sola 7 días antes' : ''}</span>`
+              : `<span class="status open">Disponible</span>`);
+      const skipBtn = isHeld && standing && standing.student_id === s.reserved_for
+        ? `<button class="btn btn-small btn-outline" style="margin-right: 8px;" onclick="adminSkipOccurrence('${s.id}')" title="Libera solo esta semana; su clase fija sigue">Liberar esta semana</button>`
+        : '';
       const refundToggle = s.is_booked
         ? `<label style="font-size: 0.78rem; margin-right: 10px; white-space: nowrap;">
              <input type="checkbox" id="refund-${s.id}" checked> Devolver crédito
@@ -1391,8 +1951,9 @@
       return `
         <div class="slot-row">
           <span>${start}–${end} ${statusHtml}</span>
-          <span style="display:flex; align-items:center;">
+          <span style="display:flex; align-items:center; flex-wrap: wrap; gap: 4px;">
             ${meetHtml}
+            ${skipBtn}
             ${refundToggle}
             <button class="btn btn-small btn-danger" onclick="cancelSlot('${s.id}', ${s.is_booked}, ${!!s.template_id})">Eliminar</button>
           </span>
@@ -1416,7 +1977,7 @@
 
     const { error } = await sb.rpc('admin_cancel_slot', { _slot_id: slotId, _refund: wasBooked ? refund : false });
     if (error) {
-      alert(error.message);
+      toast(error.message, 'error');
       return;
     }
 
@@ -1428,12 +1989,16 @@
     await loadNextLessons();
   }
 
-  // ---- STUDENT CREDITS ----
+  // ---- STUDENTS ----
+  // A list on the left and one page per student on the right: credits,
+  // lessons, weekly slot, notes, practice and transcripts all in one place
+  // instead of spread across four tabs.
+  let currentStudentId = null;
+
   async function loadStudents() {
-    const { data, error } = await sb
-      .from('profiles')
-      .select('id, full_name, email, credits, is_admin, language, referral_code, price_per_credit, intro_offer_used')
-      .order('full_name');
+    // select('*') rather than a column list, so the page keeps working on
+    // both sides of a migration that adds a column to profiles.
+    const { data, error } = await sb.from('profiles').select('*').order('full_name');
 
     if (error) {
       console.error('Error cargando alumnos:', error);
@@ -1443,8 +2008,14 @@
     }
     renderStudents();
     fillFocusStudents();
+    fillStudentSelects();
+    if (currentStudentId) renderStudentDetail();
     loadPayments();
     loadOfferLink();
+  }
+
+  function shortWhen(iso) {
+    return new Date(iso).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
   }
 
   function renderStudents() {
@@ -1454,30 +2025,96 @@
       (s.email || '').toLowerCase().includes(query)
     );
 
-    const tbody = document.getElementById('students-tbody');
-    const empty = document.getElementById('students-empty');
-    tbody.innerHTML = '';
+    const box = document.getElementById('students-list');
+    document.getElementById('students-empty').style.display = filtered.length ? 'none' : 'block';
+    box.innerHTML = filtered.map(s => {
+      const name = s.full_name || s.email || 'Alumno/a';
+      const credits = Number(s.credits ?? 0);
+      const next = hoy.lessons.find(l => l.student_id === s.id);
+      const sub = next ? 'Próxima: ' + shortWhen(next.start_time) : (s.email || '');
+      return `<button class="student-row${currentStudentId === s.id ? ' active' : ''}" onclick="openStudent('${s.id}')">
+        <span class="student-avatar">${escapeHtml(initials(name))}</span>
+        <span class="who"><span class="nm">${escapeHtml(name)}</span><span class="sub">${escapeHtml(sub)}</span></span>
+        <span class="credit-pill${credits < 1 ? ' low' : ''}" title="Créditos">${fmtCredits(credits)} cr.</span>
+      </button>`;
+    }).join('');
+  }
 
-    if (filtered.length === 0) {
-      empty.style.display = 'block';
-      return;
+  function openStudent(id) {
+    currentStudentId = id;
+    renderStudents();
+    renderStudentDetail();
+    pickFocusStudent(id);
+    if (window.matchMedia('(max-width: 1000px)').matches) {
+      document.getElementById('student-detail-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    empty.style.display = 'none';
+  }
 
-    filtered.forEach(s => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${escapeHtml(s.full_name || '—')}</td>
-        <td>${escapeHtml(s.email || '—')}</td>
-        <td><code>${escapeHtml(s.referral_code || '—')}</code></td>
-        <td><input type="number" min="0.01" step="0.01" value="${fmtCredits(s.price_per_credit)}" id="price-input-${s.id}" style="max-width: 80px;"></td>
-        <td><input type="number" min="0" step="0.01" value="${fmtCredits(s.credits)}" id="credit-input-${s.id}"></td>
-        <td style="text-align:center;"><input type="checkbox" ${s.intro_offer_used ? 'checked' : ''} onchange="setIntroOfferUsed('${s.id}', this)"></td>
-        <td style="white-space:nowrap;"><button class="btn btn-small btn-outline" onclick="saveCredits('${s.id}')">Guardar</button>
-          <button class="btn btn-small btn-outline" onclick="toggleCreditHistory('${s.id}', this)">Historial</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
+  function messageStudent(id) {
+    showAdminTab('mensajes');
+    openThread(id);
+  }
+
+  function renderStudentDetail() {
+    const s = allStudents.find(x => x.id === currentStudentId);
+    document.getElementById('student-detail-empty').style.display = s ? 'none' : 'block';
+    document.getElementById('student-detail-body').style.display = s ? 'block' : 'none';
+    if (!s) return;
+
+    const name = s.full_name || s.email || 'Alumno/a';
+    const lang = { es: 'Español', pl: 'Polski', en: 'English' }[s.language] || '—';
+    const tags = [
+      s.telegram_chat_id ? '<span class="tag ok">Telegram vinculado</span>' : '<span class="tag warn">Sin Telegram: no le llegan avisos</span>',
+      s.intro_offer_used ? '<span class="tag">Oferta usada</span>' : '<span class="tag">Oferta disponible</span>',
+      `<span class="tag">Idioma de la web: ${lang}</span>`,
+      s.referral_code ? `<span class="tag">Referencia ${escapeHtml(s.referral_code)}</span>` : ''
+    ].join('');
+    document.getElementById('sd-head').innerHTML = `
+      <span class="student-avatar">${escapeHtml(initials(name))}</span>
+      <div class="grow">
+        <h2>${escapeHtml(name)}</h2>
+        <div class="hint" style="margin: 2px 0 0;">${escapeHtml(s.email || '')}</div>
+        <div class="tags">${tags}</div>
+      </div>
+      <button class="btn btn-outline" onclick="messageStudent('${s.id}')">Escribir mensaje</button>`;
+
+    document.getElementById('sd-credit-input').value = fmtCredits(s.credits);
+    document.getElementById('sd-price-input').value = fmtCredits(s.price_per_credit ?? 15);
+    document.getElementById('sd-offer-used').checked = !!s.intro_offer_used;
+    document.getElementById('sd-history').style.display = 'none';
+    document.getElementById('sd-history-btn').textContent = 'Ver historial de créditos';
+
+    renderStudentLessons(s);
+    renderStudentPractice(s);
+    renderStudentTranscripts(s);
+  }
+
+  async function renderStudentLessons(s) {
+    const box = document.getElementById('sd-lessons-body');
+    const { data: lessons, error } = await sb.from('schedule_slots')
+      .select('id, start_time, end_time, google_meet_link, template_id')
+      .eq('student_id', s.id).eq('is_booked', true)
+      .gte('end_time', new Date().toISOString())
+      .order('start_time').limit(10);
+    if (s.id !== currentStudentId) return;   // another student was opened meanwhile
+    if (error) { box.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+
+    const mine = standingRows.filter(r => r.student_id === s.id);
+    const lessonsHtml = (lessons || []).length
+      ? `<ul class="mini-list">${lessons.map(l => `<li><span>${shortWhen(l.start_time)}${mine.some(r => r.template_id === l.template_id) ? ' <span class="tag">clase fija</span>' : ''}</span>
+           ${l.google_meet_link ? `<a class="join-meet-btn btn-small" style="padding: 5px 12px; font-size: 0.78rem;" href="${l.google_meet_link}" target="_blank" rel="noopener">🔗 Meet</a>` : ''}</li>`).join('')}</ul>`
+      : '<p class="empty-note">No tiene clases reservadas.</p>';
+    const standingHtml = mine.length
+      ? `<ul class="mini-list">${mine.map(r => `<li><span>Cada ${standingLabel(r)}</span>
+           <button class="btn btn-small btn-outline" onclick="adminCancelStanding('${r.id}')">Quitar</button></li>`).join('')}</ul>`
+      : '<p class="empty-note">No tiene clase fija.</p>';
+    box.innerHTML = `
+      <div class="sub-h">Próximas clases</div>${lessonsHtml}
+      <div class="sub-h">Clase fija semanal</div>${standingHtml}
+      <div class="form-row" style="margin-top: 10px;">
+        <div><label for="sd-standing-time">Fijarle una hora</label><select id="sd-standing-time">${standingTimeOptions()}</select></div>
+        <div style="flex: 0 0 auto;"><button class="btn btn-small" onclick="adminCreateStanding('${s.id}', 'sd-standing-time')">Fijar</button></div>
+      </div>`;
   }
 
   // ---- CREDIT HISTORY ----
@@ -1489,19 +2126,23 @@
     admin_cancel_slot: 'Clase cancelada (admin)', admin_force_cancel_for_conflict: 'Cancelada por conflicto',
     admin_grant_credits: 'Recarga (admin)', apply_wise_payment: 'Pago Wise',
     admin_assign_payment: 'Pago asignado', admin_revert_payment: 'Pago deshecho',
-    signup: 'Regalo de registro'
+    signup: 'Regalo de registro',
+    _process_standing_bookings: 'Clase fija (reserva automática)',
+    create_standing_booking: 'Clase fija (al fijarla)',
+    restore_standing_occurrence: 'Clase fija (semana recuperada)'
   };
 
-  async function toggleCreditHistory(studentId, btn) {
-    const tr = btn.closest('tr');
-    const next = tr.nextElementSibling;
-    if (next && next.classList.contains('history-row')) { next.remove(); return; }
-
-    const row = document.createElement('tr');
-    row.className = 'history-row';
-    row.innerHTML = `<td colspan="7"><p class="history-empty">Cargando…</p></td>`;
-    tr.after(row);
-    const cell = row.firstElementChild;
+  async function toggleCreditHistory(studentId) {
+    const cell = document.getElementById('sd-history');
+    const btn = document.getElementById('sd-history-btn');
+    if (cell.style.display !== 'none') {
+      cell.style.display = 'none';
+      btn.textContent = 'Ver historial de créditos';
+      return;
+    }
+    cell.style.display = 'block';
+    btn.textContent = 'Ocultar historial';
+    cell.innerHTML = '<p class="history-empty">Cargando…</p>';
 
     const [ledger, bookings] = await Promise.all([
       sb.from('credit_ledger').select('created_at, delta, balance_after, source').eq('student_id', studentId).order('created_at', { ascending: false }).limit(100),
@@ -1546,36 +2187,37 @@
   }
 
   async function saveCredits(studentId) {
-    const input = document.getElementById(`credit-input-${studentId}`);
+    const input = document.getElementById('sd-credit-input');
     // Credits are fractional now (a 75-min class costs 1.5), so parseFloat.
     const newCredits = parseFloat(input.value);
     if (isNaN(newCredits) || newCredits < 0) {
-      alert('Introduce un número válido de créditos.');
+      toast('Introduce un número válido de créditos.', 'error');
       return;
     }
     // Uses admin_grant_credits instead of a raw update so that a genuine
     // top-up (not a refund — those go through separate RPCs) correctly
     // triggers the referral reward the first time it happens.
-    const price = parseFloat(document.getElementById(`price-input-${studentId}`).value);
+    const price = parseFloat(document.getElementById('sd-price-input').value);
     if (isNaN(price) || price <= 0) {
-      alert('Introduce un precio válido.');
+      toast('Introduce un precio válido.', 'error');
       return;
     }
     const student = allStudents.find(s => s.id === studentId);
     if (student && Number(student.price_per_credit) !== price) {
       const { error: priceError } = await sb.rpc('admin_set_price', { _student_id: studentId, _price: price });
-      if (priceError) { alert(priceError.message); return; }
+      if (priceError) { toast(priceError.message, 'error'); return; }
     }
     if (!student || Number(student.credits) !== newCredits) {
       const { error } = await sb.rpc('admin_grant_credits', { _student_id: studentId, _new_credits: newCredits });
-      if (error) { alert(error.message); return; }
+      if (error) { toast(error.message, 'error'); return; }
     }
+    toast('Guardado.');
     await loadStudents();
   }
 
   async function setIntroOfferUsed(studentId, box) {
     const { error } = await sb.rpc('admin_set_intro_offer_used', { _student_id: studentId, _used: box.checked });
-    if (error) { alert(error.message); box.checked = !box.checked; }
+    if (error) { toast(error.message, 'error'); box.checked = !box.checked; }
   }
 
   // ---- WELCOME OFFER LINK ----
@@ -1590,6 +2232,8 @@
       .order('created_at', { ascending: false }).limit(1);
     if (error) { box.textContent = 'Error: ' + error.message; return; }
     const l = data?.[0];
+    hoy.offerActive = !!l && l.status === 'active';
+    renderHoy();
     if (!l) { box.textContent = 'No hay ningún enlace todavía.'; return; }
     const when = d => d ? new Date(d).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
     const live = l.status === 'active';
@@ -1635,6 +2279,9 @@
     tbody.innerHTML = '';
     if (error) { console.error('Error cargando pagos:', error); return; }
     empty.style.display = (data || []).length ? 'none' : 'block';
+    hoy.unmatched = (data || []).filter(p => p.status === 'unmatched').length;
+    setSideBadge('tab-pay-badge', hoy.unmatched);
+    renderHoy();
 
     const nameOf = id => (allStudents.find(s => s.id === id) || {}).full_name || '—';
     const options = allStudents
@@ -1664,16 +2311,16 @@
 
   async function assignPayment(paymentId) {
     const studentId = document.getElementById(`pay-assign-${paymentId}`).value;
-    if (!studentId) { alert('Elige un alumno.'); return; }
+    if (!studentId) { toast('Elige un alumno.', 'error'); return; }
     const { error } = await sb.rpc('admin_assign_payment', { _payment_id: paymentId, _student_id: studentId });
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     await loadStudents();
   }
 
   async function revertPayment(paymentId) {
     if (!confirm('¿Deshacer este pago? Se quitarán los créditos que se añadieron.')) return;
     const { error } = await sb.rpc('admin_revert_payment', { _payment_id: paymentId });
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     await loadStudents();
   }
 
@@ -1693,6 +2340,9 @@
       console.error('Error cargando opiniones:', error);
       return;
     }
+    hoy.reviews = (data || []).length;
+    setSideBadge('tab-rev-badge', hoy.reviews);
+    renderHoy();
 
     if (!data || data.length === 0) {
       empty.style.display = 'block';
@@ -1717,14 +2367,14 @@
 
   async function approveTestimonial(id) {
     const { error } = await sb.from('testimonials').update({ approved: true }).eq('id', id);
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     await loadPendingTestimonials();
   }
 
   async function rejectTestimonial(id) {
     if (!confirm('¿Eliminar esta opinión?')) return;
     const { error } = await sb.from('testimonials').delete().eq('id', id);
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     await loadPendingTestimonials();
   }
 
@@ -1773,8 +2423,10 @@
     const fab = document.getElementById('msg-fab');
     document.getElementById('msg-fab-badge').textContent = totalUnread > 99 ? '99+' : String(totalUnread);
     fab.style.display = totalUnread > 0 ? 'flex' : 'none';
-    const tabBadge = document.getElementById('tab-msg-badge');
-    if (tabBadge) tabBadge.innerHTML = totalUnread > 0 ? `<span class="chat-badge">${totalUnread}</span>` : '';
+    setSideBadge('tab-msg-badge', totalUnread);
+    hoy.unread = totalUnread;
+    hoy.unreadThreads = threads.filter(t => Number(t.unread_count) > 0);
+    renderHoy();
 
     if (!threads.length) {
       box.innerHTML = '<p class="empty-note">Todavía no hay conversaciones.</p>';
@@ -1986,7 +2638,7 @@
       .select('id, author_is_admin, body, resolved_at, created_at')
       .eq('student_id', studentId)
       .order('created_at', { ascending: false });
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
 
     const rows = data || [];
     renderAdminFocus('student', rows.filter(r => !r.author_is_admin));
@@ -2018,7 +2670,7 @@
     const { error } = await sb.from('student_focus').insert({
       student_id: studentId, author_is_admin: true, body
     });
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     input.value = '';
     await loadAdminFocus();
   }
@@ -2027,14 +2679,14 @@
     const { error } = await sb.from('student_focus')
       .update({ resolved_at: done ? null : new Date().toISOString() })
       .eq('id', id);
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     await loadAdminFocus();
   }
 
   async function deleteAdminFocus(id) {
     if (!confirm('¿Eliminar esta nota?')) return;
     const { error } = await sb.from('student_focus').delete().eq('id', id);
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     await loadAdminFocus();
   }
 
@@ -2332,7 +2984,7 @@
 
   function setSchedView(v) {
     schedView = v;
-    document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+    document.querySelectorAll('#sched-seg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
     renderSchedule();
   }
 
@@ -2411,26 +3063,55 @@
     setTimeout(() => { msg.textContent = ''; }, 3500);
   }
 
-  const ADMIN_TABS = ['clases', 'alumnos', 'notas', 'mensajes', 'opiniones', 'blog', 'horario'];
+  const ADMIN_TABS = {
+    hoy:       ['Hoy', ''],
+    agenda:    ['Agenda', 'Calendario, clases fijas de alumnos, tu semana tipo y vacaciones.'],
+    alumnos:   ['Alumnos', 'Todo lo de cada alumno en un sitio.'],
+    mensajes:  ['Mensajes', ''],
+    pagos:     ['Pagos', 'Pagos de Wise, enlace de la oferta e ingresos previstos.'],
+    grabar:    ['Grabar clase', 'Graba la clase de Meet y transcríbela en este ordenador.'],
+    practica:  ['Práctica y vídeos', 'Vídeo-lecciones y ejercicios para la pestaña Practicar de tus alumnos.'],
+    opiniones: ['Opiniones', ''],
+    blog:      ['Blog', ''],
+    horario:   ['Imagen de horario', 'Para mandársela a alguien que todavía no tiene cuenta.']
+  };
+  // Old bookmarks from the tabbed panel still land somewhere sensible.
+  const LEGACY_TABS = { clases: 'agenda', notas: 'alumnos' };
 
   function showAdminTab(name) {
-    if (!ADMIN_TABS.includes(name)) name = 'clases';
-    ADMIN_TABS.forEach(tab => {
+    name = LEGACY_TABS[name] || name;
+    if (!ADMIN_TABS[name]) name = 'hoy';
+    Object.keys(ADMIN_TABS).forEach(tab => {
       const panel = document.getElementById('apanel-' + tab);
-      const btn = document.querySelector(`.tab[data-tab="${tab}"]`);
+      const btn = document.querySelector(`.side-link[data-tab="${tab}"]`);
       if (panel) panel.classList.toggle('active', tab === name);
       if (btn) {
         btn.classList.toggle('active', tab === name);
         btn.setAttribute('aria-selected', String(tab === name));
       }
     });
+    document.getElementById('page-title').textContent = ADMIN_TABS[name][0];
+    document.getElementById('page-sub').textContent = name === 'hoy' ? todayLabel() : ADMIN_TABS[name][1];
     if (window.location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+    window.scrollTo(0, 0);
     // Built lazily: it queries a whole month of slots, which nothing else needs.
     if (name === 'horario') renderSchedule();
+    if (name === 'grabar') { renderLocalRecordings(); fillRecLessonSelect(); }
+    if (name === 'practica') renderExerciseForm();
+  }
+
+  function todayLabel() {
+    const d = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    return d.charAt(0).toUpperCase() + d.slice(1);
+  }
+
+  function setSideBadge(id, n) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = n > 0 ? `<span class="chat-badge">${n > 99 ? '99+' : n}</span>` : '';
   }
 
   window.addEventListener('hashchange', () => {
-    showAdminTab((window.location.hash || '#clases').slice(1));
+    showAdminTab((window.location.hash || '#hoy').slice(1));
   });
 
   // The unread indicator should take you to the Mensajes tab, not just scroll.
@@ -2557,10 +3238,1310 @@
   async function deleteBlogPost(id) {
     if (!confirm('¿Eliminar este artículo? No se puede deshacer.')) return;
     const { error } = await sb.from('blog_posts').delete().eq('id', id);
-    if (error) { alert(error.message); return; }
+    if (error) { toast(error.message, 'error'); return; }
     if (editingBlogId === id) resetBlogForm();
     await loadBlogPosts();
   }
+
+  // =====================================================================
+  // HOY — the landing page: the lesson that matters now, and a to-do list
+  // of everything that is waiting on Paulo. Every loader drops its piece
+  // into `hoy` and calls renderHoy(), which is cheap and idempotent.
+  // =====================================================================
+  const hoy = { lessons: [], unread: 0, unreadThreads: [], unmatched: 0, reviews: 0, offerActive: true, short: [], week: null };
+
+  function fmtCountdown(ms) {
+    const m = Math.max(0, Math.round(ms / 60000));
+    if (m < 60) return `${m} min`;
+    const h = Math.floor(m / 60), r = m % 60;
+    if (h < 24) return r ? `${h} h ${r} min` : `${h} h`;
+    const d = Math.round(h / 24);
+    return d === 1 ? '1 día' : `${d} días`;
+  }
+  const hhmm = d => new Date(d).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+  function renderHoy() {
+    const hero = document.getElementById('hero-lesson');
+    if (!hero) return;
+    const now = Date.now();
+    const live = hoy.lessons.find(l => Date.parse(l.start_time) <= now && now < Date.parse(l.end_time));
+    const next = live || hoy.lessons.find(l => Date.parse(l.start_time) > now);
+    if (!next) {
+      hero.innerHTML = `
+        <div><span class="eyebrow">Sin clases a la vista</span>
+          <h2>No tienes clases reservadas</h2>
+          <div class="when">Cuando un alumno reserve, aparecerá aquí con su enlace de Meet.</div></div>
+        <div class="hero-actions"><button class="btn btn-on-ground" onclick="showAdminTab('agenda')">Ver la agenda</button></div>`;
+    } else {
+      const day = new Date(next.start_time).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+      const eyebrow = live
+        ? `Ahora mismo · termina en ${fmtCountdown(Date.parse(next.end_time) - now)}`
+        : `Siguiente clase · empieza en ${fmtCountdown(Date.parse(next.start_time) - now)}`;
+      const join = next.google_meet_link
+        ? `<a class="btn" href="${next.google_meet_link}" target="_blank" rel="noopener">Unirse a Meet</a>`
+        : `<span class="btn btn-on-ground" title="El enlace se genera automáticamente poco después de la reserva.">Enlace de Meet pendiente</span>`;
+      hero.innerHTML = `
+        <div><span class="eyebrow">${eyebrow}</span>
+          <h2>${escapeHtml(next.name)}</h2>
+          <div class="when">${day}, ${hhmm(next.start_time)}–${hhmm(next.end_time)}</div></div>
+        <div class="hero-actions">${join}
+          <button class="btn btn-on-ground" onclick="recordLesson('${next.id}')">Grabar esta clase</button>
+          <button class="btn btn-on-ground" onclick="openStudentFromHoy('${next.student_id}')">Ficha del alumno</button></div>`;
+    }
+    renderTodos();
+    renderHoyStats();
+    if (document.getElementById('apanel-hoy').classList.contains('active')) {
+      document.getElementById('page-sub').textContent = todayLabel();
+    }
+  }
+
+  function renderTodos() {
+    const list = document.getElementById('todo-list');
+    const items = [];
+    const plural = (n, one, many) => (n === 1 ? one : many);
+    if (hoy.unread) {
+      const who = hoy.unreadThreads.map(t => t.full_name || t.email).filter(Boolean).slice(0, 3).join(', ');
+      items.push([hoy.unread, `${plural(hoy.unread, 'Mensaje sin leer', 'Mensajes sin leer')}${who ? ' de ' + who : ''}`, 'Leer', "showAdminTab('mensajes')"]);
+    }
+    if (hoy.unmatched) items.push([hoy.unmatched, plural(hoy.unmatched, 'Pago de Wise sin asignar a ningún alumno', 'Pagos de Wise sin asignar a ningún alumno'), 'Asignar', "showAdminTab('pagos')"]);
+    if (hoy.reviews) items.push([hoy.reviews, plural(hoy.reviews, 'Opinión esperando tu aprobación', 'Opiniones esperando tu aprobación'), 'Revisar', "showAdminTab('opiniones')"]);
+    if (!hoy.offerActive) items.push(['!', 'La oferta de bienvenida no tiene enlace de Wise activo: los alumnos nuevos no pueden pagarla', 'Pegar enlace', "showAdminTab('pagos')"]);
+    hoy.short.forEach(x => items.push(['€', `${x.name} tiene su clase fija el ${shortWhen(x.start)} y no tiene créditos para pagarla`, 'Ver', `openStudentFromHoy('${x.student_id}')`]));
+    const noTg = allStudents.filter(s => !s.telegram_chat_id && hoy.lessons.some(l => l.student_id === s.id));
+    if (noTg.length) items.push([noTg.length, `Con clase reservada pero sin Telegram (no reciben aviso ni enlace de Meet): ${noTg.map(s => s.full_name || s.email).join(', ')}`, 'Ver', `openStudentFromHoy('${noTg[0].id}')`]);
+
+    list.innerHTML = items.length
+      ? items.map(([n, text, cta, action]) => `
+          <li class="todo-item"><span class="todo-count">${n}</span><span class="grow">${escapeHtml(text)}</span>
+            <button class="btn btn-small btn-outline" onclick="${action}">${cta}</button></li>`).join('')
+      : '<li class="todo-item"><span class="todo-done">✓ Todo al día.</span></li>';
+  }
+
+  async function loadHoyStats() {
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setHours(0, 0, 0, 0);
+    weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+    const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 7);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const from = new Date(Math.min(weekStart, monthStart)), to = new Date(Math.max(weekEnd, monthEnd));
+    const { data, error } = await sb.from('schedule_slots')
+      .select('start_time, is_booked, is_blocked, reserved_for, student_id, credit_cost')
+      .gte('start_time', from.toISOString()).lt('start_time', to.toISOString()).limit(3000);
+    if (error) { hoy.week = null; return; }
+    const at = s => new Date(s.start_time);
+    const inWeek = s => at(s) >= weekStart && at(s) < weekEnd;
+    const inMonth = s => at(s) >= monthStart && at(s) < monthEnd;
+    const monthBooked = data.filter(s => inMonth(s) && s.is_booked);
+    hoy.week = {
+      bookedWeek: data.filter(s => inWeek(s) && s.is_booked).length,
+      openWeek: data.filter(s => inWeek(s) && at(s) > now && !s.is_booked && !s.is_blocked && !s.reserved_for).length,
+      monthBooked: monthBooked.length,
+      income: monthBooked.reduce((n, s) => n + Number(s.credit_cost ?? 1) *
+        Number(allStudents.find(x => x.id === s.student_id)?.price_per_credit ?? 15), 0)
+    };
+    renderHoy();
+  }
+
+  function renderHoyStats() {
+    const w = hoy.week;
+    const box = document.getElementById('stat-row');
+    if (!w) { box.innerHTML = ''; return; }
+    const withCredits = allStudents.filter(s => Number(s.credits) >= 1).length;
+    box.innerHTML = [
+      ['Clases esta semana', w.bookedWeek, 'reservadas'],
+      ['Huecos libres', w.openWeek, 'en lo que queda de semana'],
+      ['Previsto este mes', `${fmtCredits(w.income)}€`, `${w.monthBooked} clases reservadas`],
+      ['Alumnos con créditos', withCredits, `de ${allStudents.length} en total`]
+    ].map(([k, v, sub]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub}</div></div>`).join('');
+  }
+
+  function openStudentFromHoy(id) {
+    showAdminTab('alumnos');
+    openStudent(id);
+  }
+
+  function recordLesson(slotId) {
+    showAdminTab('grabar');
+    fillRecLessonSelect();
+    const sel = document.getElementById('rec-lesson');
+    if ([...sel.options].some(o => o.value === slotId)) sel.value = slotId;
+  }
+
+  // Every student <select> on the page, filled from allStudents.
+  function fillStudentSelects() {
+    const opts = allStudents.map(s => `<option value="${s.id}">${escapeHtml(s.full_name || s.email || s.id)}</option>`).join('');
+    const set = (id, first) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const prev = el.value;
+      el.innerHTML = first + opts;
+      if (prev && [...el.options].some(o => o.value === prev)) el.value = prev;
+    };
+    set('standing-student', '<option value="">Elegir alumno…</option>');
+    set('vl-student', '<option value="">Todos los alumnos</option>');
+    set('ex-student', '<option value="">Todos los alumnos</option>');
+  }
+
+  // =====================================================================
+  // STANDING (WEEKLY) BOOKINGS
+  // The server does the work (migration 20261027_standing_bookings.sql):
+  // an hourly run holds the next 4 weeks and books each lesson 7 days
+  // ahead. This page only lists them and creates/ends them.
+  // =====================================================================
+  let standingRows = [];
+  let templateRows = [];
+  const WK_NAMES = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+  const capFirst = t => t.charAt(0).toUpperCase() + t.slice(1);
+  const STANDING_ERRORS = {
+    slot_taken: 'Esa hora ya es la clase fija de otro alumno.',
+    too_many: 'Ese alumno ya tiene 3 clases fijas.',
+    no_credits: 'El alumno necesita al menos 1 crédito.',
+    no_free_weeks: 'Esa hora no está libre ninguna de las próximas 4 semanas.',
+    template_not_found: 'Esa hora ya no está en tu semana tipo.',
+    already_booked: 'Esa semana ya está reservada: cancélala desde el calendario.',
+    not_allowed: 'No permitido.',
+    not_found: 'Ya no existe.'
+  };
+  function standingError(e) {
+    if (e.code === '23505') return STANDING_ERRORS.slot_taken;
+    const code = Object.keys(STANDING_ERRORS).find(k => (e.message || '').includes(k));
+    return code ? STANDING_ERRORS[code] : e.message;
+  }
+  function standingLabel(r) {
+    const t = r.weekly_template;
+    return t ? `${WK_NAMES[t.weekday - 1]} a las ${t.start_local.slice(0, 5)}` : 'una hora que ya no está en tu semana tipo';
+  }
+
+  async function loadStanding() {
+    const [st, tp] = await Promise.all([
+      sb.from('standing_bookings')
+        .select('id, student_id, template_id, created_at, created_by_admin, weekly_template(weekday, start_local, duration_min)')
+        .order('created_at'),
+      sb.from('weekly_template').select('id, weekday, start_local, duration_min').order('weekday').order('start_local')
+    ]);
+    const list = document.getElementById('standing-list');
+    if (st.error) {
+      standingRows = [];
+      list.innerHTML = '<p class="empty-note">Las clases fijas aún no están activadas en la base de datos (falta aplicar la migración 20261027_standing_bookings.sql).</p>';
+    } else {
+      standingRows = st.data || [];
+      renderStandingList();
+    }
+    templateRows = tp.data || [];
+    await computeStandingShort();
+    const el = document.getElementById('standing-time');
+    if (el) el.innerHTML = standingTimeOptions();
+    renderWeekTemplate();
+    renderHoy();
+  }
+
+  // Lessons inside the 7-day booking window that are only held, because the
+  // student cannot pay for them yet. Same test the server uses.
+  async function computeStandingShort() {
+    hoy.short = [];
+    if (!standingRows.length) return;
+    const { data } = await sb.from('schedule_slots')
+      .select('id, start_time, template_id, reserved_for, credit_cost')
+      .in('template_id', standingRows.map(r => r.template_id))
+      .eq('is_booked', false).not('reserved_for', 'is', null)
+      .gt('start_time', new Date().toISOString())
+      .lte('start_time', new Date(Date.now() + 7 * 86400000).toISOString());
+    (data || []).forEach(s => {
+      const own = standingRows.some(r => r.template_id === s.template_id && r.student_id === s.reserved_for);
+      const st = allStudents.find(x => x.id === s.reserved_for);
+      if (own && st && Number(st.credits) < Number(s.credit_cost ?? 1)) {
+        hoy.short.push({ student_id: st.id, name: st.full_name || st.email, start: s.start_time });
+      }
+    });
+  }
+
+  function renderStandingList() {
+    const list = document.getElementById('standing-list');
+    if (!standingRows.length) {
+      list.innerHTML = '<p class="empty-note">Ningún alumno tiene clase fija todavía.</p>';
+      return;
+    }
+    const sorted = [...standingRows].sort((a, b) =>
+      (a.weekly_template?.weekday ?? 9) - (b.weekly_template?.weekday ?? 9) ||
+      (a.weekly_template?.start_local || '').localeCompare(b.weekly_template?.start_local || ''));
+    list.innerHTML = sorted.map(r => {
+      const st = allStudents.find(x => x.id === r.student_id);
+      const low = st && Number(st.credits) < 1;
+      return `<div class="slot-row">
+        <span><strong>${escapeHtml(studentNameById(r.student_id))}</strong> — cada ${standingLabel(r)}
+          ${low ? '<span class="status" style="background: var(--danger-bg); color: var(--danger);">sin créditos</span>' : ''}</span>
+        <span style="display:flex; gap: 8px;">
+          <button class="btn btn-small btn-outline" onclick="openStudentFromHoy('${r.student_id}')">Ficha</button>
+          <button class="btn btn-small btn-outline" onclick="adminCancelStanding('${r.id}')">Quitar</button>
+        </span>
+      </div>`;
+    }).join('');
+  }
+
+  function standingTimeOptions() {
+    const taken = new Set(standingRows.map(r => r.template_id));
+    const free = templateRows.filter(t => !taken.has(t.id));
+    if (!free.length) return '<option value="">No quedan horas libres en tu semana tipo</option>';
+    return '<option value="">Elegir hora…</option>' + free.map(t =>
+      `<option value="${t.id}">${capFirst(WK_NAMES[t.weekday - 1])} ${t.start_local.slice(0, 5)}</option>`).join('');
+  }
+
+  async function refreshAfterStanding() {
+    await loadStudents();
+    await loadStanding();
+    await Promise.all([loadCalendar(), loadNextLessons()]);
+    renderHoy();
+    if (currentStudentId) renderStudentDetail();
+  }
+
+  async function adminCreateStanding(studentId, selectId) {
+    studentId = studentId || document.getElementById('standing-student').value;
+    const templateId = document.getElementById(selectId || 'standing-time').value;
+    if (!studentId || !templateId) { toast('Elige el alumno y la hora.', 'error'); return; }
+    const { data, error } = await sb.rpc('create_standing_booking', { p_template_id: templateId, p_student_id: studentId });
+    if (error) { toast(standingError(error), 'error'); return; }
+    let txt = `Clase fija creada. Reservadas ya: ${data.booked}. Guardadas para más adelante: ${data.held}.`;
+    if (data.short) txt += ` ${data.short} sin créditos suficientes todavía.`;
+    toast(txt);
+    await refreshAfterStanding();
+  }
+
+  async function adminCancelStanding(id) {
+    const r = standingRows.find(x => x.id === id);
+    if (!confirm(`¿Quitar la clase fija de ${r ? studentNameById(r.student_id) : 'este alumno'}? Las semanas que solo estaban guardadas vuelven a estar libres para todos. Las clases ya reservadas se mantienen (cancélalas en el calendario si hace falta).`)) return;
+    const { data, error } = await sb.rpc('cancel_standing_booking', { p_id: id });
+    if (error) { toast(standingError(error), 'error'); return; }
+    toast(`Clase fija quitada. ${data} semana(s) vuelven a estar libres.`);
+    await refreshAfterStanding();
+  }
+
+  async function adminSkipOccurrence(slotId) {
+    if (!confirm('¿Liberar solo esta semana? Queda libre para cualquier alumno; su clase fija sigue las demás semanas.')) return;
+    const { error } = await sb.rpc('skip_standing_occurrence', { p_slot_id: slotId });
+    if (error) { toast(standingError(error), 'error'); return; }
+    const dayToRestore = selectedDay;
+    await loadCalendar();
+    if (dayToRestore) await selectDay(dayToRestore);
+  }
+
+  // =====================================================================
+  // STUDENT DETAIL: practice and transcripts
+  // =====================================================================
+  let practiceIndex = null;
+  function getPracticeIndex() {
+    if (practiceIndex) return practiceIndex;
+    const D = window.PRACTICE_DATA, idx = {};
+    if (D) {
+      D.en.verbs.forEach(v => { idx['s:' + v.id] = `${v.base} → ${v.past.join('/')}, ${v.pp.join('/')}`; });
+      [...D.en.prepositions, ...D.es.prepositions].forEach(p => { idx['s:' + p.id] = p.sentence.replace('___', `[${p.answers[0]}]`); });
+      [...D.es.verbsPresent, ...D.es.verbsPast].forEach(c => {
+        idx['s:' + c.id] = `${c.inf} · ${c.person} · ${c.tense === 'pres' ? 'presente' : 'pasado'} → ${c.answers[0]}`;
+      });
+      [...Object.values(D.en.translation), ...Object.values(D.es.translation)].flat()
+        .forEach(t => { idx['s:' + t.id] = `${t.prompt} → ${t.answers[0]}`; });
+    }
+    return (practiceIndex = idx);
+  }
+  function describeItem(key) {
+    if (key.startsWith('c:')) {
+      const r = exerciseRows.find(e => 'c:' + e.id === key);
+      return r ? `${r.prompt} → ${(r.answers || []).map(a => a[0]).join(', ')}` : 'Ejercicio tuyo (ya borrado)';
+    }
+    return getPracticeIndex()[key] || key;
+  }
+
+  async function renderStudentPractice(s) {
+    const box = document.getElementById('sd-practice-body');
+    box.innerHTML = '<p class="empty-note">Cargando…</p>';
+    const { data, error } = await sb.from('practice_progress')
+      .select('item_key, box, correct, wrong, last_seen')
+      .eq('student_id', s.id).order('last_seen', { ascending: false }).limit(2000);
+    if (s.id !== currentStudentId) return;
+    if (error) { box.innerHTML = '<p class="empty-note">La práctica aún no está activada en la base de datos.</p>'; return; }
+    if (!data.length) { box.innerHTML = '<p class="empty-note">Todavía no ha practicado.</p>'; return; }
+
+    const right = data.reduce((n, r) => n + r.correct, 0), wrong = data.reduce((n, r) => n + r.wrong, 0);
+    const weak = data.filter(r => r.wrong > 0)
+      .sort((a, b) => (b.wrong - b.correct) - (a.wrong - a.correct) || b.wrong - a.wrong).slice(0, 8);
+    box.innerHTML = `
+      <div class="stat-row" style="margin-bottom: 8px;">
+        <div class="stat"><div class="k">Ejercicios vistos</div><div class="v">${data.length}</div></div>
+        <div class="stat"><div class="k">Aciertos</div><div class="v">${Math.round(right / Math.max(1, right + wrong) * 100)}%</div><div class="s">${right} de ${right + wrong} respuestas</div></div>
+        <div class="stat"><div class="k">Dominados</div><div class="v">${data.filter(r => r.box >= 4).length}</div><div class="s">acertados 4+ veces seguidas</div></div>
+        <div class="stat"><div class="k">Última vez</div><div class="v" style="font-size: 1.1rem;">${focusTimeAgo(data[0].last_seen)}</div></div>
+      </div>
+      ${weak.length ? `<div class="sub-h">Lo que más le cuesta</div>
+        <ul class="mini-list">${weak.map(r => `<li><span>${escapeHtml(describeItem(r.item_key))}</span>
+          <span class="hint" style="margin: 0;">${r.correct} bien · ${r.wrong} mal</span></li>`).join('')}</ul>` : ''}`;
+  }
+
+  function renderStudentTranscripts(s) {
+    const box = document.getElementById('sd-transcripts-body');
+    const rows = transcriptRows.filter(t => t.studentId === s.id);
+    box.innerHTML = rows.length
+      ? `<ul class="mini-list">${rows.map(t => transcriptRowHtml(t, false)).join('')}</ul>`
+      : '<p class="empty-note">Ninguna clase suya transcrita en este ordenador. Se graban desde «Grabar clase».</p>';
+  }
+
+  // =====================================================================
+  // LESSON RECORDER
+  // Three MediaRecorders run side by side: the Meet tab's video with both
+  // voices mixed (the file Paulo keeps), and each voice alone (for the
+  // transcript, so it knows who said what without guessing). Every 5 s of
+  // each goes straight into IndexedDB, so a crash or a closed tab loses
+  // seconds, not the lesson.
+  // =====================================================================
+  const AUDIO_MIMES = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'];
+  const VIDEO_MIMES = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  let lessonRec = null;
+
+  function recDb() {
+    return new Promise((resolve, reject) => {
+      // v2 added transcripts; each store is created only if missing, so a
+      // browser that already holds v1 recordings keeps them.
+      const req = indexedDB.open('lesson-recorder', 2);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains('recordings')) db.createObjectStore('recordings', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('chunks')) db.createObjectStore('chunks', { autoIncrement: true }).createIndex('byRec', 'rec');
+        if (!db.objectStoreNames.contains('transcripts')) db.createObjectStore('transcripts', { keyPath: 'id' });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function idbPut(store, value) {
+    const db = await recDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(store, 'readwrite');
+      tx.objectStore(store).put(value);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function idbAll(store) {
+    const db = await recDb();
+    return new Promise((resolve, reject) => {
+      const req = db.transaction(store).objectStore(store).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  const idbAllRecordings = () => idbAll('recordings');
+  async function idbDelete(store, key) {
+    const db = await recDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(store, 'readwrite');
+      tx.objectStore(store).delete(key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function idbChunks(recId, track) {
+    const db = await recDb();
+    return new Promise((resolve, reject) => {
+      const req = db.transaction('chunks').objectStore('chunks').index('byRec').getAll(recId);
+      req.onsuccess = () => resolve((req.result || []).filter(c => c.track === track).sort((a, b) => a.seq - b.seq).map(c => c.blob));
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function idbDeleteRecording(recId) {
+    const db = await recDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(['recordings', 'chunks'], 'readwrite');
+      tx.objectStore('recordings').delete(recId);
+      const cur = tx.objectStore('chunks').index('byRec').openKeyCursor(IDBKeyRange.only(recId));
+      cur.onsuccess = () => { const c = cur.result; if (c) { tx.objectStore('chunks').delete(c.primaryKey); c.continue(); } };
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  function startChunkRecorder(stream, recId, track, mimes, bitrates) {
+    const mime = mimes.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
+    const mr = new MediaRecorder(stream, { ...(mime ? { mimeType: mime } : {}), ...bitrates });
+    let seq = 0;
+    const writes = [];
+    mr.ondataavailable = e => {
+      if (e.data && e.data.size) writes.push(idbPut('chunks', { rec: recId, track, seq: seq++, blob: e.data }));
+    };
+    const done = new Promise(resolve => { mr.onstop = () => Promise.all(writes).then(resolve, resolve); });
+    mr.start(5000);
+    return { mr, mime: mr.mimeType || mime || 'video/webm', done };
+  }
+
+  function recMsg(html, kind) {
+    document.getElementById('rec-msg').innerHTML = html ? `<div class="msg ${kind || 'ok'}">${html}</div>` : '';
+  }
+
+  function fillRecLessonSelect() {
+    const sel = document.getElementById('rec-lesson');
+    if (!sel || lessonRec) return;
+    const prev = sel.value;
+    const now = Date.now();
+    const soon = hoy.lessons.filter(l => Date.parse(l.start_time) < now + 24 * 3600e3);
+    sel.innerHTML = soon.map(l => `<option value="${l.id}">${escapeHtml(l.name)} · ${shortWhen(l.start_time)}</option>`).join('')
+      + '<option value="">Otra grabación (sin clase reservada)</option>';
+    if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
+    else {
+      const pick = soon.find(l => Date.parse(l.start_time) - 30 * 60e3 <= now) || soon[0];
+      sel.value = pick ? pick.id : '';
+    }
+  }
+
+  function recCurrentStudent() {
+    const lesson = hoy.lessons.find(l => l.id === document.getElementById('rec-lesson').value);
+    return { lesson, student: lesson ? allStudents.find(s => s.id === lesson.student_id) : null };
+  }
+
+  function fmtDur(sec) {
+    sec = Math.max(0, Math.round(sec));
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+  }
+
+  function recBeforeUnload(e) { e.preventDefault(); e.returnValue = ''; }
+
+  async function startLessonRecording() {
+    if (lessonRec) return;
+    if (!navigator.mediaDevices?.getDisplayMedia || !window.MediaRecorder) {
+      recMsg('Este navegador no puede grabar pestañas. Usa Chrome o Edge en el ordenador.', 'error');
+      return;
+    }
+    recMsg('');
+    const { lesson, student } = recCurrentStudent();
+    const audioOnly = document.getElementById('rec-mode').value === 'audio';
+
+    let display, mic;
+    try {
+      display = await navigator.mediaDevices.getDisplayMedia({
+        video: { displaySurface: 'browser', frameRate: { ideal: 15, max: 30 }, width: { max: 1280 }, height: { max: 720 } },
+        audio: { suppressLocalAudioPlayback: false },
+        preferCurrentTab: false, selfBrowserSurface: 'exclude', surfaceSwitching: 'include', systemAudio: 'include'
+      });
+    } catch (e) {
+      recMsg('No se ha compartido ninguna pestaña, así que no se graba nada.', 'error');
+      return;
+    }
+    if (!display.getAudioTracks().length) {
+      display.getTracks().forEach(t => t.stop());
+      recMsg('Falta el audio de la pestaña: sin él no se oye al alumno. Vuelve a empezar, elige la <strong>pestaña</strong> de Meet (no una ventana) y deja marcado «Compartir también el audio de la pestaña».', 'error');
+      return;
+    }
+    try {
+      mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    } catch (e) {
+      display.getTracks().forEach(t => t.stop());
+      recMsg('No hay acceso al micrófono. Permítelo en el candado de la barra de direcciones y vuelve a empezar.', 'error');
+      return;
+    }
+
+    const ctx = new AudioContext();
+    const tabAudio = new MediaStream(display.getAudioTracks());
+    const micSrc = ctx.createMediaStreamSource(mic);
+    const tabSrc = ctx.createMediaStreamSource(tabAudio);
+    const mix = ctx.createMediaStreamDestination();
+    micSrc.connect(mix);
+    tabSrc.connect(mix);
+    const meters = [[micSrc, 'meter-mic'], [tabSrc, 'meter-tab']].map(([src, id]) => {
+      const an = ctx.createAnalyser(); an.fftSize = 512; src.connect(an);
+      return { an, el: document.getElementById(id), buf: new Float32Array(512) };
+    });
+
+    const mainStream = audioOnly
+      ? new MediaStream(mix.stream.getAudioTracks())
+      : new MediaStream([...display.getVideoTracks(), ...mix.stream.getAudioTracks()]);
+    const id = crypto.randomUUID();
+    const meta = {
+      id, kind: 'lesson', status: 'recording', audioOnly,
+      startedAt: new Date().toISOString(),
+      studentId: student?.id || null, slotId: lesson?.id || null,
+      title: lesson ? `Clase con ${lesson.name}` : 'Grabación'
+    };
+    let recorders;
+    try {
+      const main = startChunkRecorder(mainStream, id, 'main', audioOnly ? AUDIO_MIMES : VIDEO_MIMES,
+        audioOnly ? { audioBitsPerSecond: 64000 } : { videoBitsPerSecond: 1200000, audioBitsPerSecond: 96000 });
+      const micR = startChunkRecorder(new MediaStream(mic.getAudioTracks()), id, 'mic', AUDIO_MIMES, { audioBitsPerSecond: 32000 });
+      const tabR = startChunkRecorder(tabAudio, id, 'tab', AUDIO_MIMES, { audioBitsPerSecond: 32000 });
+      recorders = [main, micR, tabR];
+      Object.assign(meta, { mainMime: main.mime, micMime: micR.mime, tabMime: tabR.mime });
+      await idbPut('recordings', meta);
+    } catch (e) {
+      [display, mic].forEach(s => s.getTracks().forEach(t => t.stop()));
+      ctx.close();
+      recMsg('No se pudo empezar a grabar: ' + escapeHtml(e.message || String(e)), 'error');
+      return;
+    }
+
+    const t0 = Date.now();
+    const timerEl = document.getElementById('rec-timer');
+    const tick = () => { timerEl.innerHTML = `<span class="rec-dot"></span>${fmtDur((Date.now() - t0) / 1000)}`; };
+    tick();
+    const timer = setInterval(tick, 1000);
+    let raf = 0;
+    const draw = () => {
+      meters.forEach(m => {
+        m.an.getFloatTimeDomainData(m.buf);
+        let s = 0; for (let i = 0; i < m.buf.length; i++) s += m.buf[i] * m.buf[i];
+        m.el.style.width = Math.min(100, Math.sqrt(s / m.buf.length) * 400) + '%';
+      });
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+
+    lessonRec = { meta, display, mic, ctx, recorders, timer, raf: () => raf };
+    // Stopping the share from Chrome's own bar ends the recording cleanly.
+    display.getVideoTracks()[0]?.addEventListener('ended', stopLessonRecording);
+    window.addEventListener('beforeunload', recBeforeUnload);
+    document.getElementById('rec-start').disabled = true;
+    document.getElementById('rec-stop').disabled = false;
+    document.getElementById('rec-lesson').disabled = true;
+    document.getElementById('rec-meters').style.display = 'grid';
+    renderLocalRecordings();
+  }
+
+  async function stopLessonRecording() {
+    if (!lessonRec) return;
+    const r = lessonRec;
+    lessonRec = null;
+    r.recorders.forEach(x => { if (x.mr.state !== 'inactive') x.mr.stop(); });
+    await Promise.all(r.recorders.map(x => x.done));
+    [r.display, r.mic].forEach(s => s.getTracks().forEach(t => t.stop()));
+    r.ctx.close();
+    clearInterval(r.timer);
+    cancelAnimationFrame(r.raf());
+    window.removeEventListener('beforeunload', recBeforeUnload);
+
+    r.meta.status = 'done';
+    r.meta.endedAt = new Date().toISOString();
+    r.meta.durationSec = Math.round((Date.parse(r.meta.endedAt) - Date.parse(r.meta.startedAt)) / 1000);
+    await idbPut('recordings', r.meta);
+
+    document.getElementById('rec-start').disabled = false;
+    document.getElementById('rec-stop').disabled = true;
+    document.getElementById('rec-lesson').disabled = false;
+    document.getElementById('rec-meters').style.display = 'none';
+    document.getElementById('rec-timer').textContent = '';
+    recMsg(`Grabación terminada (${fmtDur(r.meta.durationSec)}). Se está descargando; también puedes transcribirla abajo.`);
+    await renderLocalRecordings();
+    downloadRecording(r.meta.id);
+  }
+
+  function slugName(s) {
+    return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  }
+  function extFor(mime) {
+    return /mp4/.test(mime) ? (/^audio/.test(mime) ? 'm4a' : 'mp4') : (/ogg/.test(mime) ? 'ogg' : 'webm');
+  }
+
+  async function downloadRecording(id) {
+    const meta = (await idbAllRecordings()).find(r => r.id === id);
+    if (!meta) return;
+    const blob = new Blob(await idbChunks(id, 'main'), { type: meta.mainMime });
+    if (!blob.size) { toast('Esa grabación está vacía.', 'error'); return; }
+    const d = new Date(meta.startedAt);
+    const stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}-${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${meta.kind === 'video' ? 'video-leccion' : 'clase'}-${stamp}${meta.title ? '-' + slugName(meta.title.replace(/^Clase con /, '')) : ''}.${extFor(meta.mainMime)}`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    if (!meta.downloadedAt) {
+      meta.downloadedAt = new Date().toISOString();
+      await idbPut('recordings', meta);
+      renderLocalRecordings();
+    }
+  }
+
+  async function deleteRecording(id) {
+    const meta = (await idbAllRecordings()).find(r => r.id === id);
+    if (!meta) return;
+    if (!confirm(meta.downloadedAt
+      ? '¿Borrar esta grabación del navegador? Ya la descargaste, así que la copia del disco no se toca.'
+      : '¿Borrar esta grabación? TODAVÍA NO LA HAS DESCARGADO: se perderá para siempre.')) return;
+    await idbDeleteRecording(id);
+    renderLocalRecordings();
+  }
+
+  async function renderLocalRecordings() {
+    const targets = [['rec-local-list', 'lesson'], ['vl-local-list', 'video']];
+    let recs;
+    try {
+      recs = await idbAllRecordings();
+    } catch (e) {
+      targets.forEach(([id]) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<p class="empty-note">Este navegador no deja guardar grabaciones (¿ventana privada?). Graba en una ventana normal.</p>';
+      });
+      return;
+    }
+    recs.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+    targets.forEach(([id, kind]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const mine = recs.filter(r => r.kind === kind);
+      if (!mine.length) { el.innerHTML = kind === 'lesson' ? '<p class="empty-note">No hay grabaciones guardadas aquí.</p>' : ''; return; }
+      el.innerHTML = (kind === 'video' ? '<div class="sub-h">Grabadas en este ordenador</div>' : '') + mine.map(r => {
+        const active = (lessonRec && lessonRec.meta.id === r.id) || (vlRec && vlRec.meta.id === r.id);
+        const state = active ? '<span class="tag warn">Grabando…</span>'
+          : r.status === 'recording' ? '<span class="tag warn">Se cortó: se puede recuperar</span>'
+          : r.downloadedAt ? '<span class="tag ok">Descargada</span>' : '<span class="tag warn">Sin descargar</span>';
+        return `<div class="rec-item">
+          <span><strong>${escapeHtml(r.title || 'Grabación')}</strong> · ${shortWhen(r.startedAt)}${r.durationSec ? ' · ' + fmtDur(r.durationSec) : ''} ${state}</span>
+          ${active ? '' : `<span class="acts">
+            <button class="btn btn-small btn-outline" onclick="downloadRecording('${r.id}')">Descargar</button>
+            ${kind === 'lesson' ? `<button class="btn btn-small" onclick="transcribeRecording('${r.id}')">Transcribir</button>` : ''}
+            <button class="btn btn-small btn-outline" onclick="deleteRecording('${r.id}')">Borrar</button></span>`}
+        </div>`;
+      }).join('');
+    });
+  }
+
+  // =====================================================================
+  // TRANSCRIPTION (Whisper in transcribe-worker.js, on this computer)
+  // The page cuts each voice into utterances first: silence never reaches
+  // Whisper (that is where it invents "Thanks for watching"), and each
+  // utterance keeps its real start time, so the two voices can be merged
+  // back into one conversation in the right order. Transcripts are kept in
+  // this browser's IndexedDB like the recordings: nothing is uploaded.
+  // =====================================================================
+  let txWorker = null;
+  const txPending = new Map();
+  let txSeq = 0;
+  let txBusy = false;
+  let currentTx = null;   // { id?, studentId, slotId, lessonStart, durationSec, title, segments }
+
+  function getTxWorker() {
+    if (txWorker) return txWorker;
+    txWorker = new Worker('transcribe-worker.js', { type: 'module' });
+    txWorker.onmessage = e => {
+      const m = e.data || {};
+      if (m.type === 'download') {
+        const pct = m.total ? Math.round(m.loaded / m.total * 100) : 0;
+        setTxStatus(`Descargando el modelo de transcripción (solo la primera vez): ${pct}% de ${Math.round(m.total / 1e6)} MB…`, pct);
+        return;
+      }
+      const p = txPending.get(m.id);
+      if (!p) return;
+      txPending.delete(m.id);
+      if (m.type === 'error') p.reject(new Error(m.message)); else p.resolve(m);
+    };
+    txWorker.onerror = e => {
+      txPending.forEach(p => p.reject(new Error(e.message || 'El transcriptor se ha cerrado.')));
+      txPending.clear();
+      txWorker = null;
+    };
+    return txWorker;
+  }
+  function txCall(msg) {
+    return new Promise((resolve, reject) => {
+      const id = ++txSeq;
+      txPending.set(id, { resolve, reject });
+      getTxWorker().postMessage({ ...msg, id }, msg.audio ? [msg.audio.buffer] : []);
+    });
+  }
+
+  function setTxStatus(text, pct) {
+    document.getElementById('tx-status').textContent = text;
+    const bar = document.getElementById('tx-progress');
+    bar.style.display = pct == null ? 'none' : 'block';
+    if (pct != null) bar.firstElementChild.style.width = Math.max(0, Math.min(100, pct)) + '%';
+  }
+
+  // decodeAudioData resamples to the context's rate, so a 16 kHz offline
+  // context hands back exactly what Whisper wants.
+  async function decodeTo16k(blob) {
+    const ctx = new OfflineAudioContext(1, 16000, 16000);
+    const audio = await ctx.decodeAudioData(await blob.arrayBuffer());
+    if (audio.numberOfChannels === 1) return audio.getChannelData(0);
+    const a = audio.getChannelData(0), b = audio.getChannelData(1), out = new Float32Array(a.length);
+    for (let i = 0; i < a.length; i++) out[i] = (a[i] + b[i]) / 2;
+    return out;
+  }
+
+  // 30 ms frames; the noise floor is the 20th-percentile frame, speech is
+  // clearly above it. Gaps under 0.6 s join two pieces, blips under 0.3 s
+  // are dropped, anything over 25 s is cut at its quietest point because
+  // Whisper reads 30 s at a time.
+  function speechSegments(x, sr = 16000) {
+    const F = Math.round(sr * 0.03), n = Math.floor(x.length / F);
+    if (!n) return [];
+    const rms = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      let s = 0;
+      for (let j = i * F; j < (i + 1) * F; j++) s += x[j] * x[j];
+      rms[i] = Math.sqrt(s / F);
+    }
+    const floor = Float32Array.from(rms).sort()[Math.floor(n * 0.2)] || 0;
+    const thr = Math.max(0.006, floor * 3);
+    const runs = [];
+    let st = -1;
+    for (let i = 0; i < n; i++) {
+      if (rms[i] > thr) { if (st < 0) st = i; }
+      else if (st >= 0) { runs.push([st, i]); st = -1; }
+    }
+    if (st >= 0) runs.push([st, n]);
+    const merged = [];
+    runs.forEach(r => {
+      const last = merged[merged.length - 1];
+      if (last && r[0] - last[1] <= 20) last[1] = r[1]; else merged.push([...r]);
+    });
+    const out = [];
+    merged.filter(r => r[1] - r[0] >= 10).forEach(([a, b]) => {
+      while (b - a > 833) {
+        let cut = a + 400, min = Infinity;
+        for (let i = a + 400; i < a + 833; i++) if (rms[i] < min) { min = rms[i]; cut = i; }
+        out.push([a, cut]);
+        a = cut;
+      }
+      out.push([a, b]);
+    });
+    return out.map(([a, b]) => ({ start: Math.max(0, a - 7) * F / sr, end: Math.min(n, b + 7) * F / sr }));
+  }
+
+  // Stock phrases Whisper produces from noise; real lesson speech is kept.
+  const TX_JUNK = /^(\.+|…|-+|\[.*\]|\(.*\)|♪.*|thanks for watching!?|subt[ií]tulos (realizados )?por la comunidad de amara\.org|subtitles by the amara\.org community|napisy (wykonane )?przez społeczność amara\.org)$/i;
+
+  function speakerName(sp) {
+    if (sp === 'tutor') return 'Paulo';
+    const st = currentTx && allStudents.find(s => s.id === currentTx.studentId);
+    return st ? (st.full_name || '').split(/\s+/)[0] || 'Alumno' : 'Alumno';
+  }
+
+  async function runTranscription(pieces) {
+    const quality = document.getElementById('tx-quality').value;
+    const language = document.getElementById('tx-language').value;
+    txBusy = true;
+    document.getElementById('tx-actions').style.display = 'none';
+    try {
+      setTxStatus('Preparando el modelo de transcripción…', 0);
+      const ready = await txCall({ type: 'load', quality });
+      const viaCpu = ready.device !== 'webgpu';
+      if (quality === 'precise' && viaCpu) toast('Este ordenador no ofrece WebGPU: uso el modelo pequeño, en el procesador. Irá más lento.');
+      const total = pieces.reduce((n, p) => n + (p.end - p.start), 0);
+      let doneSec = 0;
+      const t0 = Date.now();
+      currentTx.segments = [];
+      for (let i = 0; i < pieces.length; i++) {
+        const p = pieces[i];
+        const audio = p.pcm.slice(Math.floor(p.start * 16000), Math.ceil(p.end * 16000));
+        const res = await txCall({ type: 'transcribe', audio, language, quality });
+        const text = (res.text || '').trim();
+        if (text && !TX_JUNK.test(text)) {
+          currentTx.segments.push({ speaker: p.speaker, start: +p.start.toFixed(2), end: +p.end.toFixed(2), text });
+          appendTxLine(currentTx.segments[currentTx.segments.length - 1], currentTx.segments.length - 1);
+        }
+        doneSec += p.end - p.start;
+        const elapsed = (Date.now() - t0) / 1000;
+        const eta = doneSec ? elapsed / doneSec * (total - doneSec) : 0;
+        setTxStatus(`Transcribiendo: ${i + 1} de ${pieces.length} fragmentos · quedan unos ${fmtCountdown(eta * 1000)}`, doneSec / total * 100);
+      }
+      currentTx.segments = mergeSegments(currentTx.segments);
+      renderTxLines();
+      setTxStatus(`Listo: ${currentTx.segments.length} intervenciones. Corrige lo que haga falta (clic en el texto; clic en el nombre para cambiar quién habla) y guárdala.`, null);
+      document.getElementById('tx-actions').style.display = 'flex';
+    } catch (e) {
+      setTxStatus('No se pudo transcribir: ' + (e.message || e), null);
+    } finally {
+      txBusy = false;
+    }
+  }
+
+  // Consecutive pieces from the same voice read as one turn.
+  function mergeSegments(segs) {
+    const out = [];
+    segs.forEach(s => {
+      const last = out[out.length - 1];
+      if (last && last.speaker === s.speaker && s.start - last.end < 2.5) {
+        last.end = s.end;
+        last.text = `${last.text} ${s.text}`;
+      } else out.push({ ...s });
+    });
+    return out;
+  }
+
+  function openTxCard(title) {
+    const card = document.getElementById('tx-card');
+    card.style.display = 'block';
+    document.getElementById('tx-title').textContent = title;
+    document.getElementById('tx-lines').innerHTML = '';
+    document.getElementById('tx-msg').innerHTML = '';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function txLineHtml(seg, i) {
+    return `<div class="tx-line" data-i="${i}">
+      <button class="tx-who ${seg.speaker}" title="Cambiar quién habla" onclick="flipSpeaker(${i})">${escapeHtml(speakerName(seg.speaker))}</button>
+      <span class="tx-time">${fmtDur(seg.start)}</span>
+      <span class="tx-text" contenteditable="${txBusy ? 'false' : 'true'}" spellcheck="false">${escapeHtml(seg.text)}</span>
+    </div>`;
+  }
+  function appendTxLine(seg, i) {
+    const box = document.getElementById('tx-lines');
+    box.insertAdjacentHTML('beforeend', txLineHtml(seg, i));
+    box.scrollTop = box.scrollHeight;
+  }
+  function renderTxLines() {
+    document.getElementById('tx-lines').innerHTML = currentTx.segments.map(txLineHtml).join('')
+      || '<p class="empty-note">No se ha reconocido ninguna frase. ¿Se grabó el audio?</p>';
+  }
+  function readTxEdits() {
+    document.querySelectorAll('#tx-lines .tx-line').forEach(el => {
+      const seg = currentTx.segments[Number(el.dataset.i)];
+      if (seg) seg.text = el.querySelector('.tx-text').innerText.trim();
+    });
+    currentTx.segments = currentTx.segments.filter(s => s.text);
+  }
+  function flipSpeaker(i) {
+    if (txBusy) return;
+    readTxEdits();
+    const seg = currentTx.segments[i];
+    if (!seg) return;
+    seg.speaker = seg.speaker === 'tutor' ? 'student' : 'tutor';
+    renderTxLines();
+  }
+
+  async function transcribeRecording(id) {
+    if (txBusy) { toast('Ya hay una transcripción en marcha.', 'error'); return; }
+    const meta = (await idbAllRecordings()).find(r => r.id === id);
+    if (!meta) return;
+    currentTx = {
+      studentId: meta.studentId, slotId: meta.slotId, lessonStart: meta.startedAt,
+      durationSec: meta.durationSec || null, title: meta.title, segments: []
+    };
+    openTxCard(`Transcripción · ${meta.title}`);
+    setTxStatus('Preparando el audio…', 0);
+    try {
+      const pieces = [];
+      for (const [speaker, track, mime] of [['tutor', 'mic', meta.micMime], ['student', 'tab', meta.tabMime]]) {
+        const blob = new Blob(await idbChunks(id, track), { type: mime });
+        if (!blob.size) continue;
+        const pcm = await decodeTo16k(blob);
+        speechSegments(pcm).forEach(seg => pieces.push({ speaker, pcm, ...seg }));
+      }
+      pieces.sort((a, b) => a.start - b.start);
+      if (!pieces.length) { setTxStatus('No hay voz en esta grabación.', null); return; }
+      await runTranscription(pieces);
+    } catch (e) {
+      setTxStatus('No se pudo leer el audio de la grabación: ' + (e.message || e), null);
+    }
+  }
+
+  // Any audio or video file from elsewhere. One track, so there is no way
+  // to tell voices apart; every line starts as the student and can be flipped.
+  async function transcribeFile(input) {
+    const file = input.files[0];
+    input.value = '';
+    if (!file) return;
+    if (txBusy) { toast('Ya hay una transcripción en marcha.', 'error'); return; }
+    const { lesson } = recCurrentStudent();
+    currentTx = {
+      studentId: lesson?.student_id || null, slotId: lesson?.id || null,
+      lessonStart: new Date(file.lastModified || Date.now()).toISOString(),
+      durationSec: null, title: file.name.replace(/\.[^.]+$/, ''), segments: []
+    };
+    openTxCard(`Transcripción · ${file.name}`);
+    setTxStatus('Leyendo el archivo…', 0);
+    try {
+      const pcm = await decodeTo16k(file);
+      currentTx.durationSec = Math.round(pcm.length / 16000);
+      const pieces = speechSegments(pcm).map(seg => ({ speaker: 'student', pcm, ...seg }));
+      if (!pieces.length) { setTxStatus('No hay voz en este archivo.', null); return; }
+      await runTranscription(pieces);
+    } catch (e) {
+      setTxStatus('No se pudo leer ese archivo (prueba con mp3, m4a, webm o mp4): ' + (e.message || e), null);
+    }
+  }
+
+  function txPlainText() {
+    return currentTx.segments.map(s => `[${fmtDur(s.start)}] ${speakerName(s.speaker)}: ${s.text}`).join('\n');
+  }
+  function downloadTranscriptTxt() {
+    readTxEdits();
+    const url = URL.createObjectURL(new Blob([txPlainText()], { type: 'text/plain;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `transcripcion-${slugName(currentTx.title) || 'clase'}.txt`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+
+  async function saveTranscript() {
+    readTxEdits();
+    const row = {
+      id: currentTx.id || crypto.randomUUID(),
+      studentId: currentTx.studentId, slotId: currentTx.slotId,
+      lessonStart: currentTx.lessonStart, durationSec: currentTx.durationSec,
+      title: currentTx.title || 'Clase', segments: currentTx.segments,
+      savedAt: new Date().toISOString()
+    };
+    const box = document.getElementById('tx-msg');
+    try {
+      await idbPut('transcripts', row);
+    } catch (e) {
+      box.innerHTML = `<div class="msg error">No se pudo guardar en este navegador: ${escapeHtml(e.message || String(e))}</div>`;
+      return;
+    }
+    currentTx.id = row.id;
+    box.innerHTML = '<div class="msg ok">Guardada en este ordenador.</div>';
+    await loadTranscripts();
+  }
+
+  let transcriptRows = [];
+  async function loadTranscripts() {
+    const box = document.getElementById('tx-list');
+    try {
+      transcriptRows = (await idbAll('transcripts')).sort((a, b) => (b.lessonStart || '').localeCompare(a.lessonStart || ''));
+    } catch (e) {
+      transcriptRows = [];
+      box.innerHTML = '<p class="empty-note">Este navegador no deja guardar transcripciones (¿ventana privada?).</p>';
+      return;
+    }
+    box.innerHTML = transcriptRows.length
+      ? `<ul class="mini-list">${transcriptRows.map(t => transcriptRowHtml(t, true)).join('')}</ul>`
+      : '<p class="empty-note">Todavía no has guardado ninguna.</p>';
+    if (currentStudentId) {
+      const s = allStudents.find(x => x.id === currentStudentId);
+      if (s) renderStudentTranscripts(s);
+    }
+  }
+
+  function transcriptRowHtml(t, withName) {
+    const who = t.studentId ? studentNameById(t.studentId) : 'Sin alumno';
+    return `<li><span>${escapeHtml(t.title || 'Clase')} · ${shortWhen(t.lessonStart)}${withName ? ' · ' + escapeHtml(who) : ''}</span>
+      <span style="display:flex; gap: 6px; flex-wrap: wrap;">
+        <button class="btn btn-small btn-outline" onclick="openTranscript('${t.id}')">Abrir</button>
+        <button class="btn btn-small btn-outline" onclick="deleteTranscript('${t.id}')">Borrar</button>
+      </span></li>`;
+  }
+
+  function openTranscript(id) {
+    if (txBusy) { toast('Espera a que termine la transcripción en marcha.', 'error'); return; }
+    const t = transcriptRows.find(x => x.id === id);
+    if (!t) return;
+    currentTx = {
+      id: t.id, studentId: t.studentId, slotId: t.slotId, lessonStart: t.lessonStart,
+      durationSec: t.durationSec, title: t.title, segments: (t.segments || []).map(s => ({ ...s }))
+    };
+    showAdminTab('grabar');
+    openTxCard(`Transcripción · ${t.title || 'Clase'}`);
+    renderTxLines();
+    setTxStatus('Clic en el texto para corregirlo; clic en el nombre para cambiar quién habla.', null);
+    document.getElementById('tx-actions').style.display = 'flex';
+  }
+
+  async function deleteTranscript(id) {
+    if (!confirm('¿Borrar esta transcripción de este ordenador? No se puede deshacer.')) return;
+    await idbDelete('transcripts', id);
+    if (currentTx && currentTx.id === id) { currentTx = null; document.getElementById('tx-card').style.display = 'none'; }
+    await loadTranscripts();
+  }
+
+  // =====================================================================
+  // VIDEO LESSONS: record here, upload to YouTube as unlisted, publish the link
+  // =====================================================================
+  let vlMode = 'camera';
+  let vlRec = null;
+  let vlPip = null;
+  const VL_HINTS = {
+    camera: 'Solo tu cámara y tu micrófono.',
+    screen: 'Una pestaña, una ventana o tu pantalla entera, con tu voz del micrófono.',
+    both: 'Tu pantalla, con tu cara en una ventanita flotante encima. Al compartir elige «Pantalla entera»: la ventanita solo sale en el vídeo si se graba la pantalla completa.'
+  };
+  function setVlMode(m) {
+    if (vlRec) return;
+    vlMode = m;
+    document.querySelectorAll('#vl-mode button').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+    document.getElementById('vl-mode-hint').textContent = VL_HINTS[m];
+  }
+
+  function vlMsg(html, kind) {
+    document.getElementById('vl-msg').innerHTML = html ? `<div class="msg ${kind || 'ok'}">${html}</div>` : '';
+  }
+
+  async function openCameraPip() {
+    if (!vlPip) return;
+    try { await vlPip.requestPictureInPicture(); vlMsg(''); }
+    catch (e) { vlMsg('No se pudo abrir la ventanita de la cámara: ' + escapeHtml(e.message || String(e)), 'error'); }
+  }
+
+  async function startVideoLesson() {
+    if (vlRec) return;
+    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { vlMsg('Este navegador no puede grabar. Usa Chrome o Edge.', 'error'); return; }
+    vlMsg('');
+    document.getElementById('vl-result').style.display = 'none';
+    const streams = [];
+    const stopAll = () => streams.forEach(s => s.getTracks().forEach(t => t.stop()));
+    const audio = { echoCancellation: true, noiseSuppression: true };
+    let cam = null, screen = null, mic = null, stream;
+    try {
+      if (vlMode === 'camera') {
+        cam = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio });
+        streams.push(cam);
+        stream = cam;
+      } else {
+        screen = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 30 } }, audio: false });
+        streams.push(screen);
+        mic = await navigator.mediaDevices.getUserMedia({ audio });
+        streams.push(mic);
+        if (vlMode === 'both') {
+          cam = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 360 } }, audio: false });
+          streams.push(cam);
+        }
+        stream = new MediaStream([...screen.getVideoTracks(), ...mic.getAudioTracks()]);
+      }
+    } catch (e) {
+      stopAll();
+      vlMsg('Sin permiso para la cámara, el micrófono o la pantalla. Permítelo en el candado de la barra de direcciones.', 'error');
+      return;
+    }
+
+    const preview = document.getElementById('vl-preview');
+    preview.srcObject = vlMode === 'camera' ? cam : screen;
+    preview.style.display = 'block';
+    preview.play().catch(() => {});
+    if (cam && vlMode === 'both') {
+      vlPip = document.createElement('video');
+      vlPip.muted = true; vlPip.playsInline = true; vlPip.srcObject = cam;
+      await vlPip.play().catch(() => {});
+      // Needs a fresh click if the screen picker used up the gesture.
+      try { await vlPip.requestPictureInPicture(); }
+      catch (e) { vlMsg('Pulsa <button class="btn btn-small" onclick="openCameraPip()">Mostrar mi cámara flotante</button> para que tu cara salga en el vídeo.', 'error'); }
+    }
+
+    const id = crypto.randomUUID();
+    const meta = { id, kind: 'video', status: 'recording', startedAt: new Date().toISOString(), title: 'Vídeo-lección' };
+    let rec;
+    try {
+      rec = startChunkRecorder(stream, id, 'main', VIDEO_MIMES, { videoBitsPerSecond: 2500000, audioBitsPerSecond: 128000 });
+      meta.mainMime = rec.mime;
+      await idbPut('recordings', meta);
+    } catch (e) {
+      stopAll();
+      vlMsg('No se pudo empezar a grabar: ' + escapeHtml(e.message || String(e)), 'error');
+      return;
+    }
+    const t0 = Date.now();
+    const timerEl = document.getElementById('vl-timer');
+    const tick = () => { timerEl.innerHTML = `<span class="rec-dot"></span>${fmtDur((Date.now() - t0) / 1000)}`; };
+    tick();
+    vlRec = { meta, rec, streams, timer: setInterval(tick, 1000) };
+    (screen || cam).getVideoTracks()[0]?.addEventListener('ended', stopVideoLesson);
+    window.addEventListener('beforeunload', recBeforeUnload);
+    document.getElementById('vl-start').disabled = true;
+    document.getElementById('vl-stop').disabled = false;
+    renderLocalRecordings();
+  }
+
+  async function stopVideoLesson() {
+    if (!vlRec) return;
+    const r = vlRec;
+    vlRec = null;
+    if (r.rec.mr.state !== 'inactive') r.rec.mr.stop();
+    await r.rec.done;
+    r.streams.forEach(s => s.getTracks().forEach(t => t.stop()));
+    clearInterval(r.timer);
+    window.removeEventListener('beforeunload', recBeforeUnload);
+    if (document.pictureInPictureElement) document.exitPictureInPicture().catch(() => {});
+    vlPip = null;
+
+    r.meta.status = 'done';
+    r.meta.endedAt = new Date().toISOString();
+    r.meta.durationSec = Math.round((Date.parse(r.meta.endedAt) - Date.parse(r.meta.startedAt)) / 1000);
+    await idbPut('recordings', r.meta);
+
+    const preview = document.getElementById('vl-preview');
+    preview.srcObject = null;
+    preview.style.display = 'none';
+    document.getElementById('vl-start').disabled = false;
+    document.getElementById('vl-stop').disabled = true;
+    document.getElementById('vl-timer').textContent = '';
+
+    const blob = new Blob(await idbChunks(r.meta.id, 'main'), { type: r.meta.mainMime });
+    const playback = document.getElementById('vl-playback');
+    if (playback.dataset.url) URL.revokeObjectURL(playback.dataset.url);
+    const url = URL.createObjectURL(blob);
+    playback.src = url;
+    playback.dataset.url = url;
+    const dl = document.getElementById('vl-download');
+    dl.href = 'javascript:void(0)';
+    dl.onclick = () => downloadRecording(r.meta.id);
+    document.getElementById('vl-result').style.display = 'block';
+    vlMsg(`Grabado (${fmtDur(r.meta.durationSec)}). Revísalo, descárgalo y súbelo a YouTube como «No listado»; luego pega el enlace en «Publicar un vídeo».`);
+    renderLocalRecordings();
+  }
+
+  function youtubeId(url) {
+    const s = (url || '').trim();
+    if (/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+    const m = s.match(/(?:youtu\.be\/|[?&]v=|\/(?:shorts|embed|live)\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  let videoRows = [];
+  async function loadVideoLessons() {
+    const { data, error } = await sb.from('video_lessons')
+      .select('id, title, description, youtube_id, target_lang, student_id, published, created_at')
+      .order('created_at', { ascending: false });
+    const box = document.getElementById('vl-list');
+    if (error) { box.innerHTML = '<p class="empty-note">Los vídeos aún no están activados en la base de datos.</p>'; return; }
+    videoRows = data || [];
+    box.innerHTML = videoRows.length ? videoRows.map(v => `
+      <div class="vl-item">
+        <img src="https://i.ytimg.com/vi/${v.youtube_id}/mqdefault.jpg" alt="" loading="lazy">
+        <div class="grow">
+          <div class="ttl">${escapeHtml(v.title)}</div>
+          <div class="hint" style="margin: 2px 0 6px;">${v.student_id ? 'Solo ' + escapeHtml(studentNameById(v.student_id)) : 'Todos los alumnos'}
+            · ${{ en: 'inglés', es: 'español' }[v.target_lang] || 'cualquier idioma'}${v.published ? '' : ' · <strong>oculto</strong>'}</div>
+          <span style="display:flex; gap: 6px; flex-wrap: wrap;">
+            <a class="btn btn-small btn-outline" href="https://youtu.be/${v.youtube_id}" target="_blank" rel="noopener">Ver</a>
+            <button class="btn btn-small btn-outline" onclick="toggleVideoPublished('${v.id}')">${v.published ? 'Ocultar' : 'Mostrar'}</button>
+            <button class="btn btn-small btn-outline" onclick="deleteVideoLesson('${v.id}')">Quitar</button>
+          </span>
+        </div>
+      </div>`).join('') : '<p class="empty-note">Todavía no has publicado ninguno.</p>';
+  }
+
+  async function publishVideoLesson() {
+    const box = document.getElementById('vl-pub-msg');
+    const yt = youtubeId(document.getElementById('vl-url').value);
+    const title = document.getElementById('vl-title').value.trim();
+    if (!yt) { box.innerHTML = '<div class="msg error">Ese enlace no parece de YouTube (ej: https://youtu.be/abc123XYZ_0).</div>'; return; }
+    if (!title) { box.innerHTML = '<div class="msg error">Ponle un título.</div>'; return; }
+    const { error } = await sb.from('video_lessons').insert({
+      youtube_id: yt, title,
+      description: document.getElementById('vl-desc').value.trim() || null,
+      target_lang: document.getElementById('vl-lang').value || null,
+      student_id: document.getElementById('vl-student').value || null
+    });
+    if (error) { box.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+    box.innerHTML = '<div class="msg ok">Publicado. Ya aparece en la pestaña Practicar de tus alumnos.</div>';
+    ['vl-url', 'vl-title', 'vl-desc'].forEach(id => { document.getElementById(id).value = ''; });
+    await loadVideoLessons();
+  }
+
+  async function toggleVideoPublished(id) {
+    const v = videoRows.find(x => x.id === id);
+    const { error } = await sb.from('video_lessons').update({ published: !v.published }).eq('id', id);
+    if (error) { toast(error.message, 'error'); return; }
+    await loadVideoLessons();
+  }
+
+  async function deleteVideoLesson(id) {
+    if (!confirm('¿Quitar este vídeo de la web? En YouTube sigue estando; bórralo allí si ya no lo quieres.')) return;
+    const { error } = await sb.from('video_lessons').delete().eq('id', id);
+    if (error) { toast(error.message, 'error'); return; }
+    await loadVideoLessons();
+  }
+
+  // =====================================================================
+  // EXERCISES (practice_items): Paulo's own sentences and verbs
+  // =====================================================================
+  let exerciseRows = [];
+  const EX_KIND = { translation: 'Traducción', preposition: 'Hueco', verb: 'Verbo' };
+
+  function renderExerciseForm() {
+    const kind = document.getElementById('ex-kind').value;
+    const target = document.getElementById('ex-target').value;
+    const box = document.getElementById('ex-fields');
+    const field = (id, label, ph, area) => `<label for="${id}">${label}</label>` + (area
+      ? `<textarea id="${id}" rows="2" maxlength="500" placeholder="${ph}" style="width: 100%; margin-bottom: 10px;"></textarea>`
+      : `<input type="text" id="${id}" maxlength="500" placeholder="${ph}" style="width: 100%; margin-bottom: 10px;">`);
+    if (kind === 'translation') {
+      box.innerHTML = `
+        <div class="form-row" style="margin-bottom: 10px;"><div style="flex: 0 1 220px;">
+          <label for="ex-source">La frase está en</label>
+          <select id="ex-source">
+            <option value="es"${target === 'en' ? ' selected' : ''}>Español</option>
+            <option value="pl">Polaco</option>
+            <option value="en"${target === 'es' ? ' selected' : ''}>Inglés</option>
+          </select></div></div>
+        ${field('ex-prompt', 'Frase para traducir', target === 'en' ? 'Ej: Llevo dos años aquí.' : 'Ej: I have been here for two years.', true)}
+        ${field('ex-answers', 'Traducciones correctas (una por línea)', target === 'en' ? "I've been here for two years.\nI have been here for two years." : 'Llevo dos años aquí.\nHace dos años que estoy aquí.', true)}
+        ${field('ex-hint', 'Pista (opcional)', 'Ej: present perfect')}`;
+    } else if (kind === 'preposition') {
+      box.innerHTML = `
+        ${field('ex-prompt', 'Frase con ___ donde va el hueco', target === 'en' ? "Ej: I'm good ___ cooking." : 'Ej: Me acuerdo ___ ti.')}
+        ${field('ex-answers', 'Respuesta (varias válidas: sepáralas con /)', target === 'en' ? 'at' : 'de')}
+        ${field('ex-hint', 'Pista (opcional)', 'Ej: good + ?')}`;
+    } else if (target === 'en') {
+      box.innerHTML = `
+        ${field('ex-prompt', 'Verbo (infinitivo)', 'Ej: swim')}
+        <div class="form-row"><div>${field('ex-past', 'Past simple (varias: /)', 'swam')}</div><div>${field('ex-pp', 'Past participle (varias: /)', 'swum')}</div></div>
+        ${field('ex-hint', 'Significado (opcional)', 'Ej: nadar / pływać')}`;
+    } else {
+      box.innerHTML = `
+        ${field('ex-prompt', 'Qué conjugar', 'Ej: tener · nosotros · pasado')}
+        ${field('ex-answers', 'Respuesta (varias válidas: sepáralas con /)', 'tuvimos')}
+        ${field('ex-hint', 'Pista (opcional)', 'Ej: to have / mieć')}`;
+    }
+  }
+
+  async function saveExercise() {
+    const box = document.getElementById('ex-msg');
+    const kind = document.getElementById('ex-kind').value;
+    const target = document.getElementById('ex-target').value;
+    const val = id => (document.getElementById(id)?.value || '').trim();
+    const split = s => s.split('/').map(x => x.trim()).filter(Boolean);
+    const prompt = val('ex-prompt');
+    let answers;
+    if (kind === 'translation') answers = [val('ex-answers').split('\n').map(x => x.trim()).filter(Boolean)];
+    else if (kind === 'verb' && target === 'en') answers = [split(val('ex-past')), split(val('ex-pp'))];
+    else answers = [split(val('ex-answers'))];
+    if (!prompt || answers.some(a => !a.length)) { box.innerHTML = '<div class="msg error">Rellena el enunciado y la respuesta.</div>'; return; }
+    if (kind === 'preposition' && !prompt.includes('___')) { box.innerHTML = '<div class="msg error">Pon ___ (tres guiones bajos) donde va el hueco.</div>'; return; }
+    const { error } = await sb.from('practice_items').insert({
+      kind, target_lang: target, prompt, answers,
+      source_lang: kind === 'translation' ? val('ex-source') : null,
+      hint: val('ex-hint') || null,
+      student_id: document.getElementById('ex-student').value || null
+    });
+    if (error) { box.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`; return; }
+    box.innerHTML = '<div class="msg ok">Añadido. El alumno lo verá en su mazo «De tus clases».</div>';
+    renderExerciseForm();
+    await loadExercises();
+  }
+
+  async function loadExercises() {
+    const { data, error } = await sb.from('practice_items')
+      .select('id, kind, target_lang, source_lang, prompt, answers, hint, student_id, created_at')
+      .order('created_at', { ascending: false });
+    const box = document.getElementById('ex-list');
+    const D = window.PRACTICE_DATA;
+    if (D) {
+      document.getElementById('ex-starter-summary').textContent =
+        `Inglés: ${D.en.verbs.length} verbos irregulares, ${D.en.prepositions.length} frases de preposiciones, ` +
+        `${D.en.translation.es.length} frases para traducir desde el español y ${D.en.translation.pl.length} desde el polaco. ` +
+        `Español: ${D.es.verbsPresent.length / 6} verbos en presente y pasado, ${D.es.prepositions.length} frases de preposiciones, ` +
+        `${D.es.translation.en.length} frases desde el inglés y ${D.es.translation.pl.length} desde el polaco. ` +
+        'Están en practice-data.js; cambiarlos es una edición del archivo, no de la base de datos.';
+    }
+    if (error) { exerciseRows = []; box.innerHTML = '<p class="empty-note">Los ejercicios propios aún no están activados en la base de datos.</p>'; return; }
+    exerciseRows = data || [];
+    box.innerHTML = exerciseRows.length ? exerciseRows.map(e => `
+      <div class="ex-row">
+        <div class="grow">
+          <span class="tag">${EX_KIND[e.kind]} · ${e.target_lang === 'en' ? 'inglés' : 'español'}</span>
+          <span class="tag">${e.student_id ? escapeHtml(studentNameById(e.student_id)) : 'Todos'}</span>
+          <div style="margin-top: 4px;">${escapeHtml(e.prompt)}</div>
+          <div class="ans">${(e.answers || []).map(a => escapeHtml(a.join(' / '))).join(' · ')}${e.hint ? ' — ' + escapeHtml(e.hint) : ''}</div>
+        </div>
+        <button class="btn btn-small btn-outline" onclick="deleteExercise('${e.id}')">Borrar</button>
+      </div>`).join('') : '<p class="empty-note">Todavía no has añadido ninguno.</p>';
+  }
+
+  async function deleteExercise(id) {
+    if (!confirm('¿Borrar este ejercicio? Desaparece de la práctica del alumno.')) return;
+    const { error } = await sb.from('practice_items').delete().eq('id', id);
+    if (error) { toast(error.message, 'error'); return; }
+    await loadExercises();
+  }
+
+  setVlMode('camera');
 
   checkAccess();
 </script>
